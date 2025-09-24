@@ -6,7 +6,7 @@
 // =========================================
 // !!! ATENÇÃO: SUBSTITUA OS VALORES ABAIXO PELOS SEUS DADOS DO SUPABASE !!!
 const supabaseUrl = "https://ejddiovmtjpipangyqeo.supabase.co";
-const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZGRpb3ZtdGpwaXBhbmd5cWVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg3MTU4MDksImV4cCI6MjA3NDI5MTgwOX0.GH53mox_cijkhqAxy-sNmvxGcgtoLzuoE5sfP9hHdho";
+const supabaseAnonKey = "SeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZGRpb3ZtdGpwaXBhbmd5cWVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg3MTU4MDksImV4cCI6MjA3NDI5MTgwOX0.GH53mox_cijkhqAxy-sNmvxGcgtoLzuoE5sfP9hHdho";
 // Usando a versão UMD do Supabase que é carregada no HTML
 const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
 
@@ -203,6 +203,80 @@ async function simulateUpgrade() {
     return { success: true, message: "Upgrade para Premium simulado com sucesso!" };
 }
 
+/**
+ * Funções para cálculos pré-definidos (Ex: INSS, IPCA)
+ * Adiciona lógica de negócio baseada em opções pré-selecionadas.
+ */
+async function performPredefinedCalculation(type, value, params = {}) {
+    const parsedValue = parseFloat(value);
+    
+    // Validação básica do valor
+    if (isNaN(parsedValue) || parsedValue <= 0) {
+        return { success: false, error: "Por favor, insira um valor numérico válido e positivo." };
+    }
+
+    switch (type) {
+        case 'inss':
+            return calculateINSS(parsedValue);
+        case 'ipca':
+            // Assume que 'params' contém a taxa do IPCA e o período
+            if (params.taxaIPCA && params.periodo) {
+                return calculateIPCAInterest(parsedValue, params.taxaIPCA, params.periodo);
+            } else {
+                return { success: false, error: "Parâmetros para cálculo de IPCA ausentes." };
+            }
+        default:
+            return { success: false, error: "Tipo de cálculo não reconhecido." };
+    }
+}
+
+/**
+ * Calcula o valor do INSS com base em uma tabela simplificada.
+ * @param {number} salary - Salário bruto para o cálculo.
+ */
+function calculateINSS(salary) {
+    let inssValue = 0;
+    
+    if (salary <= 1412) {
+        inssValue = salary * 0.075;
+    } else if (salary <= 2666.68) {
+        inssValue = (1412 * 0.075) + ((salary - 1412) * 0.09);
+    } else if (salary <= 4000.03) {
+        inssValue = (1412 * 0.075) + (1254.68 * 0.09) + ((salary - 2666.68) * 0.12);
+    } else {
+        inssValue = (1412 * 0.075) + (1254.68 * 0.09) + (1333.35 * 0.12) + ((salary - 4000.03) * 0.14);
+    }
+
+    return {
+        success: true,
+        data: {
+            result: inssValue.toFixed(2),
+            message: `O valor do INSS calculado para o salário de R$${salary.toFixed(2)} é R$${inssValue.toFixed(2)}.`
+        }
+    };
+}eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZGRpb3ZtdGpwaXBhbmd5cWVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg3MTU4MDksImV4cCI6MjA3NDI5MTgwOX0.GH53mox_cijkhqAxy-sNmvxGcgtoLzuoE5sfP9hHdho
+
+/**
+ * Calcula o valor corrigido pelo IPCA de um investimento.
+ * @param {number} valorInicial - O valor inicial a ser corrigido.
+ * @param {number} taxaIPCA - A taxa de inflação do IPCA (em porcentagem, ex: 0.5).
+ * @param {number} periodo - O período de correção (em meses ou anos).
+ */
+function calculateIPCAInterest(valorInicial, taxaIPCA, periodo) {
+    const taxaDecimal = taxaIPCA / 100;
+    const valorCorrigido = valorInicial * Math.pow((1 + taxaDecimal), periodo);
+    const jurosIPCA = valorCorrigido - valorInicial;
+
+    return {
+        success: true,
+        data: {
+            result: jurosIPCA.toFixed(2),
+            valorCorrigido: valorCorrigido.toFixed(2),
+            message: `Para um valor inicial de R$${valorInicial.toFixed(2)} com IPCA de ${taxaIPCA}% por ${periodo} período(s), o valor corrigido é R$${valorCorrigido.toFixed(2)} e os juros foram de R$${jurosIPCA.toFixed(2)}.`
+        }
+    };
+}
+
 
 // =========================================
 // EXPOR FUNÇÕES GLOBALMENTE
@@ -217,5 +291,6 @@ window.addGoal = addGoal;
 window.fetchGoals = fetchGoals;
 window.getSubscriptionStatus = getSubscriptionStatus;
 window.simulateUpgrade = simulateUpgrade;
+window.performPredefinedCalculation = performPredefinedCalculation;
 
 console.log('Main.js carregado');
