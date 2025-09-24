@@ -1,11 +1,15 @@
 // main.js - Gerencia a lógica central do aplicativo, incluindo autenticação,
 // comunicação com o banco de dados (Supabase) e as regras de negócio.
 
-// Configuração do cliente Supabase
-const supabaseUrl = window.ENV.VITE_SUPABASE_URL;
-const supabaseAnonKey = window.ENV.VITE_SUPABASE_ANON_KEY;
+// =========================================
+// CONFIGURAÇÃO DO SUPABASE (COLE SUAS CHAVES AQUI)
+// =========================================
+// !!! ATENÇÃO: SUBSTITUA OS VALORES ABAIXO PELOS SEUS DADOS DO SUPABASE !!!
+const supabaseUrl = "https://ejddiovmtjpipangyqeo.supabase.co";
+const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZGRpb3ZtdGpwaXBhbmd5cWVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg3MTU4MDksImV4cCI6MjA3NDI5MTgwOX0.GH53mox_cijkhqAxy-sNmvxGcgtoLzuoE5sfP9hHdho";
 // Usando a versão UMD do Supabase que é carregada no HTML
 const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+
 
 // =========================================
 // FUNÇÕES DE AUTENTICAÇÃO
