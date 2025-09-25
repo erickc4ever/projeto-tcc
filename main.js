@@ -1,296 +1,199 @@
-// main.js - Gerencia a lógica central do aplicativo, incluindo autenticação,
-// comunicação com o banco de dados (Supabase) e as regras de negócio.
+// ===================================================================================
+// ARQUIVO: main.js
+// OBJETIVO: Cérebro da aplicação. Gerencia o estado, a autenticação e a
+//           comunicação com o backend (Supabase).
+// VERSÃO: Otimizada e Robusta
+// ===================================================================================
 
-// =========================================
-// CONFIGURAÇÃO DO SUPABASE (COLE SUAS CHAVES AQUI)
-// =========================================
-// !!! ATENÇÃO: SUBSTITUA OS VALORES ABAIXO PELOS SEUS DADOS DO SUPABASE !!!
-const supabaseUrl = "https://ejddiovmtjpipangyqeo.supabase.co";
-const supabaseAnonKey = "SeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZGRpb3ZtdGpwaXBhbmd5cWVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg3MTU4MDksImV4cCI6MjA3NDI5MTgwOX0.GH53mox_cijkhqAxy-sNmvxGcgtoLzuoE5sfP9hHdho";
-// Usando a versão UMD do Supabase que é carregada no HTML
-const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+// -----------------------------------------------------------------------------------
+// 1. INICIALIZAÇÃO E CONFIGURAÇÃO DO SUPABASE
+// -----------------------------------------------------------------------------------
+const { createClient } = supabase;
 
+// --- ATENÇÃO: PREENCHA COM AS SUAS CREDENCIAIS DO SUPABASE ---
+const SUPABASE_URL = 'https://ejddiovmtjpipangyqeo.supabase.co'; // Encontre em: Project Settings > API > Project URL
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZGRpb3ZtdGpwaXBhbmd5cWVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg3MTU4MDksImV4cCI6MjA3NDI5MTgwOX0.GH53mox_cijkhqAxy-sNmvxGcgtoLzuoE5sfP9hHdho';     // Encontre em: Project Settings > API > Project API Keys > anon public
 
-// =========================================
-// FUNÇÕES DE AUTENTICAÇÃO
-// =========================================
+const sbClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Função para fazer o login de um usuário existente
-async function signIn(email, password) {
-    try {
-        const { data, error } = await supabase.auth.signInWithPassword({
-            email: email,
-            password: password,
-        });
-        if (error) throw error;
-        return { success: true, data: data };
-    } catch (error) {
-        return { success: false, error: error.message };
-    }
-}
+// -----------------------------------------------------------------------------------
+// 2. ESTADO GLOBAL DA APLICAÇÃO
+// -----------------------------------------------------------------------------------
+const appState = {
+    user: null,
+    vendas: [],
+    categorias: [],
+    metricas: null
+};
 
-// Função para cadastrar um novo usuário
-async function signUp(email, password, options = {}) {
-    try {
-        const { data, error } = await supabase.auth.signUp({
-            email: email,
-            password: password,
-            options: options
-        });
-        if (error) throw error;
-        return { success: true, data: data };
-    } catch (error) {
-        return { success: false, error: error.message };
-    }
-}
-
-// Função para deslogar o usuário
-async function signOut() {
-    try {
-        const { error } = await supabase.auth.signOut();
-        if (error) throw error;
-        return { success: true };
-    } catch (error) {
-        return { success: false, error: error.message };
-    }
-}
-
-// Ouve mudanças no estado de autenticação e notifica o app.js
-if (typeof window.onAuthStateChange === 'function') {
-    supabase.auth.onAuthStateChange(window.onAuthStateChange);
-}
-
-// =========================================
-// FUNÇÕES DE GESTÃO DE DADOS (TRANSAÇÕES, CATEGORIAS, METAS)
-// =========================================
-
-/**
- * Busca todas as categorias do usuário logado.
- */
-async function fetchCategories() {
-    const { data, error } = await supabase
-        .from('categorias')
-        .select('*')
-        .order('nome', { ascending: true }); // Ordena por nome
-
+// -----------------------------------------------------------------------------------
+// 3. FUNÇÕES DE AUTENTICAÇÃO
+// -----------------------------------------------------------------------------------
+async function handleSignUp(email, password) {
+    const { data, error } = await sbClient.auth.signUp({ email, password });
     if (error) {
-        console.error("Erro ao buscar categorias:", error);
-        return { success: false, error: error.message };
+        console.error('Erro no cadastro:', error.message);
+        return { success: false, message: error.message };
     }
-    return { success: true, data: data };
+    return { success: true, user: data.user };
 }
 
-/**
- * Adiciona uma nova transação financeira.
- * @param {object} transacao - Dados da transação (valor, data, tipo, categoria_id, descricao)
- */
-async function addTransaction(transacao) {
-    // Pega o ID do usuário logado
-    const user = supabase.auth.getUser();
-    if (!user) {
-        return { success: false, error: "Usuário não autenticado." };
-    }
-
-    const { error } = await supabase
-        .from('transacoes')
-        .insert({
-            user_id: user.data.user.id,
-            valor: transacao.valor,
-            data: transacao.data,
-            tipo: transacao.tipo,
-            categoria_id: transacao.categoria_id,
-            descricao: transacao.descricao
-        });
-
+async function handleSignIn(email, password) {
+    const { data, error } = await sbClient.auth.signInWithPassword({ email, password });
     if (error) {
-        console.error("Erro ao adicionar transação:", error);
-        return { success: false, error: error.message };
+        console.error('Erro no login:', error.message);
+        return { success: false, message: error.message };
     }
-    return { success: true };
+    appState.user = data.user;
+    return { success: true, user: data.user };
 }
 
-/**
- * Busca todas as transações do usuário logado.
- */
-async function fetchTransactions() {
-    const { data, error } = await supabase
-        .from('transacoes')
-        .select('*')
-        .order('data', { ascending: false }); // Ordena pela data mais recente
-
+async function handleSignOut() {
+    const { error } = await sbClient.auth.signOut();
     if (error) {
-        console.error("Erro ao buscar transações:", error);
-        return { success: false, error: error.message };
-    }
-    return { success: true, data: data };
-}
-
-/**
- * Adiciona uma nova meta financeira.
- * @param {object} meta - Dados da meta (nome, valor_alvo)
- */
-async function addGoal(meta) {
-    const user = supabase.auth.getUser();
-    if (!user) {
-        return { success: false, error: "Usuário não autenticado." };
-    }
-
-    const { error } = await supabase
-        .from('metas_financeiras')
-        .insert({
-            user_id: user.data.user.id,
-            nome: meta.nome,
-            valor_alvo: meta.valor_alvo,
-            valor_atual: 0 // Valor inicial sempre 0
-        });
-    
-    if (error) {
-        console.error("Erro ao adicionar meta:", error);
-        return { success: false, error: error.message };
-    }
-    return { success: true };
-}
-
-/**
- * Busca todas as metas financeiras do usuário logado.
- */
-async function fetchGoals() {
-    const { data, error } = await supabase
-        .from('metas_financeiras')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-    if (error) {
-        console.error("Erro ao buscar metas:", error);
-        return { success: false, error: error.message };
-    }
-    return { success: true, data: data };
-}
-
-
-// =========================================
-// FUNÇÕES DE LÓGICA DE NEGÓCIO
-// =========================================
-
-/**
- * Simula a verificação do status de assinatura do usuário.
- * No TCC, isso seria uma chamada a uma API de pagamento.
- * Aqui, vamos simular baseados em dados simples, como a contagem de transações.
- */
-async function getSubscriptionStatus() {
-    const { data: transacoes, error } = await supabase
-        .from('transacoes')
-        .select('id');
-    
-    if (error) {
-        console.error("Erro ao verificar status de assinatura:", error);
-        return { isPremium: false };
-    }
-    
-    // Simula o plano Freemium: Gratuito até 10 transações
-    const transactionLimit = 10;
-    const isPremium = transacoes.length >= transactionLimit;
-    
-    return { isPremium: isPremium };
-}
-
-/**
- * Simula o processo de upgrade para o plano Premium.
- */
-async function simulateUpgrade() {
-    // Para o TCC, apenas retorna um sucesso simulado.
-    // Em um projeto real, isso envolveria uma API de pagamento.
-    return { success: true, message: "Upgrade para Premium simulado com sucesso!" };
-}
-
-/**
- * Funções para cálculos pré-definidos (Ex: INSS, IPCA)
- * Adiciona lógica de negócio baseada em opções pré-selecionadas.
- */
-async function performPredefinedCalculation(type, value, params = {}) {
-    const parsedValue = parseFloat(value);
-    
-    // Validação básica do valor
-    if (isNaN(parsedValue) || parsedValue <= 0) {
-        return { success: false, error: "Por favor, insira um valor numérico válido e positivo." };
-    }
-
-    switch (type) {
-        case 'inss':
-            return calculateINSS(parsedValue);
-        case 'ipca':
-            // Assume que 'params' contém a taxa do IPCA e o período
-            if (params.taxaIPCA && params.periodo) {
-                return calculateIPCAInterest(parsedValue, params.taxaIPCA, params.periodo);
-            } else {
-                return { success: false, error: "Parâmetros para cálculo de IPCA ausentes." };
-            }
-        default:
-            return { success: false, error: "Tipo de cálculo não reconhecido." };
-    }
-}
-
-/**
- * Calcula o valor do INSS com base em uma tabela simplificada.
- * @param {number} salary - Salário bruto para o cálculo.
- */
-function calculateINSS(salary) {
-    let inssValue = 0;
-    
-    if (salary <= 1412) {
-        inssValue = salary * 0.075;
-    } else if (salary <= 2666.68) {
-        inssValue = (1412 * 0.075) + ((salary - 1412) * 0.09);
-    } else if (salary <= 4000.03) {
-        inssValue = (1412 * 0.075) + (1254.68 * 0.09) + ((salary - 2666.68) * 0.12);
+        console.error('Erro ao sair:', error.message);
     } else {
-        inssValue = (1412 * 0.075) + (1254.68 * 0.09) + (1333.35 * 0.12) + ((salary - 4000.03) * 0.14);
+        Object.assign(appState, { user: null, vendas: [], categorias: [], metricas: null });
     }
-
-    return {
-        success: true,
-        data: {
-            result: inssValue.toFixed(2),
-            message: `O valor do INSS calculado para o salário de R$${salary.toFixed(2)} é R$${inssValue.toFixed(2)}.`
-        }
-    };
-}eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZGRpb3ZtdGpwaXBhbmd5cWVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg3MTU4MDksImV4cCI6MjA3NDI5MTgwOX0.GH53mox_cijkhqAxy-sNmvxGcgtoLzuoE5sfP9hHdho
-
-/**
- * Calcula o valor corrigido pelo IPCA de um investimento.
- * @param {number} valorInicial - O valor inicial a ser corrigido.
- * @param {number} taxaIPCA - A taxa de inflação do IPCA (em porcentagem, ex: 0.5).
- * @param {number} periodo - O período de correção (em meses ou anos).
- */
-function calculateIPCAInterest(valorInicial, taxaIPCA, periodo) {
-    const taxaDecimal = taxaIPCA / 100;
-    const valorCorrigido = valorInicial * Math.pow((1 + taxaDecimal), periodo);
-    const jurosIPCA = valorCorrigido - valorInicial;
-
-    return {
-        success: true,
-        data: {
-            result: jurosIPCA.toFixed(2),
-            valorCorrigido: valorCorrigido.toFixed(2),
-            message: `Para um valor inicial de R$${valorInicial.toFixed(2)} com IPCA de ${taxaIPCA}% por ${periodo} período(s), o valor corrigido é R$${valorCorrigido.toFixed(2)} e os juros foram de R$${jurosIPCA.toFixed(2)}.`
-        }
-    };
 }
 
+// -----------------------------------------------------------------------------------
+// 4. FUNÇÕES DE API (CONVERSA COM O BANCO DE DADOS)
+// -----------------------------------------------------------------------------------
+async function fetchCategories() {
+    const { data, error } = await sbClient.from('categorias').select('id, nome');
+    if (error) {
+        console.error('Erro ao buscar categorias:', error.message);
+        appState.categorias = [];
+        return;
+    }
+    appState.categorias = data;
+}
 
-// =========================================
-// EXPOR FUNÇÕES GLOBALMENTE
-// =========================================
-window.signIn = signIn;
-window.signUp = signUp;
-window.signOut = signOut;
-window.fetchCategories = fetchCategories;
-window.addTransaction = addTransaction;
-window.fetchTransactions = fetchTransactions;
-window.addGoal = addGoal;
-window.fetchGoals = fetchGoals;
-window.getSubscriptionStatus = getSubscriptionStatus;
-window.simulateUpgrade = simulateUpgrade;
-window.performPredefinedCalculation = performPredefinedCalculation;
+async function addCategory(categoryName) {
+    const { data, error } = await sbClient.from('categorias').insert([{ nome: categoryName }]).select();
+    if (error) {
+        console.error('Erro ao adicionar categoria:', error.message);
+        return { success: false, message: error.message };
+    }
+    return { success: true, data: data[0] };
+}
 
-console.log('Main.js carregado');
+async function addSale(saleData) {
+    const { data, error } = await sbClient.from('vendas').insert([saleData]).select();
+    if (error) {
+        console.error('Erro ao adicionar venda:', error.message);
+        return { success: false, message: error.message };
+    }
+    return { success: true, data: data[0] };
+}
+
+async function fetchSales(filters = {}) {
+    let query = sbClient.from('vendas')
+        .select('id, produto, quantidade, valor_unitario, total, data_venda, categorias(id, nome)')
+        .order('data_venda', { ascending: false });
+
+    if (filters.startDate) query = query.gte('data_venda', filters.startDate);
+    if (filters.endDate) query = query.lte('data_venda', filters.endDate);
+    if (filters.categoryId) query = query.eq('categoria_id', filters.categoryId);
+
+    const { data, error } = await query;
+    if (error) {
+        console.error('Erro ao buscar vendas:', error.message);
+        appState.vendas = [];
+        return;
+    }
+    appState.vendas = data;
+}
+
+async function getDashboardMetrics(filters = {}) {
+    // Esta é a chamada mais otimizada: uma única requisição para buscar todas as métricas.
+    const { data, error } = await sbClient.rpc('get_dashboard_metrics', {
+        start_date: filters.startDate || null,
+        end_date: filters.endDate || null,
+        category_id_filter: filters.categoryId || null
+    });
+
+    if (error) {
+        console.error('Erro ao buscar métricas:', error.message);
+        appState.metricas = null;
+        return;
+    }
+    appState.metricas = data;
+}
+
+// -----------------------------------------------------------------------------------
+// 5. ORQUESTRAÇÃO E FLUXO DE DADOS (Otimizações Principais)
+// -----------------------------------------------------------------------------------
+
+/**
+ * Carrega todos os dados iniciais do dashboard em paralelo para máxima velocidade.
+ * @param {object} filters - Filtros a serem aplicados no carregamento.
+ */
+async function loadDashboardData(filters = {}) {
+    // Mostra um indicador de carregamento na UI (função do app.js)
+    showLoadingIndicator(true);
+    
+    // Executa as buscas de dados essenciais em paralelo.
+    await Promise.all([
+        getDashboardMetrics(filters),
+        fetchCategories(),
+        fetchSales(filters)
+    ]);
+    
+    // Com todos os dados no appState, manda o app.js renderizar tudo.
+    renderDashboard(appState);
+
+    // Esconde o indicador de carregamento.
+    showLoadingIndicator(false);
+}
+
+/**
+ * Função chamada pela UI quando o usuário adiciona uma nova venda.
+ * Garante que os dados sejam reinseridos e a tela atualizada.
+ */
+async function onSaleAdded() {
+    // Recarrega todos os dados do dashboard sem filtros.
+    await loadDashboardData();
+}
+
+/**
+ * Função chamada pela UI quando o usuário aplica novos filtros.
+ * @param {object} filters - Os filtros selecionados na interface.
+ */
+async function onFiltersChanged(filters) {
+    // Recarrega todos os dados do dashboard com os novos filtros.
+    await loadDashboardData(filters);
+}
+
+// -----------------------------------------------------------------------------------
+// 6. PONTO DE ENTRADA E CONTROLE DE SESSÃO
+// -----------------------------------------------------------------------------------
+
+/**
+ * Observa as mudanças de estado de autenticação (login, logout, sessão inicial).
+ * Controla qual "tela" (login ou dashboard) o usuário vê.
+ */
+function setupAuthListener() {
+    sbClient.auth.onAuthStateChange((_event, session) => {
+        if (session) {
+            // Se existe uma sessão, o usuário está logado.
+            appState.user = session.user;
+            showDashboardView(); // Função do app.js que mostra a seção do dashboard
+            loadDashboardData(); // Carrega os dados do dashboard
+        } else {
+            // Se não há sessão, o usuário está deslogado.
+            appState.user = null;
+            showLoginView(); // Função do app.js que mostra a seção de login
+        }
+    });
+}
+
+// Ponto de entrada da aplicação.
+function init() {
+    console.log('App inicializado.');
+    setupAuthListener();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+

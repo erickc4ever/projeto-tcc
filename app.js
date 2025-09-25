@@ -1,175 +1,324 @@
-// app.js - Controla toda a interface de usuário e a lógica de interação.
+// ===================================================================================
+// ARQUIVO: app.js
+// OBJETIVO: Responsável por toda a manipulação da interface (UI),
+//           renderização de dados e gerenciamento de eventos do usuário.
+//           Este arquivo é o "artista" que desenha o que o main.js (cérebro) decide.
+// ===================================================================================
 
-// =========================================
-// FUNÇÕES UTILITÁRIAS
-// =========================================
+// -----------------------------------------------------------------------------------
+// 1. REFERÊNCIAS AOS ELEMENTOS DO DOM
+// -----------------------------------------------------------------------------------
+const loader = document.getElementById('loader');
+const loginView = document.getElementById('login-view');
+const dashboardView = document.getElementById('dashboard-view');
 
-// Função para mostrar mensagens de feedback temporárias
-function showMessage(text, type = 'info') {
-    const messageBox = document.createElement('div');
-    messageBox.className = `message-box ${type}`;
-    messageBox.innerText = text;
-    document.body.appendChild(messageBox);
-    messageBox.style.display = 'block';
+// Elementos de Autenticação
+const tabLogin = document.getElementById('tab-login');
+const tabSignup = document.getElementById('tab-signup');
+const loginForm = document.getElementById('login-form');
+const signupForm = document.getElementById('signup-form');
+const loginEmailInput = document.getElementById('login-email');
+const loginPasswordInput = document.getElementById('login-password');
+const signupEmailInput = document.getElementById('signup-email');
+const signupPasswordInput = document.getElementById('signup-password');
+const loginErrorMessage = document.getElementById('login-error-message');
+const signupErrorMessage = document.getElementById('signup-error-message');
+const logoutButton = document.getElementById('logout-button');
+const userEmailDisplay = document.getElementById('user-email-display');
 
-    setTimeout(() => {
-        messageBox.style.opacity = '0';
-        messageBox.addEventListener('transitionend', () => {
-            messageBox.remove();
-        });
-    }, 3000);
-}
+// Elementos do Dashboard
+const filtersForm = document.getElementById('filters-form');
+const startDateInput = document.getElementById('start-date');
+const endDateInput = document.getElementById('end-date');
+const categoryFilterSelect = document.getElementById('category-filter');
 
-// Função para exibir uma mensagem no chat
-function displayMessage(text, sender) {
-    const chatMessages = document.getElementById('chatMessages');
-    const messageEl = document.createElement('div');
-    messageEl.className = `message ${sender}`;
-    messageEl.innerHTML = `
-        <div class="message-content">
-            <p>${text}</p>
-        </div>
-        <span class="message-time">${new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
-    `;
-    chatMessages.appendChild(messageEl);
-    chatMessages.scrollTop = chatMessages.scrollHeight; // Rolar para a última mensagem
-}
+// Elementos do Modal
+const addSaleBtn = document.getElementById('add-sale-btn');
+const addSaleModal = document.getElementById('add-sale-modal');
+const closeModalBtn = document.getElementById('close-modal-btn');
+const addSaleForm = document.getElementById('add-sale-form');
+const saleProductInput = document.getElementById('sale-product');
+const saleQuantityInput = document.getElementById('sale-quantity');
+const salePriceInput = document.getElementById('sale-price');
+const saleDateInput = document.getElementById('sale-date');
+const saleCategorySelect = document.getElementById('sale-category');
+const modalErrorMessage = document.getElementById('modal-error-message');
 
-// =========================================
-// LÓGICA PRINCIPAL (EXECUTADA APÓS O CARREGAMENTO DA PÁGINA)
-// =========================================
-window.onload = function() {
-    // Adicionamos um pequeno atraso para garantir que todos os elementos do DOM estão prontos
-    setTimeout(() => {
-        // Variáveis globais e elementos da UI
-        const authScreen = document.getElementById('authScreen');
-        const chatScreen = document.getElementById('chatScreen');
+// Elementos de Exibição de Dados
+const kpiTotalRevenue = document.getElementById('kpi-total-revenue');
+const kpiAvgTicket = document.getElementById('kpi-avg-ticket');
+const kpiTotalSales = document.getElementById('kpi-total-sales');
+const kpiTopCategory = document.getElementById('kpi-top-category');
+const recentSalesContainer = document.getElementById('recent-sales-container');
 
-        const loginForm = document.getElementById('loginForm');
-        const signupForm = document.getElementById('signupForm');
-        const authBtns = document.querySelectorAll('.auth-btn');
+// Contextos dos Gráficos
+const revenueChartCtx = document.getElementById('revenue-chart').getContext('2d');
+const topProductsChartCtx = document.getElementById('top-products-chart').getContext('2d');
+const categoryChartCtx = document.getElementById('category-chart').getContext('2d');
 
-        const logoutBtn = document.querySelector('.logout-btn');
-        const questionInput = document.getElementById('questionInput');
-        const sendBtn = document.querySelector('.send-btn');
-        const chatTabs = document.querySelectorAll('.chat-tabs .tab');
+// -----------------------------------------------------------------------------------
+// 2. ESTADO DA UI E INSTÂNCIAS DOS GRÁFICOS
+// -----------------------------------------------------------------------------------
+const charts = {}; // Objeto para armazenar as instâncias dos gráficos
 
-        // Função para alternar a visibilidade das telas
-        function showScreen(screen) {
-            authScreen.classList.remove('visible');
-            chatScreen.classList.remove('visible');
-            authScreen.classList.add('hidden');
-            chatScreen.classList.add('hidden');
-            screen.classList.remove('hidden');
-            screen.classList.add('visible');
-        }
-
-        // Ouve mudanças no estado de autenticação (login/logout)
-        // Esta função se conecta ao main.js para receber as mudanças
-        window.onAuthStateChange = (event, session) => {
-            if (session) {
-                // Usuário logado
-                showScreen(chatScreen);
-            } else {
-                // Usuário deslogado
-                showScreen(authScreen);
-            }
-        };
-
-        // Lógica para alternar entre login e cadastro
-        authBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                authBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-
-                const tab = btn.dataset.tab;
-                document.querySelectorAll('.auth-form').forEach(form => {
-                    form.classList.remove('active');
-                });
-                document.getElementById(`${tab}Form`).classList.add('active');
-            });
-        });
-
-        // Lida com o formulário de login
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-
-            const result = await window.signIn(email, password);
-            if (result.success) {
-                showMessage('Login realizado com sucesso!', 'info');
-                showScreen(chatScreen);
-            } else {
-                showMessage(`Erro ao fazer login: ${result.error}`, 'error');
-            }
-        });
-
-        // Lida com o formulário de cadastro
-        signupForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('signupEmail').value;
-            const password = document.getElementById('signupPassword').value;
-
-            const result = await window.signUp(email, password);
-            if (result.success) {
-                // Faz o login imediatamente após o cadastro
-                const signInResult = await window.signIn(email, password);
-                if (signInResult.success) {
-                    showMessage('Conta criada e login realizado com sucesso!', 'info');
-                    showScreen(chatScreen);
-                } else {
-                    showMessage('Conta criada, mas houve um erro no login automático. Tente fazer login manualmente.', 'error');
-                }
-            } else {
-                showMessage(`Erro ao criar conta: ${result.error}`, 'error');
-            }
-        });
-
-        // Lida com o botão de logout
-        logoutBtn.addEventListener('click', async () => {
-            const result = await window.signOut();
-            if (result.success) {
-                showMessage('Você saiu da sua conta.', 'info');
-            } else {
-                showMessage('Erro ao sair da conta.', 'error');
-            }
-        });
-
-        // =========================================
-        // LÓGICA DO CHAT
-        // =========================================
-
-        async function handleSendMessage() {
-            const question = questionInput.value.trim();
-            if (!question) return;
-
-            // Adiciona a mensagem do usuário ao chat
-            displayMessage(question, 'user');
-            questionInput.value = '';
-
-            // ✅ Próxima etapa: Aqui é onde vamos integrar a API da IA para processar a mensagem do usuário.
-            // Por enquanto, vamos exibir uma mensagem de resposta fixa.
-            displayMessage('Estou processando sua transação...', 'ai');
-        }
-
-        sendBtn.addEventListener('click', handleSendMessage);
-        questionInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                handleSendMessage();
-            }
-        });
-
-        // Lógica para alternar entre as abas do chat
-        chatTabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                chatTabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                // Adicione a lógica para exibir o conteúdo da aba aqui
-            });
-        });
-        
-        console.log('App.js carregado com sucesso!');
-    }, 100);
+// -----------------------------------------------------------------------------------
+// 3. FUNÇÕES DE MANIPULAÇÃO DA UI (VISIBILIDADE)
+// -----------------------------------------------------------------------------------
+const showLoginView = () => {
+    loginView.style.display = 'flex';
+    dashboardView.style.display = 'none';
 };
+
+const showDashboardView = () => {
+    loginView.style.display = 'none';
+    dashboardView.style.display = 'flex';
+};
+
+const showLoadingIndicator = (isLoading) => {
+    loader.style.display = isLoading ? 'flex' : 'none';
+};
+
+const toggleModal = (show) => {
+    addSaleModal.style.display = show ? 'flex' : 'none';
+    if (!show) {
+        addSaleForm.reset(); // Limpa o formulário ao fechar
+        modalErrorMessage.textContent = '';
+    }
+};
+
+// -----------------------------------------------------------------------------------
+// 4. FUNÇÕES DE RENDERIZAÇÃO DE DADOS
+// -----------------------------------------------------------------------------------
+
+/**
+ * Formata um número para o padrão de moeda brasileira (BRL).
+ * @param {number} value - O número a ser formatado.
+ * @returns {string} - O valor formatado como moeda.
+ */
+const formatCurrency = (value) => {
+    if (typeof value !== 'number') return 'R$ 0,00';
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+};
+
+/**
+ * Renderiza os cards de KPI (Métricas Principais).
+ * @param {object} metrics - O objeto de métricas vindo do main.js.
+ */
+function renderKPIs(metrics) {
+    kpiTotalRevenue.textContent = formatCurrency(metrics?.total_revenue || 0);
+    kpiAvgTicket.textContent = formatCurrency(metrics?.avg_ticket || 0);
+    kpiTotalSales.textContent = metrics?.total_sales || 0;
+    kpiTopCategory.textContent = metrics?.top_category?.nome || 'N/A';
+}
+
+/**
+ * Renderiza a tabela de vendas recentes.
+ * @param {Array} sales - A lista de vendas vinda do main.js.
+ */
+function renderRecentSalesTable(sales) {
+    if (sales.length === 0) {
+        recentSalesContainer.innerHTML = '<p>Nenhuma venda encontrada.</p>';
+        return;
+    }
+
+    const tableHTML = `
+        <table>
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Data</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${sales.slice(0, 10).map(sale => `
+                    <tr>
+                        <td>${sale.produto}</td>
+                        <td>${new Date(sale.data_venda).toLocaleDateString('pt-BR')}</td>
+                        <td>${formatCurrency(sale.total)}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+    recentSalesContainer.innerHTML = tableHTML;
+}
+
+/**
+ * Preenche os menus suspensos de categoria.
+ * @param {Array} categories - A lista de categorias.
+ */
+function populateCategoryDropdowns(categories) {
+    const optionsHTML = categories.map(cat => `<option value="${cat.id}">${cat.nome}</option>`).join('');
+    categoryFilterSelect.innerHTML = `<option value="">Todas as categorias</option>${optionsHTML}`;
+    saleCategorySelect.innerHTML = `<option value="">Selecione...</option>${optionsHTML}`;
+}
+
+
+/**
+ * Cria ou atualiza todos os gráficos do dashboard.
+ * @param {object} appState - O estado completo da aplicação.
+ */
+function renderCharts(appState) {
+    // Destruir gráficos antigos para evitar sobreposição e memory leaks
+    Object.values(charts).forEach(chart => chart.destroy());
+
+    // --- Gráfico de Faturamento por Dia ---
+    const dailyRevenue = {};
+    appState.vendas.forEach(sale => {
+        const date = sale.data_venda;
+        dailyRevenue[date] = (dailyRevenue[date] || 0) + sale.total;
+    });
+    const sortedDates = Object.keys(dailyRevenue).sort((a, b) => new Date(a) - new Date(b));
+    charts.revenue = new Chart(revenueChartCtx, {
+        type: 'line',
+        data: {
+            labels: sortedDates.map(date => new Date(date).toLocaleDateString('pt-BR')),
+            datasets: [{
+                label: 'Faturamento',
+                data: sortedDates.map(date => dailyRevenue[date]),
+                borderColor: 'rgba(0, 122, 255, 1)',
+                backgroundColor: 'rgba(0, 122, 255, 0.1)',
+                fill: true,
+                tension: 0.1
+            }]
+        }
+    });
+
+    // --- Gráfico de Produtos Mais Vendidos ---
+    const productSales = {};
+    appState.vendas.forEach(sale => {
+        productSales[sale.produto] = (productSales[sale.produto] || 0) + sale.total;
+    });
+    const topProducts = Object.entries(productSales).sort((a, b) => b[1] - a[1]).slice(0, 5);
+    charts.topProducts = new Chart(topProductsChartCtx, {
+        type: 'bar',
+        data: {
+            labels: topProducts.map(p => p[0]),
+            datasets: [{
+                label: 'Total Vendido',
+                data: topProducts.map(p => p[1]),
+                backgroundColor: 'rgba(0, 122, 255, 0.7)'
+            }]
+        },
+        options: { indexAxis: 'y' }
+    });
+
+    // --- Gráfico de Vendas por Categoria ---
+    const categorySales = {};
+    appState.vendas.forEach(sale => {
+        const categoryName = sale.categorias?.nome || 'Sem Categoria';
+        categorySales[categoryName] = (categorySales[categoryName] || 0) + sale.total;
+    });
+    charts.category = new Chart(categoryChartCtx, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(categorySales),
+            datasets: [{
+                data: Object.values(categorySales),
+                backgroundColor: ['#007AFF', '#34C759', '#FF9500', '#FF3B30', '#5856D6', '#AF52DE']
+            }]
+        }
+    });
+}
+
+/**
+ * Função principal que atualiza toda a UI do dashboard.
+ * @param {object} appState - O estado completo da aplicação, vindo do main.js.
+ */
+function renderDashboard(appState) {
+    if (!appState.user) return;
+    userEmailDisplay.textContent = appState.user.email;
+    
+    populateCategoryDropdowns(appState.categorias);
+    renderKPIs(appState.metricas);
+    renderRecentSalesTable(appState.vendas);
+    renderCharts(appState);
+}
+
+
+// -----------------------------------------------------------------------------------
+// 5. CONFIGURAÇÃO DOS EVENT LISTENERS
+// -----------------------------------------------------------------------------------
+function setupEventListeners() {
+    // --- Autenticação ---
+    tabLogin.addEventListener('click', () => {
+        tabLogin.classList.add('active');
+        tabSignup.classList.remove('active');
+        loginForm.style.display = 'block';
+        signupForm.style.display = 'none';
+    });
+
+    tabSignup.addEventListener('click', () => {
+        tabSignup.classList.add('active');
+        tabLogin.classList.remove('active');
+        signupForm.style.display = 'block';
+        loginForm.style.display = 'none';
+    });
+
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        loginErrorMessage.textContent = '';
+        const { success, message } = await handleSignIn(loginEmailInput.value, loginPasswordInput.value);
+        if (!success) {
+            loginErrorMessage.textContent = 'Email ou senha inválidos.';
+        }
+    });
+
+    signupForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        signupErrorMessage.textContent = '';
+        const { success, message } = await handleSignUp(signupEmailInput.value, signupPasswordInput.value);
+        if (!success) {
+            signupErrorMessage.textContent = 'Erro ao criar conta. Verifique os dados.';
+        } else {
+            alert('Cadastro realizado com sucesso! Faça o login.');
+            // Alterna para a aba de login
+            tabLogin.click();
+        }
+    });
+
+    logoutButton.addEventListener('click', handleSignOut);
+
+    // --- Modal ---
+    addSaleBtn.addEventListener('click', () => toggleModal(true));
+    closeModalBtn.addEventListener('click', () => toggleModal(false));
+    addSaleModal.addEventListener('click', (e) => {
+        if (e.target === addSaleModal) toggleModal(false); // Fecha se clicar fora
+    });
+
+    addSaleForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        modalErrorMessage.textContent = '';
+        const saleData = {
+            produto: saleProductInput.value,
+            quantidade: parseInt(saleQuantityInput.value),
+            valor_unitario: parseFloat(salePriceInput.value),
+            data_venda: saleDateInput.value,
+            categoria_id: saleCategorySelect.value ? parseInt(saleCategorySelect.value) : null
+        };
+        const { success } = await addSale(saleData);
+        if (success) {
+            toggleModal(false);
+            await onSaleAdded(); // Avisa o main.js para recarregar os dados
+        } else {
+            modalErrorMessage.textContent = 'Erro ao salvar venda. Tente novamente.';
+        }
+    });
+
+    // --- Filtros ---
+    filtersForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const filters = {
+            startDate: startDateInput.value,
+            endDate: endDateInput.value,
+            categoryId: categoryFilterSelect.value
+        };
+        onFiltersChanged(filters); // Avisa o main.js para recarregar com filtros
+    });
+}
+
+// -----------------------------------------------------------------------------------
+// 6. INICIALIZAÇÃO
+// -----------------------------------------------------------------------------------
+setupEventListeners();

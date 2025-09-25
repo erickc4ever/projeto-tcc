@@ -1,133 +1,201 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestor Financeiro Pessoal</title>
+    <title>Sistema Analítico de Nuvem</title>
 
-    <!-- Importa a fonte Inter do Google Fonts -->
+    <!-- Estilo e Fontes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-
-    <!-- Carrega a biblioteca Supabase do CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <!-- Carrega os estilos da aplicação -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="main.css">
+
+    <!-- Bibliotecas Externas (Supabase e Chart.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 <body>
-    <!-- Fundo animado -->
-    <div class="luxury-background">
-        <div class="particles-container">
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-        </div>
-        
-        <!-- Conteúdo principal -->
-        <div class="container">
-            <!-- Tela de Autenticação -->
-            <div id="authScreen" class="auth-container visible">
-                <div class="luxury-header">
-                    <h1 class="luxury-title">Fintech <span class="accent">App</span></h1>
-                    <p class="luxury-subtitle">Seu assistente financeiro pessoal.</p>
-                </div>
-                
-                <!-- Botões para alternar entre login e cadastro -->
-                <div class="auth-switcher">
-                    <button class="auth-btn active" data-tab="login">Login</button>
-                    <button class="auth-btn" data-tab="signup">Cadastre-se</button>
-                </div>
-                
-                <!-- Formulário de Login -->
-                <form id="loginForm" class="auth-form active">
-                    <div class="form-group">
-                        <input type="email" id="loginEmail" class="luxury-input" placeholder=" " required>
-                        <label for="loginEmail" class="luxury-label">Email</label>
-                    </div>
-                    <div class="form-group">
-                        <input type="password" id="loginPassword" class="luxury-input" placeholder=" " required>
-                        <label for="loginPassword" class="luxury-label">Senha</label>
-                    </div>
-                    <button type="submit" class="luxury-btn">Login</button>
-                </form>
-                
-                <!-- Formulário de Cadastro -->
-                <form id="signupForm" class="auth-form">
-                    <div class="form-group">
-                        <input type="text" id="fullName" class="luxury-input" placeholder=" " required>
-                        <label for="fullName" class="luxury-label">Nome Completo</label>
-                    </div>
-                    <div class="form-group">
-                        <input type="email" id="signupEmail" class="luxury-input" placeholder=" " required>
-                        <label for="signupEmail" class="luxury-label">Email</label>
-                    </div>
-                    <div class="form-group">
-                        <input type="password" id="signupPassword" class="luxury-input" placeholder=" " required>
-                        <label for="signupPassword" class="luxury-label">Senha</label>
-                    </div>
-                    <button type="submit" class="luxury-btn">Cadastre-se</button>
-                </form>
+
+    <!-- Indicador de Carregamento Global -->
+    <div id="loader" class="loader-container" style="display: none;">
+        <div class="loader-spinner"></div>
+    </div>
+
+    <!-- ======================================================================= -->
+    <!-- TELA DE LOGIN E CADASTRO                                                -->
+    <!-- ======================================================================= -->
+    <section id="login-view" class="view-container">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <!-- <img src="src/imagens/logo.svg" alt="Logo"> -->
+                <h2>Sistema Analítico</h2>
             </div>
             
-            <!-- Tela do Chat -->
-            <div id="chatScreen" class="chat-container hidden">
-                <div class="chat-header">
-                    <div>
-                        <h2 class="chat-title">Bem-vindo</h2>
-                        <p class="chat-subtitle">Seu assistente financeiro está pronto.</p>
-                    </div>
-                    <button class="logout-btn">Sair</button>
+            <!-- Abas para alternar entre Login e Cadastro -->
+            <div class="auth-tabs">
+                <button id="tab-login" class="auth-tab active">Já tenho cadastro</button>
+                <button id="tab-signup" class="auth-tab">Sou novo</button>
+            </div>
+
+            <!-- Formulário de Login -->
+            <form id="login-form" class="auth-form">
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" required>
                 </div>
-                
-                <div class="chat-tabs">
-                    <button class="tab active">Transações</button>
-                    <button class="tab">Metas</button>
-                    <button class="tab">Relatórios</button>
+                <div class="form-group">
+                    <label for="login-password">Senha</label>
+                    <input type="password" id="login-password" required>
                 </div>
-                
-                <div class="chat-content">
-                    <div class="sidebar">
-                        <div class="sidebar-section">
-                            <h3 class="sidebar-title">Ações Rápidas</h3>
-                            <div class="topic-list">
-                                <div class="topic-item">Nova Transação</div>
-                                <div class="topic-item">Adicionar Categoria</div>
-                                <div class="topic-item">Ver Metas</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="chat-main">
-                        <div id="chatMessages" class="chat-messages">
-                            <!-- Mensagens serão adicionadas aqui via JavaScript -->
-                            <div class="message ai">
-                                <div class="message-content">
-                                    <p>Olá! Estou aqui para ajudar a organizar suas finanças. Qual sua primeira transação?</p>
-                                </div>
-                                <span class="message-time">09:30</span>
-                            </div>
-                        </div>
-                        <div class="input-area">
-                            <div class="input-container">
-                                <textarea id="questionInput" class="luxury-textarea" placeholder="Descreva sua transação..."></textarea>
-                                <button class="send-btn">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
+                <p id="login-error-message" class="error-message"></p>
+                <button type="submit" class="btn btn-primary">Entrar</button>
+            </form>
+
+            <!-- Formulário de Cadastro (escondido por padrão) -->
+            <form id="signup-form" class="auth-form" style="display: none;">
+                <div class="form-group">
+                    <label for="signup-email">Email</label>
+                    <input type="email" id="signup-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-password">Senha (mínimo 6 caracteres)</label>
+                    <input type="password" id="signup-password" required>
+                </div>
+                <p id="signup-error-message" class="error-message"></p>
+                <button type="submit" class="btn btn-primary">Criar Conta</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- ======================================================================= -->
+    <!-- TELA PRINCIPAL DO DASHBOARD                                             -->
+    <!-- ======================================================================= -->
+    <section id="dashboard-view" class="view-container" style="display: none;">
+        
+        <!-- Cabeçalho Fixo -->
+        <header class="main-header">
+            <div class="header-logo">
+                <!-- <img src="src/imagens/logo.svg" alt="Logo"> -->
+                <h3>Análise Cloud</h3>
+            </div>
+            <div class="header-user-menu">
+                <span id="user-email-display"></span>
+                <button id="logout-button" class="btn btn-secondary">Sair</button>
+            </div>
+        </header>
+
+        <!-- Conteúdo Principal -->
+        <main class="dashboard-content">
+            
+            <h1 class="dashboard-title">Dashboard Analítico</h1>
+
+            <!-- Área de Filtros e Ações -->
+            <div class="dashboard-controls">
+                <form id="filters-form" class="filters-container">
+                    <input type="date" id="start-date">
+                    <input type="date" id="end-date">
+                    <select id="category-filter">
+                        <option value="">Todas as categorias</option>
+                    </select>
+                    <button type="submit" class="btn">Aplicar Filtro</button>
+                </form>
+                <button id="add-sale-btn" class="btn btn-primary">Adicionar Venda +</button>
+            </div>
+
+            <!-- Grid de Métricas (KPIs) -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <h4>Faturamento Total</h4>
+                    <p id="kpi-total-revenue">R$ 0,00</p>
+                </div>
+                <div class="kpi-card">
+                    <h4>Ticket Médio</h4>
+                    <p id="kpi-avg-ticket">R$ 0,00</p>
+                </div>
+                <div class="kpi-card">
+                    <h4>Total de Vendas</h4>
+                    <p id="kpi-total-sales">0</p>
+                </div>
+                <div class="kpi-card">
+                    <h4>Categoria Destaque</h4>
+                    <p id="kpi-top-category">N/A</p>
+                </div>
+            </div>
+            
+            <!-- Grid de Gráficos -->
+            <div class="charts-grid">
+                <div class="chart-card large">
+                    <h3>Faturamento por Dia</h3>
+                    <canvas id="revenue-chart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Produtos Mais Vendidos</h3>
+                    <canvas id="top-products-chart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Vendas por Categoria</h3>
+                    <canvas id="category-chart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Vendas Recentes</h3>
+                    <div id="recent-sales-container" class="table-container">
+                        <!-- Tabela será inserida aqui via JS -->
                     </div>
                 </div>
             </div>
+
+        </main>
+    </section>
+
+    <!-- ======================================================================= -->
+    <!-- MODAL PARA ADICIONAR NOVA VENDA                                         -->
+    <!-- ======================================================================= -->
+    <div id="add-sale-modal" class="modal-backdrop" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Adicionar Nova Venda</h2>
+                <button id="close-modal-btn" class="close-button">&times;</button>
+            </div>
+            <form id="add-sale-form">
+                <div class="form-group">
+                    <label for="sale-product">Nome do Produto</label>
+                    <input type="text" id="sale-product" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="sale-quantity">Quantidade</label>
+                        <input type="number" id="sale-quantity" value="1" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="sale-price">Valor Unitário (R$)</label>
+                        <input type="number" id="sale-price" step="0.01" min="0" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="sale-date">Data da Venda</label>
+                        <input type="date" id="sale-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="sale-category">Categoria</label>
+                        <select id="sale-category" required>
+                            <option value="">Selecione...</option>
+                            <!-- Categorias serão preenchidas via JS -->
+                        </select>
+                    </div>
+                </div>
+                <p id="modal-error-message" class="error-message"></p>
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">Salvar Venda</button>
+                </div>
+            </form>
         </div>
     </div>
-    
-    <!-- Scripts -->
+
+
+    <!-- Scripts da Aplicação -->
     <script src="main.js"></script>
     <script src="app.js"></script>
 
