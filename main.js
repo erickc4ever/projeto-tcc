@@ -1,199 +1,192 @@
 // ===================================================================================
-// ARQUIVO: main.js
-// OBJETIVO: Cérebro da aplicação. Gerencia o estado, a autenticação e a
-//           comunicação com o backend (Supabase).
-// VERSÃO: Otimizada e Robusta
+// ARQUIVO: main.js (Cérebro da Aplicação)
+// OBJETIVO: Gerir a lógica de negócios, estado da aplicação e comunicação com o Supabase.
+// VERSÃO: Refatorada para maior segurança e menor repetição de código.
 // ===================================================================================
 
-// -----------------------------------------------------------------------------------
-// 1. INICIALIZAÇÃO E CONFIGURAÇÃO DO SUPABASE
-// -----------------------------------------------------------------------------------
-const { createClient } = supabase;
+console.log('🚀 Sistema Analítico iniciado! Aguardando configuração do Supabase...');
 
-// --- ATENÇÃO: PREENCHA COM AS SUAS CREDENCIAIS DO SUPABASE ---
-const SUPABASE_URL = 'https://ejddiovmtjpipangyqeo.supabase.co'; // Encontre em: Project Settings > API > Project URL
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZGRpb3ZtdGpwaXBhbmd5cWVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg3MTU4MDksImV4cCI6MjA3NDI5MTgwOX0.GH53mox_cijkhqAxy-sNmvxGcgtoLzuoE5sfP9hHdho';     // Encontre em: Project Settings > API > Project API Keys > anon public
+// -----------------------------------------------------------------------------------
+// 1. CONFIGURAÇÃO DO CLIENTE SUPABASE E CONSTANTES
+// -----------------------------------------------------------------------------------
+const SUPABASE_URL = 'https://ejddiovmtjpipangyqeo.supabase.co'; // Substitua pelo seu URL
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZGRpb3ZtdGpwaXBhbmd5cWVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg3MTU4MDksImV4cCI6MjA3NDI5MTgwOX0.GH53mox_cijkhqAxy-sNmvxGcgtoLzuoE5sfP9hHdho'; // Substitua pela sua Chave Anon
 
-const sbClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+console.log('✅ Cliente Supabase configurado.');
+
+// --- PONTO DE SEGURANÇA ---
+// O e-mail abaixo é usado APENAS para VERIFICAR se um usuário já logado tem
+// permissões de admin. A conta de admin deve ser criada normalmente pelo
+// formulário de cadastro. NUNCA coloque senhas no código.
+const ADMIN_EMAIL = 'admin123@gmail.com';
 
 // -----------------------------------------------------------------------------------
 // 2. ESTADO GLOBAL DA APLICAÇÃO
 // -----------------------------------------------------------------------------------
 const appState = {
     user: null,
+    isAdmin: false,
     vendas: [],
     categorias: [],
-    metricas: null
+    metricas: {},
+    globalCategories: [],
+    filtros: { startDate: null, endDate: null, categoryId: null },
 };
 
 // -----------------------------------------------------------------------------------
-// 3. FUNÇÕES DE AUTENTICAÇÃO
-// -----------------------------------------------------------------------------------
-async function handleSignUp(email, password) {
-    const { data, error } = await sbClient.auth.signUp({ email, password });
-    if (error) {
-        console.error('Erro no cadastro:', error.message);
-        return { success: false, message: error.message };
-    }
-    return { success: true, user: data.user };
-}
-
-async function handleSignIn(email, password) {
-    const { data, error } = await sbClient.auth.signInWithPassword({ email, password });
-    if (error) {
-        console.error('Erro no login:', error.message);
-        return { success: false, message: error.message };
-    }
-    appState.user = data.user;
-    return { success: true, user: data.user };
-}
-
-async function handleSignOut() {
-    const { error } = await sbClient.auth.signOut();
-    if (error) {
-        console.error('Erro ao sair:', error.message);
-    } else {
-        Object.assign(appState, { user: null, vendas: [], categorias: [], metricas: null });
-    }
-}
-
-// -----------------------------------------------------------------------------------
-// 4. FUNÇÕES DE API (CONVERSA COM O BANCO DE DADOS)
-// -----------------------------------------------------------------------------------
-async function fetchCategories() {
-    const { data, error } = await sbClient.from('categorias').select('id, nome');
-    if (error) {
-        console.error('Erro ao buscar categorias:', error.message);
-        appState.categorias = [];
-        return;
-    }
-    appState.categorias = data;
-}
-
-async function addCategory(categoryName) {
-    const { data, error } = await sbClient.from('categorias').insert([{ nome: categoryName }]).select();
-    if (error) {
-        console.error('Erro ao adicionar categoria:', error.message);
-        return { success: false, message: error.message };
-    }
-    return { success: true, data: data[0] };
-}
-
-async function addSale(saleData) {
-    const { data, error } = await sbClient.from('vendas').insert([saleData]).select();
-    if (error) {
-        console.error('Erro ao adicionar venda:', error.message);
-        return { success: false, message: error.message };
-    }
-    return { success: true, data: data[0] };
-}
-
-async function fetchSales(filters = {}) {
-    let query = sbClient.from('vendas')
-        .select('id, produto, quantidade, valor_unitario, total, data_venda, categorias(id, nome)')
-        .order('data_venda', { ascending: false });
-
-    if (filters.startDate) query = query.gte('data_venda', filters.startDate);
-    if (filters.endDate) query = query.lte('data_venda', filters.endDate);
-    if (filters.categoryId) query = query.eq('categoria_id', filters.categoryId);
-
-    const { data, error } = await query;
-    if (error) {
-        console.error('Erro ao buscar vendas:', error.message);
-        appState.vendas = [];
-        return;
-    }
-    appState.vendas = data;
-}
-
-async function getDashboardMetrics(filters = {}) {
-    // Esta é a chamada mais otimizada: uma única requisição para buscar todas as métricas.
-    const { data, error } = await sbClient.rpc('get_dashboard_metrics', {
-        start_date: filters.startDate || null,
-        end_date: filters.endDate || null,
-        category_id_filter: filters.categoryId || null
-    });
-
-    if (error) {
-        console.error('Erro ao buscar métricas:', error.message);
-        appState.metricas = null;
-        return;
-    }
-    appState.metricas = data;
-}
-
-// -----------------------------------------------------------------------------------
-// 5. ORQUESTRAÇÃO E FLUXO DE DADOS (Otimizações Principais)
+// 3. FUNÇÕES AUXILIARES OTIMIZADAS (Menos Repetição)
 // -----------------------------------------------------------------------------------
 
 /**
- * Carrega todos os dados iniciais do dashboard em paralelo para máxima velocidade.
- * @param {object} filters - Filtros a serem aplicados no carregamento.
+ * Função genérica para executar ações de autenticação, mostrando o loader
+ * e tratando erros de forma centralizada.
+ * @param {Function} authPromise - A função de autenticação do Supabase a ser chamada.
+ * @param {object} credentials - As credenciais (email, password).
+ * @returns {Promise<{success: boolean, message?: string}>}
  */
-async function loadDashboardData(filters = {}) {
-    // Mostra um indicador de carregamento na UI (função do app.js)
+async function handleAuthAction(authPromise, credentials) {
+    showLoadingIndicator(true);
+    const { data, error } = await authPromise(credentials);
+    showLoadingIndicator(false);
+
+    if (error) {
+        console.error('Erro na autenticação:', error.message);
+        return { success: false, message: error.message };
+    }
+    return { success: true };
+}
+
+/**
+ * Função genérica para escrever dados no banco (insert, delete),
+ * mostrando o loader e tratando erros.
+ * @param {object} queryPromise - A query do Supabase a ser executada.
+ * @param {string} successMessage - Mensagem para logar em caso de sucesso.
+ * @returns {Promise<{success: boolean}>}
+ */
+async function writeData(queryPromise, successMessage) {
+    showLoadingIndicator(true);
+    const { error } = await queryPromise;
+    showLoadingIndicator(false);
+
+    if (error) {
+        console.error('Erro na operação com o banco de dados:', error.message);
+        return { success: false };
+    }
+    if (successMessage) console.log(successMessage);
+    return { success: true };
+}
+
+
+// -----------------------------------------------------------------------------------
+// 4. FUNÇÕES DE AUTENTICAÇÃO (Agora usando os auxiliares)
+// -----------------------------------------------------------------------------------
+const handleSignIn = async (email, password) => {
+    const result = await handleAuthAction(supabase.auth.signInWithPassword.bind(supabase.auth), { email, password });
+    if(result.success) console.log('Login bem-sucedido para:', email);
+    return result;
+};
+
+const handleSignUp = async (email, password) => {
+    const result = await handleAuthAction(supabase.auth.signUp.bind(supabase.auth), { email, password });
+    if (result.success) console.log('Novo usuário cadastrado:', email);
+    return result;
+};
+
+const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    console.log('🚪 Usuário deslogado.');
+};
+
+// -----------------------------------------------------------------------------------
+// 5. FUNÇÕES DE API (INTERAÇÃO COM O BANCO DE DADOS)
+// -----------------------------------------------------------------------------------
+
+// --- Funções de Leitura ---
+const fetchUserCategories = async () => supabase.from('categorias').select('*');
+const fetchSales = async () => {
+    let query = supabase.from('vendas').select('*, categorias(nome)').order('data_venda', { ascending: false });
+    if (appState.filtros.startDate) query = query.gte('data_venda', appState.filtros.startDate);
+    if (appState.filtros.endDate) query = query.lte('data_venda', appState.filtros.endDate);
+    if (appState.filtros.categoryId) query = query.eq('categoria_id', appState.filtros.categoryId);
+    return query;
+};
+const fetchDashboardMetrics = async () => supabase.rpc('get_dashboard_metrics', {
+    p_start_date: appState.filtros.startDate,
+    p_end_date: appState.filtros.endDate,
+    p_category_id: appState.filtros.categoryId
+});
+const fetchGlobalCategories = async () => {
+    const { data, error } = await supabase.from('categorias_globais').select('*').order('nome');
+    if (error) console.error('Erro ao buscar categorias globais:', error);
+    return data || [];
+};
+
+// --- Funções de Escrita (Agora usando o auxiliar 'writeData') ---
+const addSale = (saleData) => writeData(supabase.from('vendas').insert([saleData]));
+const addGlobalCategory = (name) => writeData(supabase.from('categorias_globais').insert([{ nome: name }]), `✅ Categoria global "${name}" adicionada.`);
+const deleteGlobalCategory = (id) => writeData(supabase.from('categorias_globais').delete().eq('id', id), `🗑️ Categoria global ID ${id} deletada.`);
+
+// -----------------------------------------------------------------------------------
+// 6. ORQUESTRADORES E FLUXO PRINCIPAL
+// -----------------------------------------------------------------------------------
+const loadDashboardData = async () => {
+    console.log('🔄 Carregando dados do dashboard...');
     showLoadingIndicator(true);
     
-    // Executa as buscas de dados essenciais em paralelo.
-    await Promise.all([
-        getDashboardMetrics(filters),
-        fetchCategories(),
-        fetchSales(filters)
+    const [salesRes, categoriesRes, metricsRes] = await Promise.all([
+        fetchSales(),
+        fetchUserCategories(),
+        fetchDashboardMetrics()
     ]);
+
+    appState.vendas = salesRes.data || [];
+    appState.categorias = categoriesRes.data || [];
+    appState.metricas = metricsRes.data ? metricsRes.data[0] : {};
+
+    if (appState.isAdmin) {
+        console.log('👑 Admin detectado. Buscando categorias globais...');
+        appState.globalCategories = await fetchGlobalCategories();
+    }
     
-    // Com todos os dados no appState, manda o app.js renderizar tudo.
-    renderDashboard(appState);
-
-    // Esconde o indicador de carregamento.
     showLoadingIndicator(false);
-}
+    console.log('✅ Dados do dashboard carregados.', appState);
+    renderDashboard(appState); 
+};
 
-/**
- * Função chamada pela UI quando o usuário adiciona uma nova venda.
- * Garante que os dados sejam reinseridos e a tela atualizada.
- */
-async function onSaleAdded() {
-    // Recarrega todos os dados do dashboard sem filtros.
-    await loadDashboardData();
-}
+const onFiltersChanged = (newFilters) => {
+    appState.filtros = { ...appState.filtros, ...newFilters };
+    loadDashboardData();
+};
 
-/**
- * Função chamada pela UI quando o usuário aplica novos filtros.
- * @param {object} filters - Os filtros selecionados na interface.
- */
-async function onFiltersChanged(filters) {
-    // Recarrega todos os dados do dashboard com os novos filtros.
-    await loadDashboardData(filters);
-}
+const onDataChanged = () => {
+    console.log('Dados alterados. Recarregando...');
+    loadDashboardData();
+};
 
 // -----------------------------------------------------------------------------------
-// 6. PONTO DE ENTRADA E CONTROLE DE SESSÃO
+// 7. LISTENER DE AUTENTICAÇÃO E INICIALIZAÇÃO
 // -----------------------------------------------------------------------------------
-
-/**
- * Observa as mudanças de estado de autenticação (login, logout, sessão inicial).
- * Controla qual "tela" (login ou dashboard) o usuário vê.
- */
-function setupAuthListener() {
-    sbClient.auth.onAuthStateChange((_event, session) => {
-        if (session) {
-            // Se existe uma sessão, o usuário está logado.
-            appState.user = session.user;
-            showDashboardView(); // Função do app.js que mostra a seção do dashboard
-            loadDashboardData(); // Carrega os dados do dashboard
+const setupAuthListener = () => {
+    console.log('🔑 Listener de autenticação configurado. Verificando sessão...');
+    supabase.auth.onAuthStateChange((event, session) => {
+        if (session?.user) {
+            const user = session.user;
+            appState.user = user;
+            appState.isAdmin = user.email === ADMIN_EMAIL;
+            
+            console.log(appState.isAdmin ? '👑 Acesso de administrador concedido para:' : '👤 Acesso de usuário padrão para:', user.email);
+            
+            showDashboardView();
+            loadDashboardData();
         } else {
-            // Se não há sessão, o usuário está deslogado.
             appState.user = null;
-            showLoginView(); // Função do app.js que mostra a seção de login
+            appState.isAdmin = false;
+            showLoginView();
         }
     });
-}
+};
 
-// Ponto de entrada da aplicação.
-function init() {
-    console.log('App inicializado.');
-    setupAuthListener();
-}
-
-document.addEventListener('DOMContentLoaded', init);
+// Inicia a aplicação
+setupAuthListener();
 

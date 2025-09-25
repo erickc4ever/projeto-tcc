@@ -33,13 +33,11 @@
                 <h2>Sistema Analítico</h2>
             </div>
             
-            <!-- Abas para alternar entre Login e Cadastro -->
             <div class="auth-tabs">
                 <button id="tab-login" class="auth-tab active">Já tenho cadastro</button>
                 <button id="tab-signup" class="auth-tab">Sou novo</button>
             </div>
 
-            <!-- Formulário de Login -->
             <form id="login-form" class="auth-form">
                 <div class="form-group">
                     <label for="login-email">Email</label>
@@ -53,7 +51,6 @@
                 <button type="submit" class="btn btn-primary">Entrar</button>
             </form>
 
-            <!-- Formulário de Cadastro (escondido por padrão) -->
             <form id="signup-form" class="auth-form" style="display: none;">
                 <div class="form-group">
                     <label for="signup-email">Email</label>
@@ -74,24 +71,22 @@
     <!-- ======================================================================= -->
     <section id="dashboard-view" class="view-container" style="display: none;">
         
-        <!-- Cabeçalho Fixo -->
         <header class="main-header">
             <div class="header-logo">
-                <!-- <img src="src/imagens/logo.svg" alt="Logo"> -->
                 <h3>Análise Cloud</h3>
             </div>
             <div class="header-user-menu">
                 <span id="user-email-display"></span>
-                <button id="logout-button" class="btn btn-secondary">Sair</button>
+                <!-- BOTÃO DE ADMIN (ESCONDIDO POR PADRÃO) -->
+                <button id="admin-link" class="btn btn-secondary" style="display: none;">Administração</button>
+                <button id="logout-button" class="btn">Sair</button>
             </div>
         </header>
 
-        <!-- Conteúdo Principal -->
         <main class="dashboard-content">
             
             <h1 class="dashboard-title">Dashboard Analítico</h1>
 
-            <!-- Área de Filtros e Ações -->
             <div class="dashboard-controls">
                 <form id="filters-form" class="filters-container">
                     <input type="date" id="start-date">
@@ -104,46 +99,18 @@
                 <button id="add-sale-btn" class="btn btn-primary">Adicionar Venda +</button>
             </div>
 
-            <!-- Grid de Métricas (KPIs) -->
             <div class="kpi-grid">
-                <div class="kpi-card">
-                    <h4>Faturamento Total</h4>
-                    <p id="kpi-total-revenue">R$ 0,00</p>
-                </div>
-                <div class="kpi-card">
-                    <h4>Ticket Médio</h4>
-                    <p id="kpi-avg-ticket">R$ 0,00</p>
-                </div>
-                <div class="kpi-card">
-                    <h4>Total de Vendas</h4>
-                    <p id="kpi-total-sales">0</p>
-                </div>
-                <div class="kpi-card">
-                    <h4>Categoria Destaque</h4>
-                    <p id="kpi-top-category">N/A</p>
-                </div>
+                <div class="kpi-card"><h4>Faturamento Total</h4><p id="kpi-total-revenue">R$ 0,00</p></div>
+                <div class="kpi-card"><h4>Ticket Médio</h4><p id="kpi-avg-ticket">R$ 0,00</p></div>
+                <div class="kpi-card"><h4>Total de Vendas</h4><p id="kpi-total-sales">0</p></div>
+                <div class="kpi-card"><h4>Categoria Destaque</h4><p id="kpi-top-category">N/A</p></div>
             </div>
             
-            <!-- Grid de Gráficos -->
             <div class="charts-grid">
-                <div class="chart-card large">
-                    <h3>Faturamento por Dia</h3>
-                    <canvas id="revenue-chart"></canvas>
-                </div>
-                <div class="chart-card">
-                    <h3>Produtos Mais Vendidos</h3>
-                    <canvas id="top-products-chart"></canvas>
-                </div>
-                <div class="chart-card">
-                    <h3>Vendas por Categoria</h3>
-                    <canvas id="category-chart"></canvas>
-                </div>
-                <div class="chart-card">
-                    <h3>Vendas Recentes</h3>
-                    <div id="recent-sales-container" class="table-container">
-                        <!-- Tabela será inserida aqui via JS -->
-                    </div>
-                </div>
+                <div class="chart-card large"><canvas id="revenue-chart"></canvas></div>
+                <div class="chart-card"><canvas id="top-products-chart"></canvas></div>
+                <div class="chart-card"><canvas id="category-chart"></canvas></div>
+                <div class="chart-card"><h3>Vendas Recentes</h3><div id="recent-sales-container" class="table-container"></div></div>
             </div>
 
         </main>
@@ -159,41 +126,53 @@
                 <button id="close-modal-btn" class="close-button">&times;</button>
             </div>
             <form id="add-sale-form">
-                <div class="form-group">
-                    <label for="sale-product">Nome do Produto</label>
-                    <input type="text" id="sale-product" required>
+                <div class="form-group"><label for="sale-product">Nome do Produto</label><input type="text" id="sale-product" required></div>
+                <div class="form-row">
+                    <div class="form-group"><label for="sale-quantity">Quantidade</label><input type="number" id="sale-quantity" value="1" min="1" required></div>
+                    <div class="form-group"><label for="sale-price">Valor Unitário (R$)</label><input type="number" id="sale-price" step="0.01" min="0" required></div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label for="sale-quantity">Quantidade</label>
-                        <input type="number" id="sale-quantity" value="1" min="1" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="sale-price">Valor Unitário (R$)</label>
-                        <input type="number" id="sale-price" step="0.01" min="0" required>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="sale-date">Data da Venda</label>
-                        <input type="date" id="sale-date" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="sale-category">Categoria</label>
-                        <select id="sale-category" required>
-                            <option value="">Selecione...</option>
-                            <!-- Categorias serão preenchidas via JS -->
-                        </select>
-                    </div>
+                    <div class="form-group"><label for="sale-date">Data da Venda</label><input type="date" id="sale-date" required></div>
+                    <div class="form-group"><label for="sale-category">Categoria</label><select id="sale-category" required><option value="">Selecione...</option></select></div>
                 </div>
                 <p id="modal-error-message" class="error-message"></p>
-                <div class="modal-actions">
-                    <button type="submit" class="btn btn-primary">Salvar Venda</button>
-                </div>
+                <div class="modal-actions"><button type="submit" class="btn btn-primary">Salvar Venda</button></div>
             </form>
         </div>
     </div>
 
+    <!-- ======================================================================= -->
+    <!-- MODAL DE ADMINISTRAÇÃO                                                  -->
+    <!-- ======================================================================= -->
+    <div id="admin-modal" class="modal-backdrop" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Painel de Administração</h2>
+                <button id="close-admin-modal-btn" class="close-button">&times;</button>
+            </div>
+            <div class="admin-panel">
+                <h3>Gerenciar Categorias Globais</h3>
+                
+                <!-- Formulário para adicionar nova categoria -->
+                <form id="add-category-form" class="admin-form">
+                    <div class="form-group">
+                        <label for="category-name">Nome da Nova Categoria</label>
+                        <input type="text" id="category-name" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Adicionar Categoria</g>
+                </form>
+                <p id="admin-error-message" class="error-message"></p>
+                
+                <!-- Lista de categorias existentes -->
+                <div class="category-list-container">
+                    <h4>Categorias Existentes</h4>
+                    <ul id="global-category-list">
+                        <!-- Itens da lista serão inseridos aqui via JS -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Scripts da Aplicação -->
     <script src="main.js"></script>
