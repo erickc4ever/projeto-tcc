@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora Certa</title>
+    <title>änalitks</title>
     <!-- Links para os arquivos de estilo -->
     <link rel="stylesheet" href="main.css">
     <link rel="stylesheet" href="style.css">
@@ -17,8 +17,13 @@
     <!-- TELA 1: AUTENTICAÇÃO (Login / Cadastro) -->
     <div id="auth-screen" class="screen">
         <div class="calculator-card">
+            <!-- Espaço Minimalista para o Logo -->
+            <div class="logo-container">
+                <img src="logo.png" alt="Logo da änalitks" class="logo-img">
+            </div>
+
             <div class="card-header">
-                <h1 class="title">Calculadora Certa</h1>
+                <h1 class="title">änalitks</h1>
                 <p class="subtitle">Acesse sua conta ou cadastre-se para começar.</p>
             </div>
             
@@ -48,60 +53,15 @@
 
     <!-- TELA 2: DASHBOARD (visível após login) -->
     <div id="dashboard-screen" class="screen hidden">
-        <div class="calculator-card">
-            <div class="card-header">
-                <h1 class="title">Dashboard</h1>
-                <p id="welcome-message" class="subtitle">Bem-vindo(a)!</p>
-            </div>
-            <div class="dashboard-menu">
-                <button id="goto-inss-btn" class="calculate-btn">Cálculo de Salário (INSS/IRRF)</button>
-                <button id="goto-saved-btn" class="save-btn" disabled>Cálculos Salvos (em breve)</button>
-                <button id="logout-btn" class="logout-btn">Sair</button>
-            </div>
-        </div>
+        <!-- O conteúdo da dashboard será reestruturado a seguir -->
     </div>
 
-    <!-- TELA 3: CALCULADORA (visível ao clicar no botão da dashboard) -->
+    <!-- TELA 3: CALCULADORAS (serão reestruturadas a seguir) -->
     <div id="calculator-screen" class="screen hidden">
-        <div class="calculator-card">
-            <button id="back-to-dashboard-btn" class="back-btn">← Voltar para Dashboard</button>
-            <div class="card-header">
-                <h1 class="title">Cálculo de Salário</h1>
-                <p class="subtitle">Insira o salário bruto para ver os descontos.</p>
-            </div>
-    
-            <div class="input-section">
-                <label for="salario-bruto-input">Salário Bruto (R$)</label>
-                <input type="number" id="salario-bruto-input" class="input-field" placeholder="Ex: 3500.00">
-                <button id="calcular-btn" class="calculate-btn">Calcular</button>
-            </div>
-            
-            <div id="resultados-container" class="results-section" style="display: none;">
-                <hr class="divider">
-                <h3 class="results-title">Resultado da Simulação</h3>
-                <div class="result-item">
-                    <span>Salário Bruto</span>
-                    <span class="result-value">R$ <span id="resultado-bruto">0.00</span></span>
-                </div>
-                <div class="result-item">
-                    <span>Desconto INSS (-)</span>
-                    <span class="result-value">R$ <span id="resultado-inss">0.00</span></span>
-                </div>
-                <div class="result-item">
-                    <span>Desconto IRRF (-)</span>
-                    <span class="result-value">R$ <span id="resultado-irrf">0.00</span></span>
-                </div>
-                <hr class="divider">
-                <div class="result-item result-item-total">
-                    <strong>Salário Líquido</strong>
-                    <strong class="result-value">R$ <span id="resultado-liquido">0.00</span></strong>
-                </div>
-                <button id="salvar-btn" class="save-btn" disabled>Salvar Simulação</button>
-            </div>
-        </div>
+        <!-- O conteúdo das calculadoras será reestruturado a seguir -->
     </div>
 
-    <!-- Scripts carregados no final do body para garantir que o HTML foi renderizado primeiro -->
+    <!-- Scripts carregados no final do body -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="main.js"></script>
     <script src="app.js"></script>

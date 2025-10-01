@@ -1,14 +1,18 @@
 /**
  * ==================================================================================
- * main.js - Cérebro da Aplicação "Calculadora Certa" (Versão Reestruturada)
+ * main.js - Cérebro da Aplicação "änalitks"
  * ----------------------------------------------------------------------------------
- * Organizado em seções para maior clareza e facilidade de depuração.
+ * Responsabilidades:
+ * 1. Gerenciar a exibição de telas (Autenticação, Dashboard, etc.).
+ * 2. Lidar com a lógica de autenticação de usuários (Login, Cadastro, Logout).
+ * 3. Orquestrar a navegação entre as diferentes ferramentas financeiras.
+ * 4. Conter as funções de cálculo para cada ferramenta.
  * ==================================================================================
  */
 
 // PARTE 1: CONFIGURAÇÃO E SELETORES DE ELEMENTOS
 // ----------------------------------------------------------------------------------
-console.log("Iniciando o main.js...");
+console.log("Iniciando o main.js da änalitks...");
 
 // --- Configuração do Supabase ---
 const SUPABASE_URL = 'https://ejddiovmtjpipangyqeo.supabase.co';
@@ -20,7 +24,7 @@ console.log('Cliente Supabase inicializado.');
 const screens = {
     auth: document.getElementById('auth-screen'),
     dashboard: document.getElementById('dashboard-screen'),
-    calculator: document.getElementById('calculator-screen'),
+    // Adicionaremos as telas de cada calculadora aqui no futuro
 };
 
 // --- Seletores de Autenticação ---
@@ -34,233 +38,141 @@ const authButtons = {
     showSignup: document.getElementById('show-signup-btn'),
     showLoginLink: document.getElementById('show-login-link'),
     showSignupLink: document.getElementById('show-signup-link'),
-    logout: document.getElementById('logout-btn'),
+    // O botão de logout estará na dashboard, vamos selecioná-lo depois
 };
 
-// --- Seletores da Calculadora ---
-const calculatorElements = {
-    salarioBrutoInput: document.getElementById('salario-bruto-input'),
-    calcularBtn: document.getElementById('calcular-btn'),
-    salvarBtn: document.getElementById('salvar-btn'),
-    resultadosContainer: document.getElementById('resultados-container'),
-    resultadoBrutoSpan: document.getElementById('resultado-bruto'),
-    resultadoInssSpan: document.getElementById('resultado-inss'),
-    resultadoIrrfSpan: document.getElementById('resultado-irrf'),
-    resultadoLiquidoSpan: document.getElementById('resultado-liquido'),
-};
 
-// --- Seletores de Navegação ---
-const navButtons = {
-    gotoInss: document.getElementById('goto-inss-btn'),
-    backToDashboard: document.getElementById('back-to-dashboard-btn'),
-};
-
-// --- Variável de Estado ---
-let ultimoResultado = null;
-
-
-// PARTE 2: FUNÇÕES DE CÁLCULO (O CÉREBRO PURO)
+// PARTE 2: GERENCIAMENTO DE TELAS E UI
 // ----------------------------------------------------------------------------------
 
 /**
- * Calcula o desconto do INSS com base na tabela progressiva.
- * @param {number} salario - O salário bruto.
- * @returns {number} O valor do desconto.
+ * Esconde todas as telas e exibe apenas a tela desejada.
+ * @param {string} screenName - O nome da tela a ser exibida ('auth', 'dashboard', etc.).
  */
-function calcularDescontoINSS(salario) {
-    const faixas = [
-        { limite: 1412.00, aliquota: 0.075, deducao: 0 },
-        { limite: 2666.68, aliquota: 0.09,  deducao: 21.18 },
-        { limite: 4000.03, aliquota: 0.12,  deducao: 101.18 },
-        { limite: 7786.02, aliquota: 0.14,  deducao: 181.18 }
-    ];
-    const tetoINSS = 908.85;
-
-    if (salario > faixas[3].limite) return tetoINSS;
-
-    for (const faixa of faixas) {
-        if (salario <= faixa.limite) {
-            return (salario * faixa.aliquota) - faixa.deducao;
-        }
-    }
-    return 0;
-}
-
-/**
- * Calcula o desconto do IRRF com base na tabela progressiva.
- * @param {number} baseDeCalculo - Salário bruto menos o desconto do INSS.
- * @returns {number} O valor do desconto.
- */
-function calcularDescontoIRRF(baseDeCalculo) {
-    const faixas = [
-        { limite: 2259.20, aliquota: 0,       deducao: 0 },
-        { limite: 2826.65, aliquota: 0.075,   deducao: 169.44 },
-        { limite: 3751.05, aliquota: 0.15,    deducao: 381.44 },
-        { limite: 4664.68, aliquota: 0.225,   deducao: 662.77 },
-        { limite: Infinity,aliquota: 0.275,   deducao: 896.00 }
-    ];
-
-    for (const faixa of faixas) {
-        if (baseDeCalculo <= faixa.limite) {
-            const imposto = (baseDeCalculo * faixa.aliquota) - faixa.deducao;
-            return imposto > 0 ? imposto : 0;
-        }
-    }
-    return 0;
-}
-
-/**
- * Orquestra o processo de cálculo e atualização da UI.
- */
-function executarCalculo() {
-    console.log("Botão 'Calcular' pressionado. Iniciando cálculo...");
-    
-    const salarioBruto = parseFloat(calculatorElements.salarioBrutoInput.value);
-
-    if (isNaN(salarioBruto) || salarioBruto <= 0) {
-        alert("Por favor, insira um salário válido.");
-        console.error("ERRO: O valor inserido não é um salário válido.");
-        return;
-    }
-
-    const descontoINSS = calcularDescontoINSS(salarioBruto);
-    const baseCalculoIRRF = salarioBruto - descontoINSS;
-    const descontoIRRF = calcularDescontoIRRF(baseCalculoIRRF);
-    const salarioLiquido = salarioBruto - descontoINSS - descontoIRRF;
-
-    calculatorElements.resultadoBrutoSpan.textContent = salarioBruto.toFixed(2);
-    calculatorElements.resultadoInssSpan.textContent = descontoINSS.toFixed(2);
-    calculatorElements.resultadoIrrfSpan.textContent = descontoIRRF.toFixed(2);
-    calculatorElements.resultadoLiquidoSpan.textContent = salarioLiquido.toFixed(2);
-
-    calculatorElements.resultadosContainer.style.display = 'block';
-    
-    ultimoResultado = {
-        name: `Cálculo de R$ ${salarioBruto.toFixed(2)}`,
-        type: 'salario_liquido',
-        inputs: { salarioBruto },
-        results: { descontoINSS, descontoIRRF, salarioLiquido }
-    };
-    
-    calculatorElements.salvarBtn.disabled = false;
-    console.log("Cálculo realizado com sucesso:", ultimoResultado);
-}
-
-
-// PARTE 3: FUNÇÕES DE GERENCIAMENTO DE TELA E UI
-// ----------------------------------------------------------------------------------
-
 function showScreen(screenName) {
+    // Esconde todas as telas
     Object.values(screens).forEach(screen => screen.classList.add('hidden'));
-    screens[screenName].classList.remove('hidden');
-    console.log(`Exibindo a tela: ${screenName}`);
+    
+    // Mostra a tela solicitada
+    if (screens[screenName]) {
+        screens[screenName].classList.remove('hidden');
+        console.log(`Exibindo a tela: ${screenName}`);
+    } else {
+        console.error(`ERRO: A tela "${screenName}" não foi encontrada.`);
+    }
 }
 
+/**
+ * Atualiza a interface com base no estado de login do usuário.
+ * @param {object|null} user - O objeto do usuário do Supabase, ou null se não estiver logado.
+ */
 function updateUserUI(user) {
     if (user) {
-        document.getElementById('welcome-message').textContent = `Bem-vindo(a), ${user.email}!`;
+        // Se o usuário está logado, mostra a dashboard
+        // Vamos popular a dashboard com informações do usuário no futuro
         showScreen('dashboard');
     } else {
+        // Se não há usuário, mostra a tela de autenticação
         showScreen('auth');
     }
 }
 
 
-// PARTE 4: FUNÇÕES DE AUTENTICAÇÃO E DADOS
+// PARTE 3: LÓGICA DE AUTENTICAÇÃO
 // ----------------------------------------------------------------------------------
 
+/**
+ * Lida com o envio do formulário de login.
+ * @param {Event} event - O evento de submit do formulário.
+ */
 async function handleLogin(event) {
-    event.preventDefault();
+    event.preventDefault(); // Impede o recarregamento da página
     const email = authForms.login.querySelector('#login-email').value;
     const password = authForms.login.querySelector('#login-password').value;
+
     const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-    if (error) alert(`Erro no login: ${error.message}`);
+
+    if (error) {
+        alert(`Erro no login: ${error.message}`);
+        console.error("Erro no login:", error);
+    } else {
+        console.log("Login bem-sucedido:", data.user.email);
+        // O onAuthStateChange cuidará de mostrar a dashboard
+    }
 }
 
+/**
+ * Lida com o envio do formulário de cadastro.
+ * @param {Event} event - O evento de submit do formulário.
+ */
 async function handleSignup(event) {
     event.preventDefault();
     const email = authForms.signup.querySelector('#signup-email').value;
     const password = authForms.signup.querySelector('#signup-password').value;
+
     const { error } = await supabaseClient.auth.signUp({ email, password });
+
     if (error) {
         alert(`Erro no cadastro: ${error.message}`);
+        console.error("Erro no cadastro:", error);
     } else {
-        alert('Cadastro realizado! Verifique seu e-mail para confirmar e depois faça o login.');
+        alert('Cadastro realizado! Verifique seu e-mail para confirmar a conta e depois faça o login.');
+        // Volta para a tela de login
         authForms.signup.classList.add('hidden');
         authForms.login.classList.remove('hidden');
     }
 }
 
-async function handleLogout() {
-    await supabaseClient.auth.signOut();
-    authForms.login.reset();
-    authForms.signup.reset();
-    authForms.login.classList.add('hidden');
-    authForms.signup.classList.add('hidden');
-    authForms.choices.classList.remove('hidden');
-}
-
-async function salvarSimulacao() {
-    const { data: { user } } = await supabaseClient.auth.getUser();
-    if (!user) return alert('Você precisa estar logado para salvar.');
-    if (!ultimoResultado) return alert('Calcule primeiro antes de salvar.');
-
-    const { error } = await supabaseClient.from('simulations').insert({ user_id: user.id, ...ultimoResultado });
-    
-    if (error) {
-        alert(`Erro ao salvar: ${error.message}`);
-        console.error("Erro ao salvar:", error);
-    } else {
-        alert('Simulação salva com sucesso!');
-        calculatorElements.salvarBtn.disabled = true;
-    }
-}
+// Futuramente, a função de logout será adicionada aqui.
 
 
-// PARTE 5: REGISTRO DE EVENT LISTENERS
+// PARTE 4: REGISTRO DE EVENTOS (EVENT LISTENERS)
 // ----------------------------------------------------------------------------------
-console.log("Registrando event listeners...");
+console.log("Registrando eventos...");
 
-// --- Autenticação ---
+// --- Eventos da UI de Autenticação ---
+
+// Botão "Já tenho cadastro" mostra o formulário de login
 authButtons.showLogin.addEventListener('click', () => {
     authForms.choices.classList.add('hidden');
     authForms.login.classList.remove('hidden');
 });
+
+// Botão "Sou novo" mostra o formulário de cadastro
 authButtons.showSignup.addEventListener('click', () => {
     authForms.choices.classList.add('hidden');
     authForms.signup.classList.remove('hidden');
 });
+
+// Link "Já tem uma conta?" (no form de cadastro) mostra o formulário de login
 authButtons.showLoginLink.addEventListener('click', (e) => {
     e.preventDefault();
     authForms.signup.classList.add('hidden');
     authForms.login.classList.remove('hidden');
 });
+
+// Link "Não tem uma conta?" (no form de login) mostra o formulário de cadastro
 authButtons.showSignupLink.addEventListener('click', (e) => {
     e.preventDefault();
     authForms.login.classList.add('hidden');
     authForms.signup.classList.remove('hidden');
 });
+
+// --- Eventos de Envio dos Formulários ---
 authForms.login.addEventListener('submit', handleLogin);
 authForms.signup.addEventListener('submit', handleSignup);
-authButtons.logout.addEventListener('click', handleLogout);
 
-// --- Navegação ---
-navButtons.gotoInss.addEventListener('click', () => showScreen('calculator'));
-navButtons.backToDashboard.addEventListener('click', () => showScreen('dashboard'));
 
-// --- Calculadora ---
-calculatorElements.calcularBtn.addEventListener('click', executarCalculo);
-calculatorElements.salvarBtn.addEventListener('click', salvarSimulacao);
+// PARTE 5: INICIALIZAÇÃO E ESTADO DE AUTENTICAÇÃO
+// ----------------------------------------------------------------------------------
 
-// --- Estado de Autenticação ---
+// Ouve as mudanças no estado de autenticação (login, logout)
 supabaseClient.auth.onAuthStateChange((_event, session) => {
-    console.log("Estado de autenticação mudou:", session);
+    console.log("Estado de autenticação mudou. Sessão:", session);
+    // A função updateUserUI será chamada sempre que o estado mudar,
+    // garantindo que a tela correta seja exibida.
     updateUserUI(session ? session.user : null);
 });
 
+console.log("main.js da änalitks carregado com sucesso. Aplicação pronta.");
 
-// PARTE 6: INICIALIZAÇÃO DA APLICAÇÃO
-// ----------------------------------------------------------------------------------
-// A função onAuthStateChange já lida com a verificação inicial da sessão,
-// então não precisamos de uma chamada separada ao carregar a página.
-console.log("main.js carregado com sucesso. Aplicação pronta.");

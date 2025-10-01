@@ -1,48 +1,36 @@
 /**
  * ==================================================================================
- * app.js - Lógica de Interface do Usuário (UI)
+ * app.js - Lógica da Interface do Usuário (UI) da "änalitks"
  * ----------------------------------------------------------------------------------
- * Este arquivo é responsável por interações visuais e animações que melhoram a
- * experiência do usuário, mas não fazem parte da lógica de negócio principal.
- *
- * Responsabilidade Principal:
- * 1. Controlar a troca de tema (claro/escuro).
+ * Responsabilidades:
+ * 1. Lidar com interações visuais que não afetam o estado principal da aplicação.
+ * 2. Gerenciar a troca de tema (claro/escuro).
+ * 3. Futuramente, pode conter animações e outros efeitos visuais.
  * ==================================================================================
  */
 
-console.log("Iniciando o app.js...");
+console.log("Iniciando o app.js (UI)...");
 
-// Selecionamos o botão de troca de tema.
+// --- LÓGICA DE TROCA DE TEMA ---
+
+// 1. Selecionamos os elementos necessários do HTML.
 const themeToggleButton = document.getElementById('theme-toggle');
+const htmlElement = document.documentElement; // Usamos documentElement para pegar a tag <html>
 
-// Selecionamos o elemento raiz <html> para alterar o atributo 'data-theme'.
-// Usar o <html> é uma boa prática para garantir que a página inteira mude.
-const htmlElement = document.documentElement;
-
-/**
- * Função para alternar o tema da aplicação.
- * Lê o atributo 'data-theme' atual e o inverte.
- */
-function toggleTheme() {
-    // Verifica qual é o tema atual. Se não houver 'data-theme', assume-se 'light'.
+// 2. Adicionamos um "ouvinte" que espera por um clique no botão.
+themeToggleButton.addEventListener('click', () => {
+    // 3. Verificamos qual é o tema atual lendo o atributo 'data-theme'.
     const currentTheme = htmlElement.getAttribute('data-theme');
+    
+    // 4. Invertemos o tema.
+    // Se o tema atual for 'dark', o novo tema será 'light'. Caso contrário, será 'dark'.
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
 
-    if (currentTheme === 'dark') {
-        // Se o tema for escuro, muda para o claro.
-        htmlElement.setAttribute('data-theme', 'light');
-        console.log("Tema alterado para: Claro");
-    } else {
-        // Se for claro (ou nulo), muda para o escuro.
-        htmlElement.setAttribute('data-theme', 'dark');
-        console.log("Tema alterado para: Escuro");
-    }
-}
+    // 5. Aplicamos o novo tema ao elemento <html>.
+    htmlElement.setAttribute('data-theme', newTheme);
 
-// Adicionamos um "ouvinte" que espera por um clique no botão.
-// Quando o botão for clicado, a função toggleTheme será chamada.
-themeToggleButton.addEventListener('click', toggleTheme);
+    console.log(`Tema alterado para: ${newTheme}`);
+});
 
-
-// Mensagem final para confirmar que o script foi carregado com sucesso.
 console.log("app.js carregado com sucesso. Lógica de UI pronta.");
 

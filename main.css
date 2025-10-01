@@ -1,10 +1,12 @@
 /**
  * ==================================================================================
- * main.css - Estilos de Layout e Estrutura
+ * main.css - Estilos de Layout e Estrutura da "änalitks"
  * ----------------------------------------------------------------------------------
- * Este arquivo define o posicionamento, as dimensões e a estrutura principal
- * dos elementos da aplicação. Ele não contém cores, fontes ou sombras, que
- * ficam no 'style.css'.
+ * Responsabilidades:
+ * 1. Definir o layout principal da página (centralização, espaçamento).
+ * 2. Gerenciar a visibilidade das diferentes "telas" da aplicação.
+ * 3. Estruturar os cards, formulários e botões.
+ * 4. Posicionar elementos fixos, como o botão de tema.
  * ==================================================================================
  */
 
@@ -16,7 +18,8 @@ body {
     align-items: center;
     min-height: 100vh;
     padding: 20px;
-    box-sizing: border-box; /* Garante que o padding não afete a largura total */
+    box-sizing: border-box; 
+    transition: background-color 0.3s ease; /* Transição suave para o tema */
 }
 
 /* --- Gerenciamento de Telas --- */
@@ -28,107 +31,69 @@ body {
 }
 
 .hidden {
-    display: none !important; /* Usa !important para garantir que a tela seja escondida */
+    display: none !important; /* !important garante que a tela fique escondida */
 }
-
 
 /* --- Estrutura do Card Principal --- */
 .calculator-card {
     width: 100%;
-    max-width: 450px; /* Um pouco mais de espaço para os formulários */
+    max-width: 420px; /* Um pouco mais largo para acomodar bem os formulários */
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    gap: 20px; /* Espaçamento entre os elementos filhos do card */
+    gap: 20px;
 }
 
 .card-header {
     text-align: center;
+    margin-bottom: 10px;
+}
+
+/* --- Estrutura do Logo --- */
+.logo-container {
+    text-align: center;
+    margin-bottom: -10px; /* Espaçamento negativo para aproximar o logo do título */
+}
+
+.logo-img {
+    max-width: 100px; /* Tamanho do logo */
+    height: auto;
 }
 
 
-/* --- Formulários de Autenticação --- */
-.auth-form {
+/* --- Formulários e Botões de Autenticação --- */
+.auth-form, .auth-choices {
     display: flex;
     flex-direction: column;
-    gap: 15px; /* Espaçamento entre os campos e o botão */
-}
-
-.auth-choices {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 10px;
+    gap: 15px; 
+    width: 100%;
 }
 
 
-/* --- Dashboard --- */
-.dashboard-menu {
+/* --- Estrutura Interna dos Cards e Seções --- */
+.input-group,
+.results-section,
+.dashboard-grid {
     display: flex;
     flex-direction: column;
     gap: 15px;
+    width: 100%;
 }
 
-
-/* --- Calculadora --- */
-.input-section, .results-section {
+.result-line {
     display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.result-item {
-    display: flex;
-    justify-content: space-between; /* Alinha o texto à esquerda e o valor à direita */
+    justify-content: space-between;
     align-items: center;
     width: 100%;
+    padding: 10px 0;
 }
 
 
-/* --- Componentes Reutilizáveis --- */
-.input-field, .calculate-btn, .save-btn, .logout-btn {
-    width: 100%;
-    padding: 12px;
-    box-sizing: border-box;
-    border: 1px solid; /* A cor será definida no style.css */
-    border-radius: 8px;
-    font-size: 16px;
-}
-
-button {
-    cursor: pointer;
-}
-
-.form-link {
-    text-align: center;
-    display: block;
-    margin-top: 10px;
-}
-
-.divider {
-    width: 100%;
-    border: none;
-    height: 1px;
-    /* A cor da linha será definida no style.css */
-    margin: 10px 0;
-}
-
-
-/* --- Botões Específicos de UI --- */
+/* --- Botão Fixo de Troca de Tema --- */
 .theme-toggle-btn {
-    position: fixed; /* Fica fixo na tela mesmo com rolagem */
+    position: fixed;
     top: 20px;
     right: 20px;
-    padding: 10px 15px;
-    border-radius: 20px;
-}
-
-.back-btn {
-    align-self: flex-start; /* Alinha o botão à esquerda dentro do card */
-    background: none;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-    padding: 0 0 10px 0; /* Espaçamento para não ficar colado */
+    z-index: 1000; /* Garante que o botão fique acima de outros elementos */
 }
 
