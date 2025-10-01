@@ -1,12 +1,12 @@
 /**
  * ==================================================================================
- * style.css - Estilos Visuais e Temas da "änalitks"
+ * style.css - Estilos Visuais e Temas da "änalitks" (Versão Otimizada)
  * ----------------------------------------------------------------------------------
  * Responsabilidades:
- * 1. Definir a paleta de cores e a tipografia (fontes).
- * 2. Implementar os temas claro (padrão) e escuro.
- * 3. Estilizar os componentes: cards, botões, inputs, links.
- * 4. Criar o visual "Apple-like" com cantos suavemente arredondados e sombras sutis.
+ * 1. Definir a paleta de cores e a tipografia.
+ * 2. Implementar os temas claro e escuro.
+ * 3. Estilizar os componentes com foco na estética e animações de botões.
+ * 4. Criar o visual "Apple-like" com cantos suavemente arredondados.
  * ==================================================================================
  */
 
@@ -25,6 +25,7 @@
     --cor-primaria: #0071e3;
     --cor-primaria-hover: #0077ed;
     --sombra-card: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --sombra-botao: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* TEMA ESCURO */
@@ -37,32 +38,31 @@
     --cor-primaria: #0a84ff;
     --cor-primaria-hover: #339aff;
     --sombra-card: 0 4px 12px rgba(0, 0, 0, 0.2);
+    --sombra-botao: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 /* --- Estilos de Base --- */
-html {
-    color-scheme: light dark; /* Permite que o navegador ajuste a UI (scrollbars, etc) */
-}
-
 body {
     background-color: var(--cor-fundo);
-    font-family: 'Inter', sans-serif; /* Fonte padrão limpa */
+    font-family: 'Inter', sans-serif;
     color: var(--cor-texto-primario);
+    /* Adiciona uma transição suave para a cor de fundo ao trocar de tema */
+    transition: background-color 0.3s ease;
 }
 
 /* --- Estilo do Card "Apple-like" --- */
 .calculator-card {
     background-color: var(--cor-card);
     padding: 32px;
-    border-radius: 12px; /* Cantos suavemente arredondados */
+    border-radius: 12px;
     box-shadow: var(--sombra-card);
     border: 1px solid var(--cor-borda);
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 /* --- Tipografia --- */
 h1 {
-    font-family: 'Lora', serif; /* Fonte elegante para títulos */
+    font-family: 'Lora', serif;
     font-size: 28px;
     margin: 0;
     color: var(--cor-texto-primario);
@@ -106,7 +106,7 @@ a:hover {
     box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.2);
 }
 
-/* --- Estilo dos Botões --- */
+/* --- Estilo dos Botões com Animações --- */
 .btn {
     width: 100%;
     padding: 12px;
@@ -115,8 +115,10 @@ a:hover {
     font-size: 16px;
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.2s ease;
     box-sizing: border-box;
+    /* A transição agora é aplicada a transform e background-color para performance */
+    transition: transform 0.15s ease, background-color 0.15s ease;
+    box-shadow: var(--sombra-botao);
 }
 
 .btn-primary {
@@ -124,9 +126,16 @@ a:hover {
     color: #ffffff;
 }
 
-.btn-primary:hover {
+/* Animação ao passar o mouse */
+.btn:hover {
     background-color: var(--cor-primaria-hover);
-    transform: translateY(-2px);
+    transform: translateY(-3px); /* Efeito de "levantar" o botão */
+}
+
+/* Animação ao clicar */
+.btn:active {
+    transform: translateY(1px) scale(0.99); /* Efeito de "pressionar" o botão */
+    box-shadow: none; /* Remove a sombra ao clicar para dar profundidade */
 }
 
 .btn-secondary {
@@ -151,9 +160,10 @@ a:hover {
     border-radius: 50%;
     cursor: pointer;
     box-shadow: var(--sombra-card);
-    transition: all 0.2s ease;
+    transition: transform 0.2s ease;
 }
+
 .theme-toggle-btn:hover {
-    transform: scale(1.1);
+    transform: scale(1.1) rotate(15deg); /* Animação divertida ao passar o mouse */
 }
 

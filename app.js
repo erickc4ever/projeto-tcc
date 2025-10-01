@@ -3,34 +3,33 @@
  * app.js - Lógica da Interface do Usuário (UI) da "änalitks"
  * ----------------------------------------------------------------------------------
  * Responsabilidades:
- * 1. Lidar com interações visuais que não afetam o estado principal da aplicação.
- * 2. Gerenciar a troca de tema (claro/escuro).
- * 3. Futuramente, pode conter animações e outros efeitos visuais.
+ * 1. Controlar a troca de tema (claro/escuro).
+ * 2. Manipular pequenas animações ou interações visuais que não são a lógica
+ * principal de negócio.
  * ==================================================================================
  */
 
-console.log("Iniciando o app.js (UI)...");
+console.log("app.js (UI) carregado com sucesso.");
 
 // --- LÓGICA DE TROCA DE TEMA ---
 
-// 1. Selecionamos os elementos necessários do HTML.
-const themeToggleButton = document.getElementById('theme-toggle');
-const htmlElement = document.documentElement; // Usamos documentElement para pegar a tag <html>
+// Seleciona o botão de troca de tema e o body do documento.
+const themeToggleButton = document.getElementById('theme-toggle-btn');
+const body = document.body;
 
-// 2. Adicionamos um "ouvinte" que espera por um clique no botão.
+// Adiciona um "ouvinte" que aguarda por um clique no botão.
 themeToggleButton.addEventListener('click', () => {
-    // 3. Verificamos qual é o tema atual lendo o atributo 'data-theme'.
-    const currentTheme = htmlElement.getAttribute('data-theme');
-    
-    // 4. Invertemos o tema.
-    // Se o tema atual for 'dark', o novo tema será 'light'. Caso contrário, será 'dark'.
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    // Verifica se o body já tem o atributo 'data-theme' com o valor 'dark'.
+    const isDarkMode = body.getAttribute('data-theme') === 'dark';
 
-    // 5. Aplicamos o novo tema ao elemento <html>.
-    htmlElement.setAttribute('data-theme', newTheme);
-
-    console.log(`Tema alterado para: ${newTheme}`);
+    if (isDarkMode) {
+        // Se estiver no modo escuro, remove o atributo para voltar ao tema claro (padrão).
+        body.removeAttribute('data-theme');
+        console.log("Tema alterado para: Claro");
+    } else {
+        // Se estiver no modo claro, define o atributo para 'dark' para ativar o tema escuro.
+        body.setAttribute('data-theme', 'dark');
+        console.log("Tema alterado para: Escuro");
+    }
 });
-
-console.log("app.js carregado com sucesso. Lógica de UI pronta.");
 

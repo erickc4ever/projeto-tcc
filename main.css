@@ -1,12 +1,11 @@
 /**
  * ==================================================================================
- * main.css - Estilos de Layout e Estrutura da "änalitks"
+ * main.css - Estilos de Layout e Estrutura da "änalitks" (Versão Otimizada)
  * ----------------------------------------------------------------------------------
  * Responsabilidades:
- * 1. Definir o layout principal da página (centralização, espaçamento).
- * 2. Gerenciar a visibilidade das diferentes "telas" da aplicação.
- * 3. Estruturar os cards, formulários e botões.
- * 4. Posicionar elementos fixos, como o botão de tema.
+ * 1. Definir o layout principal da página de forma eficiente.
+ * 2. Gerenciar a visibilidade das "telas" (sem animações de fade para evitar bugs).
+ * 3. Estruturar os cards, formulários e botões para performance.
  * ==================================================================================
  */
 
@@ -19,10 +18,9 @@ body {
     min-height: 100vh;
     padding: 20px;
     box-sizing: border-box; 
-    transition: background-color 0.3s ease; /* Transição suave para o tema */
 }
 
-/* --- Gerenciamento de Telas --- */
+/* --- Gerenciamento de Telas (Otimizado) --- */
 .screen {
     width: 100%;
     display: flex;
@@ -30,18 +28,19 @@ body {
     align-items: center;
 }
 
+/* A classe .hidden agora controla a visibilidade de forma instantânea, corrigindo o bug. */
 .hidden {
-    display: none !important; /* !important garante que a tela fique escondida */
+    display: none !important; 
 }
 
 /* --- Estrutura do Card Principal --- */
 .calculator-card {
     width: 100%;
-    max-width: 420px; /* Um pouco mais largo para acomodar bem os formulários */
+    max-width: 420px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 20px; /* Espaçamento entre elementos dentro do card */
 }
 
 .card-header {
@@ -52,11 +51,11 @@ body {
 /* --- Estrutura do Logo --- */
 .logo-container {
     text-align: center;
-    margin-bottom: -10px; /* Espaçamento negativo para aproximar o logo do título */
+    margin-bottom: -10px;
 }
 
 .logo-img {
-    max-width: 100px; /* Tamanho do logo */
+    max-width: 100px;
     height: auto;
 }
 
@@ -94,6 +93,5 @@ body {
     position: fixed;
     top: 20px;
     right: 20px;
-    z-index: 1000; /* Garante que o botão fique acima de outros elementos */
+    z-index: 1000;
 }
-
