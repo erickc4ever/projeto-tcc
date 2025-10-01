@@ -1,70 +1,84 @@
 <!DOCTYPE html>
-<!-- O tema padrão é definido como 'light' -->
-<html lang="pt-BR" data-theme="light">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>änalitks</title>
-    <!-- Links para os arquivos de estilo -->
+    <title>änalitks - A sua suíte financeira</title>
+    <!-- CSS de Estrutura -->
     <link rel="stylesheet" href="main.css">
+    <!-- CSS de Estilo e Tema -->
     <link rel="stylesheet" href="style.css">
+    <!-- Biblioteca do Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-    <!-- Botão para alternar o tema, posicionado de forma fixa na tela -->
-    <button id="theme-toggle" class="theme-toggle-btn">Mudar Tema</button>
+    <!-- Botão de Troca de Tema -->
+    <button id="theme-toggle-btn" class="theme-toggle-btn">🌙</button>
 
-    <!-- TELA 1: AUTENTICAÇÃO (Login / Cadastro) -->
+    <!-- TELA DE AUTENTICAÇÃO -->
     <div id="auth-screen" class="screen">
         <div class="calculator-card">
-            <!-- Espaço Minimalista para o Logo -->
             <div class="logo-container">
                 <img src="logo.png" alt="Logo da änalitks" class="logo-img">
             </div>
-
             <div class="card-header">
-                <h1 class="title">änalitks</h1>
-                <p class="subtitle">Acesse sua conta ou cadastre-se para começar.</p>
+                <h1>Bem-vindo(a)</h1>
+                <p>Entre para aceder à sua suíte financeira.</p>
             </div>
-            
+
+            <!-- Opções Iniciais: Novo ou Já tenho cadastro -->
+            <div id="auth-choices" class="auth-choices">
+                <button id="show-signup-btn" class="btn btn-primary">Sou novo aqui</button>
+                <button id="show-login-btn" class="btn btn-secondary">Já tenho cadastro</button>
+            </div>
+
             <!-- Formulário de Login (inicialmente escondido) -->
             <form id="login-form" class="auth-form hidden">
-                <input type="email" id="login-email" placeholder="Seu e-mail" class="input-field" required>
-                <input type="password" id="login-password" placeholder="Sua senha" class="input-field" required>
-                <button type="submit" class="calculate-btn">Entrar</button>
-                <a href="#" id="show-signup-link" class="form-link">Não tem uma conta? Cadastre-se</a>
+                <input type="email" id="login-email" class="input-field" placeholder="Seu e-mail" required>
+                <input type="password" id="login-password" class="input-field" placeholder="Sua senha" required>
+                <button type="submit" class="btn btn-primary">Entrar</button>
+                <p>Não tem uma conta? <a href="#" id="show-signup-link">Registe-se</a></p>
             </form>
 
-            <!-- Formulário de Cadastro (inicialmente escondido) -->
+            <!-- Formulário de Registo (inicialmente escondido) -->
             <form id="signup-form" class="auth-form hidden">
-                <input type="email" id="signup-email" placeholder="Seu e-mail" class="input-field" required>
-                <input type="password" id="signup-password" placeholder="Crie uma senha" class="input-field" required>
-                <button type="submit" class="calculate-btn">Cadastrar</button>
-                <a href="#" id="show-login-link" class="form-link">Já tem uma conta? Entrar</a>
+                <input type="email" id="signup-email" class="input-field" placeholder="Seu melhor e-mail" required>
+                <input type="password" id="signup-password" class="input-field" placeholder="Crie uma senha forte" required>
+                <button type="submit" class="btn btn-primary">Criar conta</button>
+                <p>Já tem uma conta? <a href="#" id="show-login-link">Faça login</a></p>
             </form>
-
-            <!-- Botões de escolha inicial -->
-            <div id="auth-choices" class="auth-choices">
-                 <button id="show-login-btn" class="calculate-btn">Já tenho cadastro</button>
-                 <button id="show-signup-btn" class="save-btn">Sou novo</button>
-            </div>
         </div>
     </div>
 
-    <!-- TELA 2: DASHBOARD (visível após login) -->
+    <!-- TELA DA DASHBOARD (inicialmente escondida) -->
     <div id="dashboard-screen" class="screen hidden">
-        <!-- O conteúdo da dashboard será reestruturado a seguir -->
+        <div class="calculator-card">
+            <div class="card-header">
+                <h1 id="welcome-message">Bem-vindo(a)!</h1>
+                <p>Selecione uma ferramenta para começar.</p>
+            </div>
+            
+            <!-- Grid com as ferramentas -->
+            <div class="dashboard-grid">
+                <button class="btn btn-secondary">Cálculo de Salário</button>
+                <button class="btn btn-secondary">Simulador de Investimentos</button>
+                <button class="btn btn-secondary">Cálculo de Férias</button>
+                <button class="btn btn-secondary">Cálculo de 13º Salário</button>
+                <button class="btn btn-secondary">Quanto vale a minha hora?</button>
+            </div>
+
+            <button id="logout-btn" class="btn btn-primary">Sair</button>
+        </div>
     </div>
 
-    <!-- TELA 3: CALCULADORAS (serão reestruturadas a seguir) -->
-    <div id="calculator-screen" class="screen hidden">
-        <!-- O conteúdo das calculadoras será reestruturado a seguir -->
-    </div>
+    <!-- Adicione aqui as outras telas de calculadora (ex: salario-screen, etc.) -->
 
-    <!-- Scripts carregados no final do body -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Scripts (carregados no final para melhor performance) -->
     <script src="main.js"></script>
     <script src="app.js"></script>
+
 </body>
 </html>
 
