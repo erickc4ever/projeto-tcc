@@ -1,0 +1,157 @@
+/**
+ * ==================================================================================
+ * style.css - Estilos Visuais e Temas
+ * ----------------------------------------------------------------------------------
+ * Este arquivo define a aparência da aplicação: cores, fontes, sombras e
+ * outros detalhes estéticos. Ele é projetado para funcionar com um sistema
+ * de tema claro e escuro.
+ * ==================================================================================
+ */
+
+/* 1. Importação da Fonte e Definição de Variáveis de Tema */
+/* ---------------------------------------------------------------------------------- */
+
+/* Importa a fonte serifada 'Lora' do Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap');
+
+/* :root define as variáveis para o tema claro (padrão) */
+:root {
+  --font-serif: 'Lora', serif;
+  --font-sans: 'Inter', sans-serif;
+
+  --cor-fundo: #FFFFFF;
+  --cor-texto-primario: #1d1d1f;
+  --cor-texto-secundario: #5c5c5e;
+  --cor-card: #FFFFFF;
+  --cor-borda: #dcdcdc;
+  --cor-botao-primario-fundo: #0071e3;
+  --cor-botao-primario-texto: #FFFFFF;
+  --sombra-card: 0px 10px 30px -5px rgba(0, 0, 0, 0.08);
+  --sombra-card-hover: 0px 15px 40px -5px rgba(0, 0, 0, 0.12);
+}
+
+/* Define as mesmas variáveis com valores invertidos para o tema escuro */
+[data-theme='dark'] {
+  --cor-fundo: #161616;
+  --cor-texto-primario: #f5f5f7;
+  --cor-texto-secundario: #a1a1a6;
+  --cor-card: #212121;
+  --cor-borda: #3a3a3c;
+  --cor-botao-primario-fundo: #0077ed;
+  --cor-botao-primario-texto: #FFFFFF;
+  --sombra-card: 0px 10px 30px -5px rgba(0, 0, 0, 0.2);
+  --sombra-card-hover: 0px 15px 40px -5px rgba(0, 0, 0, 0.3);
+}
+
+
+/* 2. Estilos Gerais e Card */
+/* ---------------------------------------------------------------------------------- */
+
+body {
+  background-color: var(--cor-fundo);
+  color: var(--cor-texto-primario);
+  font-family: var(--font-sans); /* Fonte padrão para textos gerais */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.calculator-card {
+  background-color: var(--cor-card);
+  padding: 32px;
+  border-radius: 16px;
+  border: 1px solid var(--cor-borda);
+  box-shadow: var(--sombra-card);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.calculator-card:hover {
+  transform: translateY(-5px); /* Efeito sutil de levantar */
+  box-shadow: var(--sombra-card-hover);
+}
+
+
+/* 3. Estilos de Texto */
+/* ---------------------------------------------------------------------------------- */
+
+.title {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--cor-texto-primario);
+}
+
+.subtitle, .results-title {
+  font-size: 16px;
+  color: var(--cor-texto-secundario);
+}
+
+.result-item {
+  color: var(--cor-texto-secundario);
+}
+
+.result-item strong {
+  color: var(--cor-texto-primario);
+  font-weight: 500;
+}
+
+.result-item-total .result-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--cor-texto-primario);
+}
+
+
+/* 4. Estilos de Elementos Interativos (Inputs, Botões, Links) */
+/* ---------------------------------------------------------------------------------- */
+
+.input-field {
+  background-color: var(--cor-fundo);
+  border-color: var(--cor-borda);
+  color: var(--cor-texto-primario);
+  font-size: 16px;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--cor-botao-primario-fundo);
+}
+
+.calculate-btn {
+  background-color: var(--cor-botao-primario-fundo);
+  color: var(--cor-botao-primario-texto);
+  border: none;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.calculate-btn:hover {
+  background-color: #005bb5; /* Um tom mais escuro para o hover */
+}
+
+.save-btn, .theme-toggle-btn, .user-area a {
+  background-color: transparent;
+  color: var(--cor-botao-primario-fundo);
+  border: 1px solid var(--cor-borda);
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.save-btn:hover, .theme-toggle-btn:hover, .user-area a:hover {
+  background-color: var(--cor-botao-primario-fundo);
+  color: var(--cor-botao-primario-texto);
+  border-color: var(--cor-botao-primario-fundo);
+}
+
+
+/* 5. Outros Elementos */
+/* ---------------------------------------------------------------------------------- */
+
+.divider {
+  background-color: var(--cor-borda);
+  transition: background-color 0.3s ease;
+}

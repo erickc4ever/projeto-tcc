@@ -1,0 +1,103 @@
+/**
+ * ==================================================================================
+ * main.css - Estilos de Layout e Estrutura
+ * ----------------------------------------------------------------------------------
+ * Este arquivo define o posicionamento e a organização dos elementos na página.
+ * Ele NÃO contém cores, fontes ou qualquer estilo que mude com o tema.
+ * ==================================================================================
+ */
+
+/* Layout Principal da Página */
+body {
+  margin: 0;
+  padding: 40px 20px; /* Adiciona um pouco de espaço nas laterais em telas menores */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  box-sizing: border-box; /* Garante que padding não afete o tamanho total */
+}
+
+/* Card Principal */
+.calculator-card {
+  width: 100%;
+  max-width: 450px; /* Um pouco mais de espaço para os conteúdos */
+  position: relative; /* Necessário para posicionar elementos filhos de forma absoluta */
+  display: flex;
+  flex-direction: column; /* Organiza os filhos em uma coluna vertical */
+  gap: 24px; /* Espaçamento entre as seções (header, input, results) */
+}
+
+/* Área do Usuário (Login) */
+.user-area {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+/* Botão de Troca de Tema */
+.theme-toggle-btn {
+  position: fixed; /* Fica fixo na tela mesmo com rolagem */
+  top: 20px;
+  left: 20px;
+  z-index: 10; /* Garante que ele fique acima de outros elementos */
+}
+
+/* Cabeçalho do Card */
+.card-header {
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+}
+
+.subtitle {
+  margin-top: 8px;
+  margin-bottom: 0;
+}
+
+/* Seção de Input */
+.input-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Seção de Resultados */
+.results-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.results-title {
+  margin: 0;
+  text-align: center;
+}
+
+/* Itens de Resultado (Ex: Salário Bruto | R$ 3000.00) */
+.result-item {
+  display: flex;
+  justify-content: space-between; /* Coloca um item na esquerda e outro na direita */
+  align-items: center;
+  padding: 8px 0;
+}
+
+.divider {
+  border: none;
+  height: 1px;
+  /* A cor da linha será definida no style.css para funcionar com os temas */
+}
+
+/* Estilos de layout para campos e botões */
+.input-field,
+.calculate-btn,
+.save-btn,
+.theme-toggle-btn {
+  width: 100%;
+  padding: 12px;
+  box-sizing: border-box; /* Garante que o padding não aumente a largura */
+  border: 1px solid; /* A cor será definida no style.css */
+  border-radius: 8px;
+}
