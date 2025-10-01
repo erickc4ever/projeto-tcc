@@ -4,7 +4,7 @@
  * ----------------------------------------------------------------------------------
  * Responsabilidades:
  * 1. Definir o layout principal da página de forma eficiente.
- * 2. Gerenciar a visibilidade das "telas" (sem animações de fade para evitar bugs).
+ * 2. Gerir a visibilidade das "telas" (sem animações de fade para evitar bugs).
  * 3. Estruturar os cards, formulários e botões para performance.
  * ==================================================================================
  */
@@ -20,7 +20,7 @@ body {
     box-sizing: border-box; 
 }
 
-/* --- Gerenciamento de Telas (Otimizado) --- */
+/* --- Gestão de Telas (Otimizado) --- */
 .screen {
     width: 100%;
     display: flex;
@@ -95,3 +95,4 @@ body {
     right: 20px;
     z-index: 1000;
 }
+

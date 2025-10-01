@@ -1,178 +1,169 @@
 /**
  * ==================================================================================
- * main.js - Cérebro da Aplicação "änalitks"
+ * main.js - Cérebro da Aplicação "änalitks" (Versão Corrigida)
  * ----------------------------------------------------------------------------------
- * Responsabilidades:
- * 1. Gerenciar a exibição de telas (Autenticação, Dashboard, etc.).
- * 2. Lidar com a lógica de autenticação de usuários (Login, Cadastro, Logout).
- * 3. Orquestrar a navegação entre as diferentes ferramentas financeiras.
- * 4. Conter as funções de cálculo para cada ferramenta.
+ * O código foi envolvido por 'DOMContentLoaded' para garantir que o HTML
+ * esteja pronto antes da execução, corrigindo o bug da tela em branco.
  * ==================================================================================
  */
 
-// PARTE 1: CONFIGURAÇÃO E SELETORES DE ELEMENTOS
-// ----------------------------------------------------------------------------------
-console.log("Iniciando o main.js da änalitks...");
-
-// --- Configuração do Supabase ---
-const SUPABASE_URL = 'https://ejddiovmtjpipangyqeo.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZGRpb3ZtdGpwaXBhbmd5cWVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg3MTU4MDksImV4cCI6MjA3NDI5MTgwOX0.GH53mox_cijkhqAxy-sNmvxGcgtoLzuoE5sfP9hHdho';
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-console.log('Cliente Supabase inicializado.');
-
-// --- Seletores de Telas ---
-const screens = {
-    auth: document.getElementById('auth-screen'),
-    dashboard: document.getElementById('dashboard-screen'),
-    // Adicionaremos as telas de cada calculadora aqui no futuro
-};
-
-// --- Seletores de Autenticação ---
-const authForms = {
-    login: document.getElementById('login-form'),
-    signup: document.getElementById('signup-form'),
-    choices: document.getElementById('auth-choices'),
-};
-const authButtons = {
-    showLogin: document.getElementById('show-login-btn'),
-    showSignup: document.getElementById('show-signup-btn'),
-    showLoginLink: document.getElementById('show-login-link'),
-    showSignupLink: document.getElementById('show-signup-link'),
-    // O botão de logout estará na dashboard, vamos selecioná-lo depois
-};
-
-
-// PARTE 2: GERENCIAMENTO DE TELAS E UI
-// ----------------------------------------------------------------------------------
-
-/**
- * Esconde todas as telas e exibe apenas a tela desejada.
- * @param {string} screenName - O nome da tela a ser exibida ('auth', 'dashboard', etc.).
- */
-function showScreen(screenName) {
-    // Esconde todas as telas
-    Object.values(screens).forEach(screen => screen.classList.add('hidden'));
+// Espera o HTML ser completamente carregado para executar o script.
+document.addEventListener('DOMContentLoaded', () => {
     
-    // Mostra a tela solicitada
-    if (screens[screenName]) {
-        screens[screenName].classList.remove('hidden');
-        console.log(`Exibindo a tela: ${screenName}`);
-    } else {
-        console.error(`ERRO: A tela "${screenName}" não foi encontrada.`);
+    // PARTE 1: CONFIGURAÇÃO E SELETORES DE ELEMENTOS
+    // ----------------------------------------------------------------------------------
+    console.log("Iniciando o main.js...");
+
+    // --- Configuração do Supabase ---
+    const SUPABASE_URL = 'https://ejddiovmtjpipangyqeo.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZGRpb3ZtdGpwaXBhbmd5cWVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg3MTU4MDksImV4cCI6MjA3NDI5MTgwOX0.GH53mox_cijkhqAxy-sNmvxGcgtoLzuoE5sfP9hHdho';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    console.log('Cliente Supabase inicializado.');
+
+    // --- Seletores de Telas ---
+    const screens = {
+        auth: document.getElementById('auth-screen'),
+        dashboard: document.getElementById('dashboard-screen'),
+        // Adicione aqui os IDs das outras telas de calculadora quando forem criadas
+    };
+
+    // --- Seletores de Autenticação ---
+    const authForms = {
+        login: document.getElementById('login-form'),
+        signup: document.getElementById('signup-form'),
+        choices: document.getElementById('auth-choices'),
+    };
+    const authButtons = {
+        showLogin: document.getElementById('show-login-btn'),
+        showSignup: document.getElementById('show-signup-btn'),
+        showLoginLink: document.getElementById('show-login-link'),
+        showSignupLink: document.getElementById('show-signup-link'),
+        logout: document.getElementById('logout-btn'),
+    };
+    
+    // Adicione aqui outros seletores (calculadora, dashboard, etc.)
+
+    
+    // PARTE 2: FUNÇÕES DE GESTÃO DE TELA E UI
+    // ----------------------------------------------------------------------------------
+
+    function showScreen(screenName) {
+        // Esconde todas as telas
+        Object.values(screens).forEach(screen => {
+            if (screen) screen.classList.add('hidden');
+        });
+        
+        // Mostra a tela desejada
+        if (screens[screenName]) {
+            screens[screenName].classList.remove('hidden');
+            console.log(`A exibir a tela: ${screenName}`);
+        } else {
+            console.error(`ERRO: A tela "${screenName}" não foi encontrada.`);
+        }
     }
-}
 
-/**
- * Atualiza a interface com base no estado de login do usuário.
- * @param {object|null} user - O objeto do usuário do Supabase, ou null se não estiver logado.
- */
-function updateUserUI(user) {
-    if (user) {
-        // Se o usuário está logado, mostra a dashboard
-        // Vamos popular a dashboard com informações do usuário no futuro
-        showScreen('dashboard');
-    } else {
-        // Se não há usuário, mostra a tela de autenticação
-        showScreen('auth');
+    function updateUserUI(user) {
+        const welcomeMessage = document.getElementById('welcome-message');
+        if (user) {
+            if(welcomeMessage) {
+                welcomeMessage.textContent = `Bem-vindo(a), ${user.email}!`;
+            }
+            showScreen('dashboard');
+        } else {
+            showScreen('auth');
+        }
     }
-}
 
 
-// PARTE 3: LÓGICA DE AUTENTICAÇÃO
-// ----------------------------------------------------------------------------------
+    // PARTE 3: FUNÇÕES DE AUTENTICAÇÃO
+    // ----------------------------------------------------------------------------------
 
-/**
- * Lida com o envio do formulário de login.
- * @param {Event} event - O evento de submit do formulário.
- */
-async function handleLogin(event) {
-    event.preventDefault(); // Impede o recarregamento da página
-    const email = authForms.login.querySelector('#login-email').value;
-    const password = authForms.login.querySelector('#login-password').value;
+    async function handleLogin(event) {
+        event.preventDefault();
+        const emailInput = authForms.login.querySelector('#login-email');
+        const passwordInput = authForms.login.querySelector('#login-password');
+        const email = emailInput.value;
+        const password = passwordInput.value;
 
-    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-
-    if (error) {
-        alert(`Erro no login: ${error.message}`);
-        console.error("Erro no login:", error);
-    } else {
-        console.log("Login bem-sucedido:", data.user.email);
-        // O onAuthStateChange cuidará de mostrar a dashboard
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        
+        if (error) {
+            alert(`Erro no login: ${error.message}`);
+            console.error('Erro de login:', error);
+        } else {
+            console.log('Login bem-sucedido:', data.user);
+            // O onAuthStateChange cuidará de mostrar a dashboard
+        }
     }
-}
 
-/**
- * Lida com o envio do formulário de cadastro.
- * @param {Event} event - O evento de submit do formulário.
- */
-async function handleSignup(event) {
-    event.preventDefault();
-    const email = authForms.signup.querySelector('#signup-email').value;
-    const password = authForms.signup.querySelector('#signup-password').value;
+    async function handleSignup(event) {
+        event.preventDefault();
+        const emailInput = authForms.signup.querySelector('#signup-email');
+        const passwordInput = authForms.signup.querySelector('#signup-password');
+        const email = emailInput.value;
+        const password = passwordInput.value;
 
-    const { error } = await supabaseClient.auth.signUp({ email, password });
+        const { error } = await supabaseClient.auth.signUp({ email, password });
+        
+        if (error) {
+            alert(`Erro no registo: ${error.message}`);
+        } else {
+            alert('Registo realizado! Verifique o seu e-mail para confirmar a conta e depois faça o login.');
+            authForms.signup.classList.add('hidden');
+            authForms.login.classList.remove('hidden');
+        }
+    }
 
-    if (error) {
-        alert(`Erro no cadastro: ${error.message}`);
-        console.error("Erro no cadastro:", error);
-    } else {
-        alert('Cadastro realizado! Verifique seu e-mail para confirmar a conta e depois faça o login.');
-        // Volta para a tela de login
+    async function handleLogout() {
+        await supabaseClient.auth.signOut();
+        // O onAuthStateChange cuidará de mostrar a tela de auth
+        authForms.login.reset();
+        authForms.signup.reset();
+        authForms.login.classList.add('hidden');
+        authForms.signup.classList.add('hidden');
+        authForms.choices.classList.remove('hidden');
+        console.log("Utilizador deslogado.");
+    }
+
+
+    // PARTE 4: REGISTO DE EVENT LISTENERS
+    // ----------------------------------------------------------------------------------
+    console.log("A registar event listeners...");
+
+    // --- Autenticação ---
+    if(authButtons.showLogin) authButtons.showLogin.addEventListener('click', () => {
+        authForms.choices.classList.add('hidden');
+        authForms.login.classList.remove('hidden');
+    });
+
+    if(authButtons.showSignup) authButtons.showSignup.addEventListener('click', () => {
+        authForms.choices.classList.add('hidden');
+        authForms.signup.classList.remove('hidden');
+    });
+
+    if(authButtons.showLoginLink) authButtons.showLoginLink.addEventListener('click', (e) => {
+        e.preventDefault();
         authForms.signup.classList.add('hidden');
         authForms.login.classList.remove('hidden');
-    }
-}
+    });
 
-// Futuramente, a função de logout será adicionada aqui.
+    if(authButtons.showSignupLink) authButtons.showSignupLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        authForms.login.classList.add('hidden');
+        authForms.signup.classList.remove('hidden');
+    });
 
+    if(authForms.login) authForms.login.addEventListener('submit', handleLogin);
+    if(authForms.signup) authForms.signup.addEventListener('submit', handleSignup);
+    if(authButtons.logout) authButtons.logout.addEventListener('click', handleLogout);
 
-// PARTE 4: REGISTRO DE EVENTOS (EVENT LISTENERS)
-// ----------------------------------------------------------------------------------
-console.log("Registrando eventos...");
+    // --- Estado de Autenticação ---
+    supabaseClient.auth.onAuthStateChange((_event, session) => {
+        console.log("Estado de autenticação mudou:", session);
+        updateUserUI(session ? session.user : null);
+    });
 
-// --- Eventos da UI de Autenticação ---
+    console.log("main.js carregado com sucesso. Aplicação pronta.");
 
-// Botão "Já tenho cadastro" mostra o formulário de login
-authButtons.showLogin.addEventListener('click', () => {
-    authForms.choices.classList.add('hidden');
-    authForms.login.classList.remove('hidden');
 });
-
-// Botão "Sou novo" mostra o formulário de cadastro
-authButtons.showSignup.addEventListener('click', () => {
-    authForms.choices.classList.add('hidden');
-    authForms.signup.classList.remove('hidden');
-});
-
-// Link "Já tem uma conta?" (no form de cadastro) mostra o formulário de login
-authButtons.showLoginLink.addEventListener('click', (e) => {
-    e.preventDefault();
-    authForms.signup.classList.add('hidden');
-    authForms.login.classList.remove('hidden');
-});
-
-// Link "Não tem uma conta?" (no form de login) mostra o formulário de cadastro
-authButtons.showSignupLink.addEventListener('click', (e) => {
-    e.preventDefault();
-    authForms.login.classList.add('hidden');
-    authForms.signup.classList.remove('hidden');
-});
-
-// --- Eventos de Envio dos Formulários ---
-authForms.login.addEventListener('submit', handleLogin);
-authForms.signup.addEventListener('submit', handleSignup);
-
-
-// PARTE 5: INICIALIZAÇÃO E ESTADO DE AUTENTICAÇÃO
-// ----------------------------------------------------------------------------------
-
-// Ouve as mudanças no estado de autenticação (login, logout)
-supabaseClient.auth.onAuthStateChange((_event, session) => {
-    console.log("Estado de autenticação mudou. Sessão:", session);
-    // A função updateUserUI será chamada sempre que o estado mudar,
-    // garantindo que a tela correta seja exibida.
-    updateUserUI(session ? session.user : null);
-});
-
-console.log("main.js da änalitks carregado com sucesso. Aplicação pronta.");
 
