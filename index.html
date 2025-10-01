@@ -1,80 +1,110 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<!-- O tema padrão é definido como 'light' -->
+<html lang="pt-BR" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora Certa</title>
-    
-    <!-- Link para os arquivos de estilo -->
-    <!-- main.css para layout e posicionamento -->
+    <!-- Links para os arquivos de estilo -->
     <link rel="stylesheet" href="main.css">
-    <!-- style.css para a estética, cores, fontes e temas -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!--
-      Botão para trocar o tema. Ele ficará posicionado pelo "main.css".
-      O "app.js" será responsável por sua funcionalidade.
-    -->
+    <!-- Botão para alternar o tema, posicionado de forma fixa na tela -->
     <button id="theme-toggle" class="theme-toggle-btn">Mudar Tema</button>
 
-    <!-- O card principal que contém toda a aplicação -->
-    <main class="calculator-card">
-        
-        <!-- NOVO: Adicionamos uma área de usuário para o login -->
-        <div class="user-area">
-            <a href="#" id="login-btn">Entrar</a>
-        </div>
-        
-        <header class="card-header">
-            <h1 class="title">Calculadora de Salário Líquido</h1>
-            <p class="subtitle">Insira seu salário bruto para ver os descontos</p>
-        </header>
-
-        <!-- Seção de Inputs: onde o usuário insere os dados -->
-        <section class="input-section">
-            <label for="salario-bruto-input" class="input-label">Salário Bruto (R$)</label>
-            <input type="number" id="salario-bruto-input" class="input-field" placeholder="Ex: 3500.00" />
-            <button id="calcular-btn" class="calculate-btn">Calcular</button>
-        </section>
-
-        <!--
-          Seção de Resultados: Ficará escondida até o primeiro cálculo.
-          O main.js vai controlar sua visibilidade.
-        -->
-        <section id="resultados-container" class="results-section" style="display: none;">
-            <h2 class="results-title">Resumo do Cálculo</h2>
-            <div class="result-item">
-                <span>Salário Bruto</span>
-                <span class="value">R$ <span id="resultado-bruto">0.00</span></span>
-            </div>
-            <div class="result-item discount">
-                <span>Desconto INSS</span>
-                <span class="value">- R$ <span id="resultado-inss">0.00</span></span>
-            </div>
-            <div class="result-item discount">
-                <span>Desconto IRRF</span>
-                <span class="value">- R$ <span id="resultado-irrf">0.00</span></span>
-            </div>
-            <hr class="divider">
-            <div class="result-item total">
-                <span>Salário Líquido</span>
-                <span class="value">R$ <span id="resultado-liquido">0.00</span></span>
+    <!-- TELA 1: AUTENTICAÇÃO (Login / Cadastro) -->
+    <div id="auth-screen" class="screen">
+        <div class="calculator-card">
+            <div class="card-header">
+                <h1 class="title">Calculadora Certa</h1>
+                <p class="subtitle">Acesse sua conta ou cadastre-se para começar.</p>
             </div>
             
-            <!-- NOVO: Adicionamos o botão para salvar a simulação -->
-            <button id="salvar-btn" class="save-btn">Salvar Simulação</button>
-        </section>
+            <!-- Formulário de Login (inicialmente escondido) -->
+            <form id="login-form" class="auth-form hidden">
+                <input type="email" id="login-email" placeholder="Seu e-mail" class="input-field" required>
+                <input type="password" id="login-password" placeholder="Sua senha" class="input-field" required>
+                <button type="submit" class="calculate-btn">Entrar</button>
+                <a href="#" id="show-signup-link" class="form-link">Não tem uma conta? Cadastre-se</a>
+            </form>
 
-    </main>
+            <!-- Formulário de Cadastro (inicialmente escondido) -->
+            <form id="signup-form" class="auth-form hidden">
+                <input type="email" id="signup-email" placeholder="Seu e-mail" class="input-field" required>
+                <input type="password" id="signup-password" placeholder="Crie uma senha" class="input-field" required>
+                <button type="submit" class="calculate-btn">Cadastrar</button>
+                <a href="#" id="show-login-link" class="form-link">Já tem uma conta? Entrar</a>
+            </form>
 
-    <!-- Links para os arquivos JavaScript -->
-    <!-- Adicionando o script do Supabase ANTES dos nossos scripts -->
+            <!-- Botões de escolha inicial -->
+            <div id="auth-choices" class="auth-choices">
+                 <button id="show-login-btn" class="calculate-btn">Já tenho cadastro</button>
+                 <button id="show-signup-btn" class="save-btn">Sou novo</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TELA 2: DASHBOARD (visível após login) -->
+    <div id="dashboard-screen" class="screen hidden">
+        <div class="calculator-card">
+            <div class="card-header">
+                <h1 class="title">Dashboard</h1>
+                <p id="welcome-message" class="subtitle">Bem-vindo(a)!</p>
+            </div>
+            <div class="dashboard-menu">
+                <button id="goto-inss-btn" class="calculate-btn">Cálculo de Salário (INSS/IRRF)</button>
+                <button id="goto-saved-btn" class="save-btn" disabled>Cálculos Salvos (em breve)</button>
+                <button id="logout-btn" class="logout-btn">Sair</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TELA 3: CALCULADORA (visível ao clicar no botão da dashboard) -->
+    <div id="calculator-screen" class="screen hidden">
+        <div class="calculator-card">
+            <button id="back-to-dashboard-btn" class="back-btn">← Voltar para Dashboard</button>
+            <div class="card-header">
+                <h1 class="title">Cálculo de Salário</h1>
+                <p class="subtitle">Insira o salário bruto para ver os descontos.</p>
+            </div>
+    
+            <div class="input-section">
+                <label for="salario-bruto-input">Salário Bruto (R$)</label>
+                <input type="number" id="salario-bruto-input" class="input-field" placeholder="Ex: 3500.00">
+                <button id="calcular-btn" class="calculate-btn">Calcular</button>
+            </div>
+            
+            <div id="resultados-container" class="results-section" style="display: none;">
+                <hr class="divider">
+                <h3 class="results-title">Resultado da Simulação</h3>
+                <div class="result-item">
+                    <span>Salário Bruto</span>
+                    <span class="result-value">R$ <span id="resultado-bruto">0.00</span></span>
+                </div>
+                <div class="result-item">
+                    <span>Desconto INSS (-)</span>
+                    <span class="result-value">R$ <span id="resultado-inss">0.00</span></span>
+                </div>
+                <div class="result-item">
+                    <span>Desconto IRRF (-)</span>
+                    <span class="result-value">R$ <span id="resultado-irrf">0.00</span></span>
+                </div>
+                <hr class="divider">
+                <div class="result-item result-item-total">
+                    <strong>Salário Líquido</strong>
+                    <strong class="result-value">R$ <span id="resultado-liquido">0.00</span></strong>
+                </div>
+                <button id="salvar-btn" class="save-btn" disabled>Salvar Simulação</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts carregados no final do body para garantir que o HTML foi renderizado primeiro -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="app.js"></script> <!-- Para UI, animações e tema -->
-    <script src="main.js"></script> <!-- Para os cálculos e backend (cérebro) -->
-
+    <script src="main.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
 
