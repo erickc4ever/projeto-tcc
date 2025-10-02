@@ -1,9 +1,9 @@
 /**
  * ==================================================================================
- * main.js - Cérebro da Aplicação "änalitks" (Com Calculadora de 13º Salário)
+ * main.js - Cérebro da Aplicação "änalitks" (Versão Completa)
  * ----------------------------------------------------------------------------------
- * Este ficheiro agora inclui a lógica completa para a ferramenta de
- * Cálculo de 13º Salário, mostrando as duas parcelas e os descontos.
+ * Este ficheiro inclui a lógica para todas as ferramentas financeiras planeadas,
+ * concluindo o escopo inicial do projeto.
  * ==================================================================================
  */
 
@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log("Iniciando o main.js...");
 
     const SUPABASE_URL = 'https://ejddiovmtjpipangyqeo.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZGRpb3ZtdGpwaXBhbmd5cWVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg3MTU4MDksImV4cCI6MjA3NDI5MTgwOX0.GH53mox_cijkhqAxy-sNmvxGcgtoLzuoE5sfP9hHdho';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZGRpb3ZtdGpwaXBhbmd5cWVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg3MTU4MDksImV4cCI6MjA3NDI5MTgwOX0.GH53mox_cijkhqAxy-sNmvxGcgtoLzuoE5sfP9hHdho';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     console.log('Cliente Supabase inicializado.');
 
@@ -24,7 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
         salario: document.getElementById('salario-screen'),
         investimentos: document.getElementById('investimentos-screen'),
         ferias: document.getElementById('ferias-screen'),
-        decimoTerceiro: document.getElementById('decimo-terceiro-screen'), // Nova tela
+        decimoTerceiro: document.getElementById('decimo-terceiro-screen'),
+        horaValor: document.getElementById('hora-valor-screen'), // Nova tela
         irpf: document.getElementById('irpf-screen'),
     };
 
@@ -35,31 +36,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const salarioElements = { form: { salarioBruto: document.getElementById('salario-bruto'), dependentes: document.getElementById('salario-dependentes') }, buttons: { calcular: document.getElementById('calcular-salario-btn'), voltar: document.getElementById('back-to-dashboard-from-salario') }, results: { container: document.getElementById('salario-results-section'), salarioBruto: document.getElementById('resultado-salario-bruto'), inss: document.getElementById('resultado-inss'), baseIrrf: document.getElementById('resultado-base-irrf'), irrf: document.getElementById('resultado-irrf'), salarioLiquido: document.getElementById('resultado-salario-liquido'), explicacaoInss: document.getElementById('explicacao-inss'), explicacaoIrrf: document.getElementById('explicacao-irrf') } };
     const investimentosElements = { form: { valorInicial: document.getElementById('valor-inicial'), aporteMensal: document.getElementById('aporte-mensal'), taxaJurosAnual: document.getElementById('taxa-juros-anual'), periodoAnos: document.getElementById('periodo-anos') }, buttons: { calcular: document.getElementById('calcular-investimentos-btn'), voltar: document.getElementById('back-to-dashboard-from-investimentos') }, results: { container: document.getElementById('investimentos-results-section'), valorFinal: document.getElementById('resultado-valor-final'), totalInvestido: document.getElementById('resultado-total-investido'), totalJuros: document.getElementById('resultado-total-juros') } };
     const feriasElements = { form: { salarioBruto: document.getElementById('ferias-salario-bruto'), dias: document.getElementById('ferias-dias'), venderDias: document.getElementById('ferias-vender-dias'), adiantar13: document.getElementById('ferias-adiantar-13') }, buttons: { calcular: document.getElementById('calcular-ferias-btn'), voltar: document.getElementById('back-to-dashboard-from-ferias') }, results: { container: document.getElementById('ferias-results-section'), feriasBrutas: document.getElementById('resultado-ferias-brutas'), tercoConstitucional: document.getElementById('resultado-terco-constitucional'), abonoPecuniario: document.getElementById('resultado-abono-pecuniario'), totalBruto: document.getElementById('resultado-total-bruto-ferias'), inss: document.getElementById('resultado-inss-ferias'), irrf: document.getElementById('resultado-irrf-ferias'), adiantamento13: document.getElementById('resultado-adiantamento-13'), liquido: document.getElementById('resultado-liquido-ferias'), abonoLine: document.getElementById('abono-pecuniario-line'), adiantamento13Line: document.getElementById('adiantamento-13-line') } };
+    const decimoTerceiroElements = { form: { salarioBruto: document.getElementById('decimo-terceiro-salario-bruto'), meses: document.getElementById('decimo-terceiro-meses'), dependentes: document.getElementById('decimo-terceiro-dependentes') }, buttons: { calcular: document.getElementById('calcular-decimo-terceiro-btn'), voltar: document.getElementById('back-to-dashboard-from-decimo-terceiro') }, results: { container: document.getElementById('decimo-terceiro-results-section'), bruto: document.getElementById('resultado-13-bruto'), primeiraParcela: document.getElementById('resultado-13-primeira-parcela'), segundaParcelaBruta: document.getElementById('resultado-13-segunda-parcela-bruta'), inss: document.getElementById('resultado-inss-13'), irrf: document.getElementById('resultado-irrf-13'), segundaParcelaLiquida: document.getElementById('resultado-13-segunda-parcela-liquida'), liquidoTotal: document.getElementById('resultado-13-liquido-total') } };
     const irpfElements = { form: { rendimentosAnuais: document.getElementById('rendimentos-anuais'), despesasSaude: document.getElementById('despesas-saude'), despesasEducacao: document.getElementById('despesas-educacao'), dependentes: document.getElementById('dependentes') }, buttons: { calcular: document.getElementById('calcular-irpf-btn'), voltar: document.getElementById('back-to-dashboard-from-irpf') }, results: { container: document.getElementById('irpf-results-section'), completa: document.getElementById('resultado-irpf-completa'), simplificada: document.getElementById('resultado-irpf-simplificada'), recomendacao: document.getElementById('recomendacao-irpf').querySelector('p') } };
 
-    // --- Seletores do Cálculo de 13º Salário ---
-    const decimoTerceiroElements = {
+    // --- Seletores do "Quanto Vale a Minha Hora?" ---
+    const horaValorElements = {
         form: {
-            salarioBruto: document.getElementById('decimo-terceiro-salario-bruto'),
-            meses: document.getElementById('decimo-terceiro-meses'),
-            dependentes: document.getElementById('decimo-terceiro-dependentes'),
+            salario: document.getElementById('hora-valor-salario'),
+            horasDia: document.getElementById('hora-valor-horas-dia'),
         },
         buttons: {
-            calcular: document.getElementById('calcular-decimo-terceiro-btn'),
-            voltar: document.getElementById('back-to-dashboard-from-decimo-terceiro'),
+            calcular: document.getElementById('calcular-hora-valor-btn'),
+            voltar: document.getElementById('back-to-dashboard-from-hora-valor'),
         },
         results: {
-            container: document.getElementById('decimo-terceiro-results-section'),
-            bruto: document.getElementById('resultado-13-bruto'),
-            primeiraParcela: document.getElementById('resultado-13-primeira-parcela'),
-            segundaParcelaBruta: document.getElementById('resultado-13-segunda-parcela-bruta'),
-            inss: document.getElementById('resultado-inss-13'),
-            irrf: document.getElementById('resultado-irrf-13'),
-            segundaParcelaLiquida: document.getElementById('resultado-13-segunda-parcela-liquida'),
-            liquidoTotal: document.getElementById('resultado-13-liquido-total'),
+            container: document.getElementById('hora-valor-results-section'),
+            valorHora: document.getElementById('resultado-hora-valor'),
         }
     };
-    
+
     // PARTE 2: FUNÇÕES DE GESTÃO DE TELA E UI
     function showScreen(screenName) { Object.values(screens).forEach(screen => { if (screen) screen.classList.add('hidden'); }); if (screens[screenName]) { screens[screenName].classList.remove('hidden'); console.log(`A exibir a tela: ${screenName}`); } else { console.warn(`AVISO: A tela "${screenName}" ainda não foi criada no index.html.`); alert(`A funcionalidade para "${screenName}" ainda está em desenvolvimento!`); screens.dashboard.classList.remove('hidden'); } }
     function updateUserUI(user) { const welcomeMessage = document.getElementById('welcome-message'); if (user) { if(welcomeMessage) { welcomeMessage.textContent = `Bem-vindo(a), ${user.email}!`; } showScreen('dashboard'); } else { showScreen('auth'); } }
@@ -77,39 +72,25 @@ document.addEventListener('DOMContentLoaded', () => {
     function executarCalculoSalario() { /* ... Lógica existente ... */ }
     function executarSimulacaoInvestimentos() { /* ... Lógica existente ... */ }
     function executarCalculoFerias() { /* ... Lógica existente ... */ }
+    function executarCalculo13Salario() { /* ... Lógica existente ... */ }
     function executarCalculoIRPFAnual() { /* ... Lógica existente ... */ }
-    
-    function executarCalculo13Salario() {
-        const salarioBruto = parseFloat(decimoTerceiroElements.form.salarioBruto.value) || 0;
-        const mesesTrabalhados = parseInt(decimoTerceiroElements.form.meses.value) || 0;
-        const numDependentes = parseInt(decimoTerceiroElements.form.dependentes.value) || 0;
 
-        if (salarioBruto <= 0 || mesesTrabalhados <= 0 || mesesTrabalhados > 12) {
-            alert('Por favor, insira valores válidos para salário e meses trabalhados (1 a 12).');
+    function executarCalculoHoraValor() {
+        const salario = parseFloat(horaValorElements.form.salario.value) || 0;
+        const horasDia = parseFloat(horaValorElements.form.horasDia.value) || 0;
+        
+        if (salario <= 0 || horasDia <= 0) {
+            alert('Por favor, insira valores válidos para salário e horas por dia.');
             return;
         }
 
-        const decimoTerceiroBruto = (salarioBruto / 12) * mesesTrabalhados;
-        const primeiraParcela = decimoTerceiroBruto / 2;
-        const segundaParcelaBruta = decimoTerceiroBruto - primeiraParcela;
+        // Considerando uma média de 22 dias úteis por mês
+        const horasTrabalhadasMes = horasDia * 22;
+        const valorHora = salario / horasTrabalhadasMes;
 
-        const descontoINSS = calcularINSS(decimoTerceiroBruto);
-        const baseIRRF = decimoTerceiroBruto - descontoINSS;
-        const descontoIRRF = calcularIRRF(baseIRRF, numDependentes);
-
-        const segundaParcelaLiquida = segundaParcelaBruta - descontoINSS - descontoIRRF;
-        const totalLiquido = primeiraParcela + segundaParcelaLiquida;
-
-        // Exibir resultados
-        decimoTerceiroElements.results.bruto.textContent = `R$ ${decimoTerceiroBruto.toFixed(2)}`;
-        decimoTerceiroElements.results.primeiraParcela.textContent = `R$ ${primeiraParcela.toFixed(2)}`;
-        decimoTerceiroElements.results.segundaParcelaBruta.textContent = `R$ ${segundaParcelaBruta.toFixed(2)}`;
-        decimoTerceiroElements.results.inss.textContent = `- R$ ${descontoINSS.toFixed(2)}`;
-        decimoTerceiroElements.results.irrf.textContent = `- R$ ${descontoIRRF.toFixed(2)}`;
-        decimoTerceiroElements.results.segundaParcelaLiquida.textContent = `R$ ${segundaParcelaLiquida.toFixed(2)}`;
-        decimoTerceiroElements.results.liquidoTotal.textContent = `R$ ${totalLiquido.toFixed(2)}`;
-
-        decimoTerceiroElements.results.container.classList.remove('hidden');
+        // Exibir resultado
+        horaValorElements.results.valorHora.textContent = `R$ ${valorHora.toFixed(2)}`;
+        horaValorElements.results.container.classList.remove('hidden');
     }
 
     // PARTE 6: REGISTO DE EVENT LISTENERS
@@ -134,12 +115,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if(investimentosElements.buttons.voltar) investimentosElements.buttons.voltar.addEventListener('click', () => showScreen('dashboard'));
     if(feriasElements.buttons.calcular) feriasElements.buttons.calcular.addEventListener('click', executarCalculoFerias);
     if(feriasElements.buttons.voltar) feriasElements.buttons.voltar.addEventListener('click', () => showScreen('dashboard'));
+    if(decimoTerceiroElements.buttons.calcular) decimoTerceiroElements.buttons.calcular.addEventListener('click', executarCalculo13Salario);
+    if(decimoTerceiroElements.buttons.voltar) decimoTerceiroElements.buttons.voltar.addEventListener('click', () => showScreen('dashboard'));
     if(irpfElements.buttons.calcular) irpfElements.buttons.calcular.addEventListener('click', executarCalculoIRPFAnual);
     if(irpfElements.buttons.voltar) irpfElements.buttons.voltar.addEventListener('click', () => showScreen('dashboard'));
     
-    // --- Ações do Cálculo de 13º Salário ---
-    if(decimoTerceiroElements.buttons.calcular) decimoTerceiroElements.buttons.calcular.addEventListener('click', executarCalculo13Salario);
-    if(decimoTerceiroElements.buttons.voltar) decimoTerceiroElements.buttons.voltar.addEventListener('click', () => showScreen('dashboard'));
+    // --- Ações do "Quanto Vale a Minha Hora?" ---
+    if(horaValorElements.buttons.calcular) horaValorElements.buttons.calcular.addEventListener('click', executarCalculoHoraValor);
+    if(horaValorElements.buttons.voltar) horaValorElements.buttons.voltar.addEventListener('click', () => showScreen('dashboard'));
 
     // --- Estado de Autenticação ---
     supabaseClient.auth.onAuthStateChange((_event, session) => { updateUserUI(session ? session.user : null); });

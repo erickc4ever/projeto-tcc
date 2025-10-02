@@ -181,7 +181,7 @@
                 </div>
                 <div class="result-line" id="abono-pecuniario-line">
                     <span>Abono Pecuniário (venda de 10 dias):</span>
-                    <span id="resultado-abono-pecuniario" class="font-bold">R$ 0,00</span>
+                    <span id="resultado-abono-pecuniário" class="font-bold">R$ 0,00</span>
                 </div>
                 <hr>
                  <div class="result-line">
@@ -260,6 +260,31 @@
                 <div class="result-line final-result">
                     <span>Total Líquido do 13º:</span>
                     <span id="resultado-13-liquido-total" class="font-bold success-text">R$ 0,00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TELA "QUANTO VALE A MINHA HORA?" -->
+    <div id="hora-valor-screen" class="screen hidden">
+        <div class="calculator-card">
+            <div class="card-header">
+                <h1>Quanto Vale a Minha Hora?</h1>
+                <p>Descubra o valor real do seu tempo de trabalho.</p>
+            </div>
+            <div class="input-group">
+                <label for="hora-valor-salario">Salário Mensal (Líquido ou Bruto)</label>
+                <input type="number" id="hora-valor-salario" class="input-field" placeholder="Ex: 3500.00">
+                <label for="hora-valor-horas-dia">Horas Trabalhadas por Dia</label>
+                <input type="number" id="hora-valor-horas-dia" class="input-field" placeholder="Ex: 8" value="8">
+            </div>
+            <button id="calcular-hora-valor-btn" class="btn btn-primary">Calcular Valor da Hora</button>
+            <button id="back-to-dashboard-from-hora-valor" class="btn btn-secondary">Voltar para a Dashboard</button>
+            
+            <div id="hora-valor-results-section" class="results-section hidden">
+                <div class="result-line final-result">
+                    <span>O valor da sua hora é:</span>
+                    <span id="resultado-hora-valor" class="font-bold success-text">R$ 0,00</span>
                 </div>
             </div>
         </div>
