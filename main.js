@@ -1,9 +1,9 @@
 /**
  * ==================================================================================
- * main.js - Cérebro da Aplicação "änalitks" (Etapa 2: Primeiro Gráfico)
+ * main.js - Cérebro da Aplicação "änalitks" (Etapa 3: Segundo Gráfico)
  * ----------------------------------------------------------------------------------
- * Este ficheiro agora inclui a lógica para renderizar o primeiro gráfico
- * (composição do salário) na nova tela de "Visão Geral".
+ * Este ficheiro agora inclui a lógica para renderizar o segundo gráfico
+ * (projeção de investimentos) na tela de "Visão Geral".
  * CÓDIGO COMPLETO E NÃO SIMPLIFICADO.
  * ==================================================================================
  */
@@ -50,7 +50,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // PARTE 2: DADOS E CONTEÚDO
     // ----------------------------------------------------------------------------------
     let userProfile = null;
-    let salaryChartInstance = null; // Variável para guardar a instância do gráfico
+    let salaryChartInstance = null;
+    let investmentChartInstance = null; // Variável para o novo gráfico
     const dashboardQuotes = [ "Um objetivo sem um plano é apenas um desejo. Use as nossas ferramentas para transformar os seus desejos em planos.", "A melhor altura para plantar uma árvore foi há 20 anos. A segunda melhor altura é agora. O mesmo vale para os seus investimentos.", "Cuidado com as pequenas despesas; um pequeno furo pode afundar um grande navio.", "O seu futuro financeiro é criado pelo que você faz hoje, não amanhã. Cada cálculo é um passo na direção certa.", "Saber o valor do seu tempo é o primeiro passo para garantir que ele seja bem recompensado." ];
 
     // PARTE 3: FUNÇÕES DE GESTÃO DE TELA E UI
@@ -74,60 +75,58 @@ document.addEventListener('DOMContentLoaded', () => {
     function calcularImpostoAnual(baseDeCalculo) { const faixas = [ { limite: 24511.92, aliquota: 0,     deducao: 0 }, { limite: 33919.80, aliquota: 0.075, deducao: 1838.39 }, { limite: 45012.60, aliquota: 0.15,  deducao: 4382.38 }, { limite: 55976.16, aliquota: 0.225, deducao: 7758.32 }, { limite: Infinity, aliquota: 0.275, deducao: 10557.13 } ]; for (const faixa of faixas) { if (baseDeCalculo <= faixa.limite) { const imposto = (baseDeCalculo * faixa.aliquota) - faixa.deducao; return imposto > 0 ? imposto : 0; } } return 0; }
 
     function renderSalaryChart() {
-        if (salaryChartInstance) {
-            salaryChartInstance.destroy(); // Destrói o gráfico antigo para evitar sobreposição
-        }
-
-        if (!userProfile || !userProfile.salario_bruto) {
-            reportsElements.notice.classList.remove('hidden');
-            reportsElements.content.classList.add('hidden');
-            return;
-        }
-
-        reportsElements.notice.classList.add('hidden');
-        reportsElements.content.classList.remove('hidden');
-
+        if (salaryChartInstance) { salaryChartInstance.destroy(); }
+        if (!userProfile || !userProfile.salario_bruto) { reportsElements.notice.classList.remove('hidden'); reportsElements.content.classList.add('hidden'); return; }
+        reportsElements.notice.classList.add('hidden'); reportsElements.content.classList.remove('hidden');
         const salarioBruto = parseFloat(userProfile.salario_bruto);
         const dependentes = userProfile.dependentes || 0;
-
         const descontoINSS = calcularINSS(salarioBruto);
         const baseCalculoIRRF = salarioBruto - descontoINSS;
         const descontoIRRF = calcularIRRF(baseCalculoIRRF, dependentes);
         const salarioLiquido = salarioBruto - descontoINSS - descontoIRRF;
-
         const ctx = reportsElements.salaryChart.getContext('2d');
         salaryChartInstance = new Chart(ctx, {
             type: 'doughnut',
             data: {
                 labels: ['Salário Líquido', 'Desconto INSS', 'Desconto IRRF'],
-                datasets: [{
-                    data: [salarioLiquido, descontoINSS, descontoIRRF],
-                    backgroundColor: [
-                        'rgba(5, 150, 105, 0.7)', // Verde para o líquido
-                        'rgba(245, 158, 11, 0.7)', // Amarelo para INSS
-                        'rgba(239, 68, 68, 0.7)'   // Vermelho para IRRF
-                    ],
-                    borderColor: [
-                        'rgba(5, 150, 105, 1)',
-                        'rgba(245, 158, 11, 1)',
-                        'rgba(239, 68, 68, 1)'
-                    ],
-                    borderWidth: 1
-                }]
+                datasets: [{ data: [salarioLiquido, descontoINSS, descontoIRRF], backgroundColor: ['rgba(5, 150, 105, 0.7)', 'rgba(245, 158, 11, 0.7)', 'rgba(239, 68, 68, 0.7)'], borderColor: ['rgba(5, 150, 105, 1)', 'rgba(245, 158, 11, 1)', 'rgba(239, 68, 68, 1)'], borderWidth: 1 }]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    title: {
-                        display: false,
-                        text: 'Composição do Salário Bruto'
-                    }
-                }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', }, title: { display: false, text: 'Composição do Salário Bruto' } } }
+        });
+    }
+
+    function renderInvestmentChart() {
+        if (investmentChartInstance) { investmentChartInstance.destroy(); }
+        if (!userProfile || !userProfile.salario_bruto) { return; }
+
+        const salarioBruto = parseFloat(userProfile.salario_bruto);
+        const aporteMensal = salarioBruto * 0.10; // 10% do salário
+        const taxaJurosAnual = 0.08; // 8% ao ano como padrão
+        const periodoAnos = 5;
+
+        const taxaMensal = taxaJurosAnual / 12;
+        const periodoMeses = periodoAnos * 12;
+
+        let valorAcumulado = 0;
+        const dataPoints = [];
+        const labels = [];
+
+        for (let i = 1; i <= periodoMeses; i++) {
+            valorAcumulado = (valorAcumulado + aporteMensal) * (1 + taxaMensal);
+            if (i % 12 === 0) { // Adiciona um ponto de dados a cada ano
+                labels.push(`Ano ${i / 12}`);
+                dataPoints.push(valorAcumulado.toFixed(2));
             }
+        }
+
+        const ctx = reportsElements.investmentChart.getContext('2d');
+        investmentChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{ label: 'Patrimônio Acumulado', data: dataPoints, backgroundColor: 'rgba(10, 132, 255, 0.2)', borderColor: 'rgba(10, 132, 255, 1)', borderWidth: 2, tension: 0.4, fill: true }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false }, title: { display: false, text: 'Projeção de Investimentos (10% do salário)' } } }
         });
     }
 
