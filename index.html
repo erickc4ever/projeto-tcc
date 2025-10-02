@@ -145,6 +145,70 @@
         </div>
     </div>
 
+    <!-- TELA DE CÁLCULO DE FÉRIAS -->
+    <div id="ferias-screen" class="screen hidden">
+        <div class="calculator-card">
+            <div class="card-header">
+                <h1>Cálculo de Férias</h1>
+                <p>Planeie o seu descanso e saiba quanto irá receber.</p>
+            </div>
+            <div class="input-group">
+                <label for="ferias-salario-bruto">Salário Bruto Mensal</label>
+                <input type="number" id="ferias-salario-bruto" class="input-field" placeholder="Ex: 3500.00">
+                <label for="ferias-dias">Dias de Férias a Tirar</label>
+                <input type="number" id="ferias-dias" class="input-field" placeholder="Ex: 30" value="30">
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="ferias-vender-dias">
+                    <label for="ferias-vender-dias">Vender 10 dias de férias (abono pecuniário)?</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="ferias-adiantar-13">
+                    <label for="ferias-adiantar-13">Adiantar a 1ª parcela do 13º salário?</label>
+                </div>
+            </div>
+            <button id="calcular-ferias-btn" class="btn btn-primary">Calcular Férias</button>
+            <button id="back-to-dashboard-from-ferias" class="btn btn-secondary">Voltar para a Dashboard</button>
+            
+            <div id="ferias-results-section" class="results-section hidden">
+                <div class="result-line">
+                    <span>Férias Brutas:</span>
+                    <span id="resultado-ferias-brutas" class="font-bold">R$ 0,00</span>
+                </div>
+                <div class="result-line">
+                    <span>Terço Constitucional (1/3):</span>
+                    <span id="resultado-terco-constitucional" class="font-bold">R$ 0,00</span>
+                </div>
+                <div class="result-line" id="abono-pecuniario-line">
+                    <span>Abono Pecuniário (venda de 10 dias):</span>
+                    <span id="resultado-abono-pecuniario" class="font-bold">R$ 0,00</span>
+                </div>
+                <hr>
+                 <div class="result-line">
+                    <span>Total Bruto (Férias + 1/3):</span>
+                    <span id="resultado-total-bruto-ferias" class="font-bold">R$ 0,00</span>
+                </div>
+                <div class="result-line">
+                    <span>Desconto INSS sobre Férias:</span>
+                    <span id="resultado-inss-ferias" class="font-bold">- R$ 0,00</span>
+                </div>
+                <div class="result-line">
+                    <span>Desconto IRRF sobre Férias:</span>
+                    <span id="resultado-irrf-ferias" class="font-bold">- R$ 0,00</span>
+                </div>
+                <div class="result-line" id="adiantamento-13-line">
+                    <span>Adiantamento 13º Salário:</span>
+                    <span id="resultado-adiantamento-13" class="font-bold">R$ 0,00</span>
+                </div>
+                <hr>
+                <div class="result-line final-result">
+                    <span>Líquido a Receber:</span>
+                    <span id="resultado-liquido-ferias" class="font-bold success-text">R$ 0,00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- TELA DO SIMULADOR DE IRPF ANUAL -->
     <div id="irpf-screen" class="screen hidden">
         <div class="calculator-card">
