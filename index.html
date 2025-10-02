@@ -26,22 +26,16 @@
                 <h1>Bem-vindo(a)</h1>
                 <p>Entre para aceder à sua suíte financeira.</p>
             </div>
-
-            <!-- Opções Iniciais -->
             <div id="auth-choices" class="auth-choices">
                 <button id="show-signup-btn" class="btn btn-primary">Sou novo aqui</button>
                 <button id="show-login-btn" class="btn btn-secondary">Já tenho cadastro</button>
             </div>
-
-            <!-- Formulário de Login -->
             <form id="login-form" class="auth-form hidden">
                 <input type="email" id="login-email" class="input-field" placeholder="Seu e-mail" required>
                 <input type="password" id="login-password" class="input-field" placeholder="Sua senha" required>
                 <button type="submit" class="btn btn-primary">Entrar</button>
                 <p>Não tem uma conta? <a href="#" id="show-signup-link">Registe-se</a></p>
             </form>
-
-            <!-- Formulário de Registo -->
             <form id="signup-form" class="auth-form hidden">
                 <input type="email" id="signup-email" class="input-field" placeholder="Seu melhor e-mail" required>
                 <input type="password" id="signup-password" class="input-field" placeholder="Crie uma senha forte" required>
@@ -58,7 +52,6 @@
                 <h1 id="welcome-message">Bem-vindo(a)!</h1>
                 <p>Selecione uma ferramenta para começar.</p>
             </div>
-            
             <div class="dashboard-grid">
                 <button id="goto-salario-btn" class="btn btn-secondary">Cálculo de Salário</button>
                 <button id="goto-investimentos-btn" class="btn btn-secondary">Simulador de Investimentos</button>
@@ -67,8 +60,58 @@
                 <button id="goto-hora-valor-btn" class="btn btn-secondary">Quanto vale a minha hora?</button>
                 <button id="goto-irpf-btn" class="btn btn-primary">Simulador Anual de IRPF</button>
             </div>
-
             <button id="logout-btn" class="btn btn-primary">Sair</button>
+        </div>
+    </div>
+    
+    <!-- TELA DE CÁLCULO DE SALÁRIO -->
+    <div id="salario-screen" class="screen hidden">
+        <div class="calculator-card">
+            <div class="card-header">
+                <h1>Cálculo de Salário Completo</h1>
+                <p>Insira os valores para ver o detalhamento.</p>
+            </div>
+
+            <div class="input-group">
+                <label for="salario-bruto">Salário Bruto Mensal</label>
+                <input type="number" id="salario-bruto" class="input-field" placeholder="Ex: 3500.00">
+                
+                <label for="salario-dependentes">Número de Dependentes</label>
+                <input type="number" id="salario-dependentes" class="input-field" placeholder="Ex: 1" value="0">
+            </div>
+
+            <button id="calcular-salario-btn" class="btn btn-primary">Calcular Salário</button>
+            <button id="back-to-dashboard-from-salario" class="btn btn-secondary">Voltar para a Dashboard</button>
+
+            <!-- Seção de Resultados do Salário -->
+            <div id="salario-results-section" class="results-section hidden">
+                <div class="result-line">
+                    <span>Salário Bruto:</span>
+                    <span id="resultado-salario-bruto" class="font-bold">R$ 0,00</span>
+                </div>
+                <hr>
+                <div class="result-line">
+                    <span>Desconto INSS:</span>
+                    <span id="resultado-inss" class="font-bold">- R$ 0,00</span>
+                </div>
+                <p class="explanation-text" id="explicacao-inss">Cálculo detalhado do INSS.</p>
+                
+                <div class="result-line">
+                    <span>Base de Cálculo IRRF:</span>
+                    <span id="resultado-base-irrf" class="font-bold">R$ 0,00</span>
+                </div>
+
+                <div class="result-line">
+                    <span>Desconto IRRF:</span>
+                    <span id="resultado-irrf" class="font-bold">- R$ 0,00</span>
+                </div>
+                <p class="explanation-text" id="explicacao-irrf">Cálculo detalhado do IRRF.</p>
+                <hr>
+                <div class="result-line final-result">
+                    <span>Salário Líquido:</span>
+                    <span id="resultado-salario-liquido" class="font-bold success-text">R$ 0,00</span>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -79,25 +122,18 @@
                 <h1>Simulador de IRPF Anual</h1>
                 <p>Preencha os campos para simular a sua declaração.</p>
             </div>
-
             <div class="input-group">
                 <label for="rendimentos-anuais">Total de Rendimentos Anuais (salário, etc.)</label>
                 <input type="number" id="rendimentos-anuais" class="input-field" placeholder="Ex: 50000.00">
-                
                 <label for="despesas-saude">Total de Despesas com Saúde</label>
                 <input type="number" id="despesas-saude" class="input-field" placeholder="Ex: 3000.00">
-
                 <label for="despesas-educacao">Total de Despesas com Educação</label>
                 <input type="number" id="despesas-educacao" class="input-field" placeholder="Ex: 5000.00">
-                
                 <label for="dependentes">Número de Dependentes</label>
                 <input type="number" id="dependentes" class="input-field" placeholder="Ex: 2">
             </div>
-
             <button id="calcular-irpf-btn" class="btn btn-primary">Calcular IRPF Anual</button>
             <button id="back-to-dashboard-from-irpf" class="btn btn-secondary">Voltar para a Dashboard</button>
-
-            <!-- Seção de Resultados do IRPF -->
             <div id="irpf-results-section" class="results-section hidden">
                 <div class="result-line">
                     <span>Resultado (Declaração Completa):</span>
