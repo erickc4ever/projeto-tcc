@@ -1,12 +1,12 @@
 /**
  * ==================================================================================
- * style.css - Estilos Visuais e Temas da "änalitks" (Versão "Página Inteira")
+ * style.css - Estilos Visuais e Temas da "änalitks" (Versão com Base para Gráficos)
  * ----------------------------------------------------------------------------------
  * Responsabilidades:
  * 1. Definir a paleta de cores e a tipografia.
  * 2. Implementar os temas claro e escuro.
  * 3. Estilizar os componentes com o novo layout amplo e minimalista.
- * 4. Manter o estilo de "card" apenas para a autenticação e o modal.
+ * 4. Adicionar estilos de base para a futura tela de relatórios.
  * ==================================================================================
  */
 
@@ -249,5 +249,31 @@ hr {
 }
 .modal-overlay li {
     margin-bottom: 0.5rem;
+}
+
+/* --- ESTILOS DA TELA DE RELATÓRIOS (NOVO) --- */
+.reports-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    width: 100%;
+}
+
+.chart-container {
+    background-color: var(--cor-card);
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: var(--sombra-card);
+    border: 1px solid var(--cor-borda);
+    /* Garante que o gráfico se ajuste ao contentor */
+    position: relative; 
+    height: 400px;
+}
+
+/* Em ecrãs mais pequenos, os gráficos ficam um por baixo do outro */
+@media (max-width: 768px) {
+    .reports-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
