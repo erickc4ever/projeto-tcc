@@ -1,9 +1,9 @@
 /**
  * ==================================================================================
- * main.js - Cérebro da Aplicação "änalitks" (Versão com Cálculos Revigorados)
+ * main.js - Cérebro da "änalitks" (Etapa 0 - Módulo PJ: Bifurcação)
  * ----------------------------------------------------------------------------------
- * Este ficheiro inclui a lógica final para a tela de "Visão Geral" e teve
- * seus principais cálculos refinados para maior precisão e clareza.
+ * Este ficheiro foi modificado para incluir a nova tela de escolha de perfil
+ * (CLT ou PJ) que aparece após o login.
  * CÓDIGO COMPLETO E NÃO SIMPLIFICADO.
  * ==================================================================================
  */
@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const screens = {
         auth: document.getElementById('auth-screen'),
+        welcome: document.getElementById('welcome-screen'), // NOVA TELA
         dashboard: document.getElementById('dashboard-screen'),
         salario: document.getElementById('salario-screen'),
         investimentos: document.getElementById('investimentos-screen'),
@@ -35,6 +36,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Seletores ---
     const authForms = { login: document.getElementById('login-form'), signup: document.getElementById('signup-form'), choices: document.getElementById('auth-choices') };
     const authButtons = { showLogin: document.getElementById('show-login-btn'), showSignup: document.getElementById('show-signup-btn'), showLoginLink: document.getElementById('show-login-link'), showSignupLink: document.getElementById('show-signup-link'), logout: document.getElementById('logout-btn') };
+    const welcomeScreenElements = { // NOVOS SELETORES
+        welcomeMessage: document.getElementById('welcome-message-choice'),
+        buttons: {
+            clt: document.getElementById('goto-clt-dashboard-btn'),
+            pj: document.getElementById('goto-pj-dashboard-btn')
+        }
+    };
     const dashboardButtons = { salario: document.getElementById('goto-salario-btn'), investimentos: document.getElementById('goto-investimentos-btn'), ferias: document.getElementById('goto-ferias-btn'), decimoTerceiro: document.getElementById('goto-decimo-terceiro-btn'), horaValor: document.getElementById('goto-hora-valor-btn'), irpf: document.getElementById('goto-irpf-btn'), showAbout: document.getElementById('show-about-btn'), profile: document.getElementById('goto-profile-btn'), reports: document.getElementById('goto-reports-btn') };
     const dashboardElements = { quote: document.getElementById('dashboard-quote') };
     const modalElements = { overlay: document.getElementById('about-modal-overlay'), closeBtn: document.getElementById('close-about-btn') };
@@ -57,7 +65,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // PARTE 3: FUNÇÕES DE GESTÃO DE TELA E UI
     // ----------------------------------------------------------------------------------
     function showScreen(screenName) { Object.values(screens).forEach(screen => { if (screen) screen.classList.add('hidden'); }); if (screens[screenName]) { screens[screenName].classList.remove('hidden'); console.log(`A exibir a tela: ${screenName}`); } else { console.warn(`AVISO: A tela "${screenName}" ainda não foi criada no index.html.`); alert(`A funcionalidade para "${screenName}" ainda está em desenvolvimento!`); screens.dashboard.classList.remove('hidden'); } }
-    async function updateUserUI(user) { const welcomeMessage = document.getElementById('welcome-message'); if (user) { if(welcomeMessage) { welcomeMessage.textContent = `Bem-vindo(a), ${user.email}!`; } const randomIndex = Math.floor(Math.random() * dashboardQuotes.length); dashboardElements.quote.textContent = dashboardQuotes[randomIndex]; await fetchUserProfile(user); showScreen('dashboard'); } else { userProfile = null; showScreen('auth'); } }
+    
+    // ATUALIZADO: Leva para a tela de escolha após o login
+    async function updateUserUI(user) {
+        if (user) {
+            welcomeScreenElements.welcomeMessage.textContent = `Olá, ${user.email}!`;
+            await fetchUserProfile(user);
+            showScreen('welcome');
+        } else {
+            userProfile = null;
+            showScreen('auth');
+        }
+    }
 
     // PARTE 4: FUNÇÕES DE AUTENTICAÇÃO E PERFIL
     // ----------------------------------------------------------------------------------
@@ -70,88 +89,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // PARTE 5: FUNÇÕES DE CÁLCULO E GRÁFICOS
     // ----------------------------------------------------------------------------------
-    // Tabelas de impostos baseadas nos valores de 2024.
     function calcularINSS(baseDeCalculo) { const faixas = [ { teto: 1412.00, aliquota: 0.075, parcela: 0 }, { teto: 2666.68, aliquota: 0.09,  parcela: 21.18 }, { teto: 4000.03, aliquota: 0.12,  parcela: 101.18 }, { teto: 7786.02, aliquota: 0.14,  parcela: 181.18 } ]; if (baseDeCalculo > faixas[3].teto) { return (faixas[3].teto * faixas[3].aliquota) - faixas[3].parcela; } for (const faixa of faixas) { if (baseDeCalculo <= faixa.teto) { return (baseDeCalculo * faixa.aliquota) - faixa.parcela; } } return 0; }
     function calcularIRRF(baseDeCalculo, numDependentes = 0) { const DEDUCAO_POR_DEPENDENTE = 189.59; const baseReal = baseDeCalculo - (numDependentes * DEDUCAO_POR_DEPENDENTE); const faixas = [ { teto: 2259.20, aliquota: 0,     parcela: 0 }, { teto: 2826.65, aliquota: 0.075, parcela: 169.44 }, { teto: 3751.05, aliquota: 0.15,  parcela: 381.44 }, { teto: 4664.68, aliquota: 0.225, parcela: 662.77 }, { teto: Infinity,aliquota: 0.275, parcela: 896.00 } ]; for (const faixa of faixas) { if (baseReal <= faixa.teto) { const imposto = (baseReal * faixa.aliquota) - faixa.parcela; return Math.max(0, imposto); } } return 0; }
     function calcularImpostoAnual(baseDeCalculo) { const faixas = [ { limite: 24511.92, aliquota: 0,     deducao: 0 }, { limite: 33919.80, aliquota: 0.075, deducao: 1838.39 }, { limite: 45012.60, aliquota: 0.15,  deducao: 4382.38 }, { limite: 55976.16, aliquota: 0.225, deducao: 7758.32 }, { limite: Infinity, aliquota: 0.275, deducao: 10557.13 } ]; for (const faixa of faixas) { if (baseDeCalculo <= faixa.limite) { const imposto = (baseDeCalculo * faixa.aliquota) - faixa.deducao; return imposto > 0 ? imposto : 0; } } return 0; }
-
-    function renderSalaryChart() {
-        if (salaryChartInstance) { salaryChartInstance.destroy(); }
-        if (!userProfile || !userProfile.salario_bruto) { reportsElements.notice.classList.remove('hidden'); reportsElements.content.classList.add('hidden'); return; }
-        reportsElements.notice.classList.add('hidden'); reportsElements.content.classList.remove('hidden');
-        const salarioBruto = parseFloat(userProfile.salario_bruto);
-        const dependentes = userProfile.dependentes || 0;
-        const descontoINSS = calcularINSS(salarioBruto);
-        const baseCalculoIRRF = salarioBruto - descontoINSS;
-        const descontoIRRF = calcularIRRF(baseCalculoIRRF, dependentes);
-        const salarioLiquido = salarioBruto - descontoINSS - descontoIRRF;
-        const ctx = reportsElements.salaryChart.getContext('2d');
-        salaryChartInstance = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Salário Líquido', 'Desconto INSS', 'Desconto IRRF'],
-                datasets: [{ data: [salarioLiquido, descontoINSS, descontoIRRF], backgroundColor: ['rgba(5, 150, 105, 0.7)', 'rgba(245, 158, 11, 0.7)', 'rgba(239, 68, 68, 0.7)'], borderColor: ['rgba(5, 150, 105, 1)', 'rgba(245, 158, 11, 1)', 'rgba(239, 68, 68, 1)'], borderWidth: 1 }]
-            },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', }, title: { display: false, text: 'Composição do Salário Bruto' } } }
-        });
-    }
-
-    function renderInvestmentChart() {
-        if (investmentChartInstance) { investmentChartInstance.destroy(); }
-        if (!userProfile || !userProfile.salario_bruto) { return; }
-        const salarioBruto = parseFloat(userProfile.salario_bruto);
-        const aporteMensal = salarioBruto * 0.10;
-        const taxaJurosAnual = 0.08;
-        const periodoAnos = 5;
-        const taxaMensal = taxaJurosAnual / 12;
-        const periodoMeses = periodoAnos * 12;
-        let valorAcumulado = 0;
-        const dataPoints = [];
-        const labels = [];
-        for (let i = 1; i <= periodoMeses; i++) {
-            valorAcumulado = (valorAcumulado + aporteMensal) * (1 + taxaMensal);
-            if (i % 12 === 0) { labels.push(`Ano ${i / 12}`); dataPoints.push(valorAcumulado.toFixed(2)); }
-        }
-        const ctx = reportsElements.investmentChart.getContext('2d');
-        investmentChartInstance = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{ label: 'Patrimônio Acumulado', data: dataPoints, backgroundColor: 'rgba(10, 132, 255, 0.2)', borderColor: 'rgba(10, 132, 255, 1)', borderWidth: 2, tension: 0.4, fill: true }]
-            },
-            options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false }, title: { display: false, text: 'Projeção de Investimentos (10% do salário)' } } }
-        });
-    }
-
-    // REVIGORADO: A função agora calcula os valores com base no salário líquido.
-    function renderSummaryCards() {
-        if (!userProfile || !userProfile.salario_bruto) { return; }
-        const { salario_bruto, dependentes, horas_dia, dias_semana } = userProfile;
-
-        // 1. Calcular Salário Líquido para usar como base
-        const descontoINSS = calcularINSS(salario_bruto);
-        const baseCalculoIRRF = salario_bruto - descontoINSS;
-        const descontoIRRF = calcularIRRF(baseCalculoIRRF, dependentes || 0);
-        const salarioLiquido = salario_bruto - descontoINSS - descontoIRRF;
-
-        // 2. Calcular Valor do Dia de Trabalho com base no Líquido
-        if (horas_dia && dias_semana) {
-            const horasTrabalhadasMes = horas_dia * dias_semana * 4.5;
-            const valorHoraLiquido = salarioLiquido / horasTrabalhadasMes;
-            const valorDiaLiquido = valorHoraLiquido * horas_dia;
-            reportsElements.summary.dailyValue.textContent = `R$ ${valorDiaLiquido.toFixed(2)}`;
-        } else {
-            reportsElements.summary.dailyValue.textContent = 'N/A';
-        }
-
-        // 3. Calcular 13º Salário Líquido Estimado
-        const decimoTerceiroBruto = salario_bruto; // Estimativa para ano completo
-        const inssSobre13 = calcularINSS(decimoTerceiroBruto);
-        const baseIrrf13 = decimoTerceiroBruto - inssSobre13;
-        const irrfSobre13 = calcularIRRF(baseIrrf13, dependentes || 0);
-        const decimoTerceiroLiquido = decimoTerceiroBruto - inssSobre13 - irrfSobre13;
-        reportsElements.summary.thirteenthValue.textContent = `~ R$ ${decimoTerceiroLiquido.toFixed(2)}`;
-    }
+    function renderSalaryChart() { if (salaryChartInstance) { salaryChartInstance.destroy(); } if (!userProfile || !userProfile.salario_bruto) { reportsElements.notice.classList.remove('hidden'); reportsElements.content.classList.add('hidden'); return; } reportsElements.notice.classList.add('hidden'); reportsElements.content.classList.remove('hidden'); const salarioBruto = parseFloat(userProfile.salario_bruto); const dependentes = userProfile.dependentes || 0; const descontoINSS = calcularINSS(salarioBruto); const baseCalculoIRRF = salarioBruto - descontoINSS; const descontoIRRF = calcularIRRF(baseCalculoIRRF, dependentes); const salarioLiquido = salarioBruto - descontoINSS - descontoIRRF; const ctx = reportsElements.salaryChart.getContext('2d'); salaryChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: ['Salário Líquido', 'Desconto INSS', 'Desconto IRRF'], datasets: [{ data: [salarioLiquido, descontoINSS, descontoIRRF], backgroundColor: ['rgba(5, 150, 105, 0.7)', 'rgba(245, 158, 11, 0.7)', 'rgba(239, 68, 68, 0.7)'], borderColor: ['rgba(5, 150, 105, 1)', 'rgba(245, 158, 11, 1)', 'rgba(239, 68, 68, 1)'], borderWidth: 1 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', }, title: { display: false, text: 'Composição do Salário Bruto' } } } }); }
+    function renderInvestmentChart() { if (investmentChartInstance) { investmentChartInstance.destroy(); } if (!userProfile || !userProfile.salario_bruto) { return; } const salarioBruto = parseFloat(userProfile.salario_bruto); const aporteMensal = salarioBruto * 0.10; const taxaJurosAnual = 0.08; const periodoAnos = 5; const taxaMensal = taxaJurosAnual / 12; const periodoMeses = periodoAnos * 12; let valorAcumulado = 0; const dataPoints = []; const labels = []; for (let i = 1; i <= periodoMeses; i++) { valorAcumulado = (valorAcumulado + aporteMensal) * (1 + taxaMensal); if (i % 12 === 0) { labels.push(`Ano ${i / 12}`); dataPoints.push(valorAcumulado.toFixed(2)); } } const ctx = reportsElements.investmentChart.getContext('2d'); investmentChartInstance = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: [{ label: 'Patrimônio Acumulado', data: dataPoints, backgroundColor: 'rgba(10, 132, 255, 0.2)', borderColor: 'rgba(10, 132, 255, 1)', borderWidth: 2, tension: 0.4, fill: true }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false }, title: { display: false, text: 'Projeção de Investimentos (10% do salário)' } } } }); }
+    function renderSummaryCards() { if (!userProfile || !userProfile.salario_bruto) { return; } const { salario_bruto, dependentes, horas_dia, dias_semana } = userProfile; const descontoINSS = calcularINSS(salario_bruto); const baseCalculoIRRF = salario_bruto - descontoINSS; const descontoIRRF = calcularIRRF(baseCalculoIRRF, dependentes || 0); const salarioLiquido = salario_bruto - descontoINSS - descontoIRRF; if (horas_dia && dias_semana) { const horasTrabalhadasMes = horas_dia * dias_semana * 4.5; const valorHoraLiquido = salarioLiquido / horasTrabalhadasMes; const valorDiaLiquido = valorHoraLiquido * horas_dia; reportsElements.summary.dailyValue.textContent = `R$ ${valorDiaLiquido.toFixed(2)}`; } else { reportsElements.summary.dailyValue.textContent = 'N/A'; } const decimoTerceiroBruto = salario_bruto; const inssSobre13 = calcularINSS(decimoTerceiroBruto); const baseIrrf13 = decimoTerceiroBruto - inssSobre13; const irrfSobre13 = calcularIRRF(baseIrrf13, dependentes || 0); const decimoTerceiroLiquido = decimoTerceiroBruto - inssSobre13 - irrfSobre13; reportsElements.summary.thirteenthValue.textContent = `~ R$ ${decimoTerceiroLiquido.toFixed(2)}`; }
 
     // PARTE 6: LÓGICA DAS FERRAMENTAS
     // ----------------------------------------------------------------------------------
@@ -159,7 +102,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function executarSimulacaoInvestimentos() { const valorInicial = parseFloat(investimentosElements.form.valorInicial.value) || 0; const aporteMensal = parseFloat(investimentosElements.form.aporteMensal.value) || 0; const taxaJurosAnual = parseFloat(investimentosElements.form.taxaJurosAnual.value) || 0; const periodoAnos = parseInt(investimentosElements.form.periodoAnos.value) || 0; if (taxaJurosAnual <= 0 || periodoAnos <= 0) { alert('Por favor, insira uma taxa de juros e um período em anos válidos.'); return; } const taxaMensal = (taxaJurosAnual / 100) / 12; const periodoMeses = periodoAnos * 12; let valorAcumulado = valorInicial; for (let i = 0; i < periodoMeses; i++) { valorAcumulado *= (1 + taxaMensal); valorAcumulado += aporteMensal; } const totalInvestido = valorInicial + (aporteMensal * periodoMeses); const totalJuros = valorAcumulado - totalInvestido; investimentosElements.results.valorFinal.textContent = `R$ ${valorAcumulado.toFixed(2)}`; investimentosElements.results.totalInvestido.textContent = `R$ ${totalInvestido.toFixed(2)}`; investimentosElements.results.totalJuros.textContent = `R$ ${totalJuros.toFixed(2)}`; investimentosElements.results.container.classList.remove('hidden'); }
     function executarCalculoFerias() { const salarioBruto = parseFloat(feriasElements.form.salarioBruto.value) || 0; const diasFerias = parseInt(feriasElements.form.dias.value) || 0; const venderDias = feriasElements.form.venderDias.checked; const adiantar13 = feriasElements.form.adiantar13.checked; if (salarioBruto <= 0 || diasFerias <= 0) { alert('Por favor, insira valores válidos para salário e dias de férias.'); return; } const feriasBrutas = (salarioBruto / 30) * diasFerias; const tercoConstitucional = feriasBrutas / 3; const totalBrutoFerias = feriasBrutas + tercoConstitucional; const abonoPecuniario = venderDias ? (salarioBruto / 30) * 10 : 0; const adiantamento13 = adiantar13 ? salarioBruto / 2 : 0; const descontoINSS = calcularINSS(totalBrutoFerias); const baseIRRF = totalBrutoFerias - descontoINSS; const descontoIRRF = calcularIRRF(baseIRRF); const liquidoReceber = (totalBrutoFerias - descontoINSS - descontoIRRF) + abonoPecuniario + adiantamento13; feriasElements.results.feriasBrutas.textContent = `R$ ${feriasBrutas.toFixed(2)}`; feriasElements.results.tercoConstitucional.textContent = `R$ ${tercoConstitucional.toFixed(2)}`; feriasElements.results.totalBruto.textContent = `R$ ${totalBrutoFerias.toFixed(2)}`; feriasElements.results.inss.textContent = `- R$ ${descontoINSS.toFixed(2)}`; feriasElements.results.irrf.textContent = `- R$ ${descontoIRRF.toFixed(2)}`; feriasElements.results.liquido.textContent = `R$ ${liquidoReceber.toFixed(2)}`; if (venderDias) { feriasElements.results.abonoPecuniario.textContent = `R$ ${abonoPecuniario.toFixed(2)}`; feriasElements.results.abonoLine.classList.remove('hidden'); } else { feriasElements.results.abonoLine.classList.add('hidden'); } if (adiantar13) { feriasElements.results.adiantamento13.textContent = `R$ ${adiantamento13.toFixed(2)}`; feriasElements.results.adiantamento13Line.classList.remove('hidden'); } else { feriasElements.results.adiantamento13Line.classList.add('hidden'); } feriasElements.results.container.classList.remove('hidden'); }
     function executarCalculo13Salario() { const salarioBruto = parseFloat(decimoTerceiroElements.form.salarioBruto.value) || 0; const mesesTrabalhados = parseInt(decimoTerceiroElements.form.meses.value) || 0; const numDependentes = parseInt(decimoTerceiroElements.form.dependentes.value) || 0; if (salarioBruto <= 0 || mesesTrabalhados <= 0 || mesesTrabalhados > 12) { alert('Por favor, insira valores válidos para salário e meses trabalhados (1 a 12).'); return; } const decimoTerceiroBruto = (salarioBruto / 12) * mesesTrabalhados; const primeiraParcela = decimoTerceiroBruto / 2; const segundaParcelaBruta = decimoTerceiroBruto - primeiraParcela; const descontoINSS = calcularINSS(decimoTerceiroBruto); const baseIRRF = decimoTerceiroBruto - descontoINSS; const descontoIRRF = calcularIRRF(baseIRRF, numDependentes); const segundaParcelaLiquida = segundaParcelaBruta - descontoINSS - descontoIRRF; const totalLiquido = primeiraParcela + segundaParcelaLiquida; decimoTerceiroElements.results.bruto.textContent = `R$ ${decimoTerceiroBruto.toFixed(2)}`; decimoTerceiroElements.results.primeiraParcela.textContent = `R$ ${primeiraParcela.toFixed(2)}`; decimoTerceiroElements.results.segundaParcelaBruta.textContent = `R$ ${segundaParcelaBruta.toFixed(2)}`; decimoTerceiroElements.results.inss.textContent = `- R$ ${descontoINSS.toFixed(2)}`; decimoTerceiroElements.results.irrf.textContent = `- R$ ${descontoIRRF.toFixed(2)}`; decimoTerceiroElements.results.segundaParcelaLiquida.textContent = `R$ ${segundaParcelaLiquida.toFixed(2)}`; decimoTerceiroElements.results.liquidoTotal.textContent = `R$ ${totalLiquido.toFixed(2)}`; decimoTerceiroElements.results.container.classList.remove('hidden'); }
-    // REVIGORADO: A explicação agora é dinâmica para maior clareza.
     function executarCalculoHoraValor() { const salario = parseFloat(horaValorElements.form.salario.value) || 0; const horasDia = parseFloat(horaValorElements.form.horasDia.value) || 0; const diasSemana = parseInt(horaValorElements.form.diasSemana.value) || 0; if (salario <= 0 || horasDia <= 0 || diasSemana <= 0 || diasSemana > 7) { alert('Por favor, insira valores válidos para salário, horas por dia e dias por semana (1 a 7).'); return; } const horasTrabalhadasMes = horasDia * diasSemana * 4.5; const valorHora = salario / horasTrabalhadasMes; const explicacao = `Baseado no salário de R$ ${salario.toFixed(2)} que você informou, o cálculo é: R$ ${salario.toFixed(2)} / (${horasTrabalhadasMes.toFixed(1)} horas/mês).`; horaValorElements.results.valorHora.textContent = `R$ ${valorHora.toFixed(2)}`; horaValorElements.results.explicacao.textContent = explicacao; horaValorElements.results.container.classList.remove('hidden'); }
     function executarCalculoIRPFAnual() { const rendimentos = parseFloat(irpfElements.form.rendimentosAnuais.value) || 0; const saude = parseFloat(irpfElements.form.despesasSaude.value) || 0; const educacao = parseFloat(irpfElements.form.despesasEducacao.value) || 0; const dependentes = parseInt(irpfElements.form.dependentes.value) || 0; if (rendimentos <= 0) { alert('Por favor, insira o total de rendimentos anuais.'); return; } const DEDUCAO_POR_DEPENDENTE = 2275.08; const LIMITE_DEDUCAO_EDUCACAO = 3561.50; const LIMITE_DESCONTO_SIMPLIFICADO = 16754.34; const deducaoDependentes = dependentes * DEDUCAO_POR_DEPENDENTE; const deducaoEducacao = Math.min(educacao, LIMITE_DEDUCAO_EDUCACAO); const totalDeducoes = deducaoDependentes + deducaoEducacao + saude; const baseCalculoCompleta = rendimentos - totalDeducoes; const impostoDevidoCompleta = calcularImpostoAnual(baseCalculoCompleta); const descontoSimplificado = rendimentos * 0.20; const descontoAplicado = Math.min(descontoSimplificado, LIMITE_DESCONTO_SIMPLIFICADO); const baseCalculoSimplificada = rendimentos - descontoAplicado; const impostoDevidoSimplificada = calcularImpostoAnual(baseCalculoSimplificada); irpfElements.results.completa.textContent = `R$ ${impostoDevidoCompleta.toFixed(2)}`; irpfElements.results.simplificada.textContent = `R$ ${impostoDevidoSimplificada.toFixed(2)}`; if (impostoDevidoCompleta < impostoDevidoSimplificada) { irpfElements.results.recomendacao.textContent = "Recomendação: A Declaração COMPLETA é mais vantajosa!"; } else if (impostoDevidoSimplificada < impostoDevidoCompleta) { irpfElements.results.recomendacao.textContent = "Recomendação: A Declaração SIMPLIFICADA é mais vantajosa!"; } else { irpfElements.results.recomendacao.textContent = "Recomendação: Ambos os modelos resultam no mesmo valor de imposto."; } irpfElements.results.container.classList.remove('hidden'); }
 
@@ -172,6 +114,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if(authForms.login) authForms.login.addEventListener('submit', handleLogin);
     if(authForms.signup) authForms.signup.addEventListener('submit', handleSignup);
     if(authButtons.logout) authButtons.logout.addEventListener('click', handleLogout);
+
+    // NOVOS LISTENERS PARA A TELA DE ESCOLHA
+    if(welcomeScreenElements.buttons.clt) welcomeScreenElements.buttons.clt.addEventListener('click', async () => {
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        const welcomeMessage = document.getElementById('welcome-message');
+        if (welcomeMessage && user) {
+             welcomeMessage.textContent = `Bem-vindo(a), ${user.email}!`;
+        }
+        const randomIndex = Math.floor(Math.random() * dashboardQuotes.length);
+        dashboardElements.quote.textContent = dashboardQuotes[randomIndex];
+        showScreen('dashboard');
+    });
+    if(welcomeScreenElements.buttons.pj) welcomeScreenElements.buttons.pj.addEventListener('click', () => {
+        alert('O Módulo PJ / Freelancer está em desenvolvimento! Fique atento para futuras atualizações.');
+    });
 
     if(dashboardButtons.salario) dashboardButtons.salario.addEventListener('click', () => { preencherFormulariosComPerfil(); showScreen('salario'); });
     if(dashboardButtons.investimentos) dashboardButtons.investimentos.addEventListener('click', () => showScreen('investimentos'));
