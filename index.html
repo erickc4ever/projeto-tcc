@@ -27,13 +27,13 @@
                 <p>Entre para aceder à sua suíte financeira.</p>
             </div>
 
-            <!-- Opções Iniciais: Novo ou Já tenho cadastro -->
+            <!-- Opções Iniciais -->
             <div id="auth-choices" class="auth-choices">
                 <button id="show-signup-btn" class="btn btn-primary">Sou novo aqui</button>
                 <button id="show-login-btn" class="btn btn-secondary">Já tenho cadastro</button>
             </div>
 
-            <!-- Formulário de Login (inicialmente escondido) -->
+            <!-- Formulário de Login -->
             <form id="login-form" class="auth-form hidden">
                 <input type="email" id="login-email" class="input-field" placeholder="Seu e-mail" required>
                 <input type="password" id="login-password" class="input-field" placeholder="Sua senha" required>
@@ -41,7 +41,7 @@
                 <p>Não tem uma conta? <a href="#" id="show-signup-link">Registe-se</a></p>
             </form>
 
-            <!-- Formulário de Registo (inicialmente escondido) -->
+            <!-- Formulário de Registo -->
             <form id="signup-form" class="auth-form hidden">
                 <input type="email" id="signup-email" class="input-field" placeholder="Seu melhor e-mail" required>
                 <input type="password" id="signup-password" class="input-field" placeholder="Crie uma senha forte" required>
@@ -51,7 +51,7 @@
         </div>
     </div>
 
-    <!-- TELA DA DASHBOARD (inicialmente escondida) -->
+    <!-- TELA DA DASHBOARD -->
     <div id="dashboard-screen" class="screen hidden">
         <div class="calculator-card">
             <div class="card-header">
@@ -59,23 +59,63 @@
                 <p>Selecione uma ferramenta para começar.</p>
             </div>
             
-            <!-- Grid com as ferramentas -->
             <div class="dashboard-grid">
-                <button class="btn btn-secondary">Cálculo de Salário</button>
-                <button class="btn btn-secondary">Simulador de Investimentos</button>
-                <button class="btn btn-secondary">Cálculo de Férias</button>
-                <button class="btn btn-secondary">Cálculo de 13º Salário</button>
-                <button class="btn btn-secondary">Quanto vale a minha hora?</button>
+                <button id="goto-salario-btn" class="btn btn-secondary">Cálculo de Salário</button>
+                <button id="goto-investimentos-btn" class="btn btn-secondary">Simulador de Investimentos</button>
+                <button id="goto-ferias-btn" class="btn btn-secondary">Cálculo de Férias</button>
+                <button id="goto-decimo-terceiro-btn" class="btn btn-secondary">Cálculo de 13º Salário</button>
+                <button id="goto-hora-valor-btn" class="btn btn-secondary">Quanto vale a minha hora?</button>
+                <button id="goto-irpf-btn" class="btn btn-primary">Simulador Anual de IRPF</button>
             </div>
 
             <button id="logout-btn" class="btn btn-primary">Sair</button>
         </div>
     </div>
 
-    <!-- Adicione aqui as outras telas de calculadora (ex: salario-screen, etc.) -->
+    <!-- TELA DO SIMULADOR DE IRPF ANUAL -->
+    <div id="irpf-screen" class="screen hidden">
+        <div class="calculator-card">
+            <div class="card-header">
+                <h1>Simulador de IRPF Anual</h1>
+                <p>Preencha os campos para simular a sua declaração.</p>
+            </div>
 
+            <div class="input-group">
+                <label for="rendimentos-anuais">Total de Rendimentos Anuais (salário, etc.)</label>
+                <input type="number" id="rendimentos-anuais" class="input-field" placeholder="Ex: 50000.00">
+                
+                <label for="despesas-saude">Total de Despesas com Saúde</label>
+                <input type="number" id="despesas-saude" class="input-field" placeholder="Ex: 3000.00">
 
-    <!-- Scripts (carregados no final para melhor performance) -->
+                <label for="despesas-educacao">Total de Despesas com Educação</label>
+                <input type="number" id="despesas-educacao" class="input-field" placeholder="Ex: 5000.00">
+                
+                <label for="dependentes">Número de Dependentes</label>
+                <input type="number" id="dependentes" class="input-field" placeholder="Ex: 2">
+            </div>
+
+            <button id="calcular-irpf-btn" class="btn btn-primary">Calcular IRPF Anual</button>
+            <button id="back-to-dashboard-from-irpf" class="btn btn-secondary">Voltar para a Dashboard</button>
+
+            <!-- Seção de Resultados do IRPF -->
+            <div id="irpf-results-section" class="results-section hidden">
+                <div class="result-line">
+                    <span>Resultado (Declaração Completa):</span>
+                    <span id="resultado-irpf-completa" class="font-bold">R$ 0,00</span>
+                </div>
+                <div class="result-line">
+                    <span>Resultado (Declaração Simplificada):</span>
+                    <span id="resultado-irpf-simplificada" class="font-bold">R$ 0,00</span>
+                </div>
+                <hr>
+                <div id="recomendacao-irpf" class="text-center font-bold">
+                    <p>Recomendação: -</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
     <script src="main.js"></script>
     <script src="app.js"></script>
 

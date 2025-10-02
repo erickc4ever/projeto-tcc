@@ -1,9 +1,9 @@
 /**
  * ==================================================================================
- * main.js - Cérebro da Aplicação "änalitks" (Versão com Dashboard Funcional)
+ * main.js - Cérebro da Aplicação "änalitks" (Com Simulador de IRPF)
  * ----------------------------------------------------------------------------------
- * Este ficheiro agora inclui a lógica para navegar a partir da dashboard
- * para as diferentes telas de calculadora.
+ * Este ficheiro agora inclui a lógica completa para o simulador de
+ * Imposto de Renda de Pessoa Física (IRPF) Anual.
  * ==================================================================================
  */
 
@@ -13,26 +13,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // ----------------------------------------------------------------------------------
     console.log("Iniciando o main.js...");
 
-    // --- Configuração do Supabase ---
     const SUPABASE_URL = 'https://ejddiovmtjpipangyqeo.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZGRpb3ZtdGpwaXBhbmd5cWVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg3MTU4MDksImV4cCI6MjA3NDI5MTgwOX0.GH53mox_cijkhqAxy-sNmvxGcgtoLzuoE5sfP9hHdho';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     console.log('Cliente Supabase inicializado.');
 
-    // --- Seletores de Telas ---
     const screens = {
         auth: document.getElementById('auth-screen'),
         dashboard: document.getElementById('dashboard-screen'),
-        // As telas das calculadoras serão adicionadas aqui quando forem criadas no HTML
-        // Ex: salario: document.getElementById('salario-screen'),
+        irpf: document.getElementById('irpf-screen'),
     };
 
-    // --- Seletores de Autenticação ---
     const authForms = {
         login: document.getElementById('login-form'),
         signup: document.getElementById('signup-form'),
         choices: document.getElementById('auth-choices'),
     };
+
     const authButtons = {
         showLogin: document.getElementById('show-login-btn'),
         showSignup: document.getElementById('show-signup-btn'),
@@ -41,19 +38,36 @@ document.addEventListener('DOMContentLoaded', () => {
         logout: document.getElementById('logout-btn'),
     };
 
-    // --- Seletores da Dashboard ---
     const dashboardButtons = {
-        // Atribuindo IDs aos botões da dashboard para podermos selecioná-los
         salario: document.getElementById('goto-salario-btn'),
         investimentos: document.getElementById('goto-investimentos-btn'),
         ferias: document.getElementById('goto-ferias-btn'),
         decimoTerceiro: document.getElementById('goto-decimo-terceiro-btn'),
         horaValor: document.getElementById('goto-hora-valor-btn'),
+        irpf: document.getElementById('goto-irpf-btn'),
+    };
+
+    const irpfElements = {
+        form: {
+            rendimentosAnuais: document.getElementById('rendimentos-anuais'),
+            despesasSaude: document.getElementById('despesas-saude'),
+            despesasEducacao: document.getElementById('despesas-educacao'),
+            dependentes: document.getElementById('dependentes'),
+        },
+        buttons: {
+            calcular: document.getElementById('calcular-irpf-btn'),
+            voltar: document.getElementById('back-to-dashboard-from-irpf'),
+        },
+        results: {
+            container: document.getElementById('irpf-results-section'),
+            completa: document.getElementById('resultado-irpf-completa'),
+            simplificada: document.getElementById('resultado-irpf-simplificada'),
+            recomendacao: document.getElementById('recomendacao-irpf').querySelector('p'),
+        }
     };
     
     // PARTE 2: FUNÇÕES DE GESTÃO DE TELA E UI
     // ----------------------------------------------------------------------------------
-
     function showScreen(screenName) {
         Object.values(screens).forEach(screen => {
             if (screen) screen.classList.add('hidden');
@@ -63,10 +77,8 @@ document.addEventListener('DOMContentLoaded', () => {
             screens[screenName].classList.remove('hidden');
             console.log(`A exibir a tela: ${screenName}`);
         } else {
-            // Aviso amigável de que a tela ainda precisa de ser criada
             console.warn(`AVISO: A tela "${screenName}" ainda não foi criada no index.html.`);
             alert(`A funcionalidade para "${screenName}" ainda está em desenvolvimento!`);
-            // Mostra a dashboard novamente como fallback
             screens.dashboard.classList.remove('hidden');
         }
     }
@@ -85,7 +97,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // PARTE 3: FUNÇÕES DE AUTENTICAÇÃO
     // ----------------------------------------------------------------------------------
-    // (As funções handleLogin, handleSignup, e handleLogout permanecem as mesmas)
     async function handleLogin(event) {
         event.preventDefault();
         const email = authForms.login.querySelector('#login-email').value;
@@ -117,29 +128,78 @@ document.addEventListener('DOMContentLoaded', () => {
         authForms.choices.classList.remove('hidden');
     }
 
-    // PARTE 4: REGISTO DE EVENT LISTENERS
+    // PARTE 4: LÓGICA DE CÁLCULO DO IRPF ANUAL
     // ----------------------------------------------------------------------------------
-    console.log("A registar event listeners...");
 
-    // --- Autenticação ---
-    if(authButtons.showLogin) authButtons.showLogin.addEventListener('click', () => {
-        authForms.choices.classList.add('hidden');
-        authForms.login.classList.remove('hidden');
-    });
-    if(authButtons.showSignup) authButtons.showSignup.addEventListener('click', () => {
-        authForms.choices.classList.add('hidden');
-        authForms.signup.classList.remove('hidden');
-    });
-    if(authButtons.showLoginLink) authButtons.showLoginLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        authForms.signup.classList.add('hidden');
-        authForms.login.classList.remove('hidden');
-    });
-    if(authButtons.showSignupLink) authButtons.showSignupLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        authForms.login.classList.add('hidden');
-        authForms.signup.classList.remove('hidden');
-    });
+    function calcularImpostoAnual(baseDeCalculo) {
+        // Tabela Progressiva Anual IRPF (valores de exemplo para 2024/2025)
+        const faixas = [
+            { limite: 24511.92, aliquota: 0,     deducao: 0 },
+            { limite: 33919.80, aliquota: 0.075, deducao: 1838.39 },
+            { limite: 45012.60, aliquota: 0.15,  deducao: 4382.38 },
+            { limite: 55976.16, aliquota: 0.225, deducao: 7758.32 },
+            { limite: Infinity, aliquota: 0.275, deducao: 10557.13 }
+        ];
+
+        for (const faixa of faixas) {
+            if (baseDeCalculo <= faixa.limite) {
+                const imposto = (baseDeCalculo * faixa.aliquota) - faixa.deducao;
+                return imposto > 0 ? imposto : 0;
+            }
+        }
+        return 0;
+    }
+
+    function executarCalculoIRPFAnual() {
+        const rendimentos = parseFloat(irpfElements.form.rendimentosAnuais.value) || 0;
+        const saude = parseFloat(irpfElements.form.despesasSaude.value) || 0;
+        const educacao = parseFloat(irpfElements.form.despesasEducacao.value) || 0;
+        const dependentes = parseInt(irpfElements.form.dependentes.value) || 0;
+
+        if (rendimentos <= 0) {
+            alert('Por favor, insira o total de rendimentos anuais.');
+            return;
+        }
+
+        // --- Valores de dedução (tabela de 2024/2025 como exemplo) ---
+        const DEDUCAO_POR_DEPENDENTE = 2275.08;
+        const LIMITE_DEDUCAO_EDUCACAO = 3561.50;
+        const LIMITE_DESCONTO_SIMPLIFICADO = 16754.34;
+
+        // --- Cálculo da Declaração Completa ---
+        const deducaoDependentes = dependentes * DEDUCAO_POR_DEPENDENTE;
+        const deducaoEducacao = Math.min(educacao, LIMITE_DEDUCAO_EDUCACAO);
+        const totalDeducoes = deducaoDependentes + deducaoEducacao + saude;
+        const baseCalculoCompleta = rendimentos - totalDeducoes;
+        const impostoDevidoCompleta = calcularImpostoAnual(baseCalculoCompleta);
+
+        // --- Cálculo da Declaração Simplificada ---
+        const descontoSimplificado = rendimentos * 0.20;
+        const descontoAplicado = Math.min(descontoSimplificado, LIMITE_DESCONTO_SIMPLIFICADO);
+        const baseCalculoSimplificada = rendimentos - descontoAplicado;
+        const impostoDevidoSimplificada = calcularImpostoAnual(baseCalculoSimplificada);
+
+        // --- Exibir Resultados ---
+        irpfElements.results.completa.textContent = `R$ ${impostoDevidoCompleta.toFixed(2)}`;
+        irpfElements.results.simplificada.textContent = `R$ ${impostoDevidoSimplificada.toFixed(2)}`;
+
+        if (impostoDevidoCompleta < impostoDevidoSimplificada) {
+            irpfElements.results.recomendacao.textContent = "Recomendação: A Declaração COMPLETA é mais vantajosa!";
+        } else if (impostoDevidoSimplificada < impostoDevidoCompleta) {
+            irpfElements.results.recomendacao.textContent = "Recomendação: A Declaração SIMPLIFICADA é mais vantajosa!";
+        } else {
+            irpfElements.results.recomendacao.textContent = "Recomendação: Ambos os modelos resultam no mesmo valor de imposto.";
+        }
+
+        irpfElements.results.container.classList.remove('hidden');
+    }
+
+    // PARTE 5: REGISTO DE EVENT LISTENERS
+    // ----------------------------------------------------------------------------------
+    if(authButtons.showLogin) authButtons.showLogin.addEventListener('click', () => { authForms.choices.classList.add('hidden'); authForms.login.classList.remove('hidden'); });
+    if(authButtons.showSignup) authButtons.showSignup.addEventListener('click', () => { authForms.choices.classList.add('hidden'); authForms.signup.classList.remove('hidden'); });
+    if(authButtons.showLoginLink) authButtons.showLoginLink.addEventListener('click', (e) => { e.preventDefault(); authForms.signup.classList.add('hidden'); authForms.login.classList.remove('hidden'); });
+    if(authButtons.showSignupLink) authButtons.showSignupLink.addEventListener('click', (e) => { e.preventDefault(); authForms.login.classList.add('hidden'); authForms.signup.classList.remove('hidden'); });
     if(authForms.login) authForms.login.addEventListener('submit', handleLogin);
     if(authForms.signup) authForms.signup.addEventListener('submit', handleSignup);
     if(authButtons.logout) authButtons.logout.addEventListener('click', handleLogout);
@@ -150,7 +210,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if(dashboardButtons.ferias) dashboardButtons.ferias.addEventListener('click', () => showScreen('ferias'));
     if(dashboardButtons.decimoTerceiro) dashboardButtons.decimoTerceiro.addEventListener('click', () => showScreen('decimoTerceiro'));
     if(dashboardButtons.horaValor) dashboardButtons.horaValor.addEventListener('click', () => showScreen('horaValor'));
+    if(dashboardButtons.irpf) dashboardButtons.irpf.addEventListener('click', () => showScreen('irpf'));
 
+    // --- Ações do Simulador IRPF ---
+    if(irpfElements.buttons.calcular) irpfElements.buttons.calcular.addEventListener('click', executarCalculoIRPFAnual);
+    if(irpfElements.buttons.voltar) irpfElements.buttons.voltar.addEventListener('click', () => showScreen('dashboard'));
 
     // --- Estado de Autenticação ---
     supabaseClient.auth.onAuthStateChange((_event, session) => {

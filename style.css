@@ -46,7 +46,6 @@ body {
     background-color: var(--cor-fundo);
     font-family: 'Inter', sans-serif;
     color: var(--cor-texto-primario);
-    /* Adiciona uma transição suave para a cor de fundo ao trocar de tema */
     transition: background-color 0.3s ease;
 }
 
@@ -88,6 +87,13 @@ a:hover {
 }
 
 /* --- Estilo dos Formulários --- */
+label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--cor-texto-secundario);
+    margin-bottom: -5px; /* Aproxima a label do seu input */
+}
+
 .input-field {
     width: 100%;
     padding: 12px;
@@ -116,7 +122,6 @@ a:hover {
     font-weight: 700;
     cursor: pointer;
     box-sizing: border-box;
-    /* A transição agora é aplicada a transform e background-color para performance */
     transition: transform 0.15s ease, background-color 0.15s ease;
     box-shadow: var(--sombra-botao);
 }
@@ -126,27 +131,47 @@ a:hover {
     color: #ffffff;
 }
 
-/* Animação ao passar o mouse */
 .btn:hover {
     background-color: var(--cor-primaria-hover);
-    transform: translateY(-3px); /* Efeito de "levantar" o botão */
+    transform: translateY(-3px);
 }
 
-/* Animação ao clicar */
 .btn:active {
-    transform: translateY(1px) scale(0.99); /* Efeito de "pressionar" o botão */
-    box-shadow: none; /* Remove a sombra ao clicar para dar profundidade */
+    transform: translateY(1px) scale(0.99);
+    box-shadow: none;
 }
 
 .btn-secondary {
-    background-color: transparent;
+    background-color: var(--cor-fundo);
     color: var(--cor-primaria);
-    border: 1px solid var(--cor-primaria);
+    border: 1px solid var(--cor-borda);
 }
 
 .btn-secondary:hover {
     background-color: var(--cor-primaria);
+    border-color: var(--cor-primaria);
     color: #ffffff;
+}
+
+/* --- Estilos para Resultados e Classes Utilitárias --- */
+.results-section {
+    border-top: 1px solid var(--cor-borda);
+    margin-top: 10px;
+    padding-top: 20px;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid var(--cor-borda);
+    margin: 10px 0;
+}
+
+.font-bold {
+    font-weight: 700;
+}
+
+.text-center {
+    text-align: center;
 }
 
 /* --- Estilo do Botão de Tema --- */
@@ -164,6 +189,6 @@ a:hover {
 }
 
 .theme-toggle-btn:hover {
-    transform: scale(1.1) rotate(15deg); /* Animação divertida ao passar o mouse */
+    transform: scale(1.1) rotate(15deg);
 }
 

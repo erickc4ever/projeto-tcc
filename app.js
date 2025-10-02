@@ -1,6 +1,6 @@
 /**
  * ==================================================================================
- * app.js - Lógica da Interface do Usuário (UI) da "änalitks"
+ * app.js - Lógica da Interface do Utilizador (UI) da "änalitks"
  * ----------------------------------------------------------------------------------
  * Responsabilidades:
  * 1. Controlar a troca de tema (claro/escuro).
@@ -9,10 +9,10 @@
  * ==================================================================================
  */
 
-// Adicionamos um "ouvinte" que espera toda a estrutura HTML ser carregada.
-// Isso garante que o botão 'theme-toggle-btn' já existe quando o script for executado.
+// Espera que o HTML esteja completamente carregado antes de executar o script
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("app.js (UI) carregado e pronto.");
+
+    console.log("app.js (UI) carregado com sucesso.");
 
     // --- LÓGICA DE TROCA DE TEMA ---
 
@@ -20,10 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeToggleButton = document.getElementById('theme-toggle-btn');
     const body = document.body;
 
-    // Verificamos se o botão realmente existe na página antes de adicionar o evento.
-    // Isso evita erros caso o botão não esteja presente em alguma tela.
+    // Adiciona um "ouvinte" que aguarda por um clique no botão.
     if (themeToggleButton) {
-        // Adiciona um "ouvinte" que aguarda por um clique no botão.
         themeToggleButton.addEventListener('click', () => {
             // Verifica se o body já tem o atributo 'data-theme' com o valor 'dark'.
             const isDarkMode = body.getAttribute('data-theme') === 'dark';
@@ -39,5 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
 });
 
