@@ -64,6 +64,7 @@
             </div>
 
             <div class="dashboard-footer">
+                <button id="goto-profile-btn" class="btn btn-secondary">Meu Perfil</button> <!-- NOVO BOTÃO -->
                 <button id="show-about-btn" class="btn btn-secondary">Sobre o Projeto</button>
                 <button id="logout-btn" class="btn btn-primary">Sair</button>
             </div>
@@ -335,7 +336,30 @@
         </div>
     </div>
 
-    <!-- MODAL SOBRE NÓS (NOVO) -->
+    <!-- TELA DE PERFIL DO UTILIZADOR (NOVA) -->
+    <div id="profile-screen" class="screen hidden">
+        <div class="calculator-card">
+            <div class="card-header">
+                <h1>Meu Perfil</h1>
+                <p>Guarde as suas informações padrão para preencher as calculadoras automaticamente.</p>
+            </div>
+            <div class="input-group">
+                <label for="profile-salario-bruto">Salário Bruto Mensal Padrão</label>
+                <input type="number" id="profile-salario-bruto" class="input-field" placeholder="Ex: 4500.00">
+                <label for="profile-dependentes">Número de Dependentes</label>
+                <input type="number" id="profile-dependentes" class="input-field" placeholder="Ex: 2" value="0">
+                <label for="profile-horas-dia">Horas Trabalhadas por Dia</label>
+                <input type="number" id="profile-horas-dia" class="input-field" placeholder="Ex: 8" value="8">
+                <label for="profile-dias-semana">Dias Trabalhados na Semana</label>
+                <input type="number" id="profile-dias-semana" class="input-field" placeholder="Ex: 5" value="5">
+            </div>
+            <button id="salvar-perfil-btn" class="btn btn-primary">Salvar Perfil</button>
+            <button id="back-to-dashboard-from-profile" class="btn btn-secondary">Voltar para a Dashboard</button>
+            <p id="profile-status-message" class="explanation-text text-center hidden"></p>
+        </div>
+    </div>
+
+    <!-- MODAL SOBRE NÓS -->
     <div id="about-modal-overlay" class="modal-overlay hidden">
         <div class="calculator-card">
             <div class="modal-header">

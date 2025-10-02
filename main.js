@@ -1,9 +1,9 @@
 /**
  * ==================================================================================
- * main.js - Cérebro da Aplicação "änalitks" (Versão com Polimento Final)
+ * main.js - Cérebro da Aplicação "änalitks" (Etapa 4: Preencher Formulários)
  * ----------------------------------------------------------------------------------
- * Este ficheiro inclui a lógica para todas as ferramentas e as novas
- * funcionalidades de interface: frases dinâmicas e modal "Sobre".
+ * Este ficheiro agora inclui a lógica final para preencher automaticamente
+ * os formulários das calculadoras com os dados salvos no perfil do utilizador.
  * CÓDIGO COMPLETO E NÃO SIMPLIFICADO.
  * ==================================================================================
  */
@@ -28,14 +28,16 @@ document.addEventListener('DOMContentLoaded', () => {
         decimoTerceiro: document.getElementById('decimo-terceiro-screen'),
         horaValor: document.getElementById('hora-valor-screen'),
         irpf: document.getElementById('irpf-screen'),
+        profile: document.getElementById('profile-screen'),
     };
 
-    // --- Seletores (Autenticação, Dashboard, etc.) ---
+    // --- Seletores ---
     const authForms = { login: document.getElementById('login-form'), signup: document.getElementById('signup-form'), choices: document.getElementById('auth-choices') };
     const authButtons = { showLogin: document.getElementById('show-login-btn'), showSignup: document.getElementById('show-signup-btn'), showLoginLink: document.getElementById('show-login-link'), showSignupLink: document.getElementById('show-signup-link'), logout: document.getElementById('logout-btn') };
-    const dashboardButtons = { salario: document.getElementById('goto-salario-btn'), investimentos: document.getElementById('goto-investimentos-btn'), ferias: document.getElementById('goto-ferias-btn'), decimoTerceiro: document.getElementById('goto-decimo-terceiro-btn'), horaValor: document.getElementById('goto-hora-valor-btn'), irpf: document.getElementById('goto-irpf-btn'), showAbout: document.getElementById('show-about-btn') };
+    const dashboardButtons = { salario: document.getElementById('goto-salario-btn'), investimentos: document.getElementById('goto-investimentos-btn'), ferias: document.getElementById('goto-ferias-btn'), decimoTerceiro: document.getElementById('goto-decimo-terceiro-btn'), horaValor: document.getElementById('goto-hora-valor-btn'), irpf: document.getElementById('goto-irpf-btn'), showAbout: document.getElementById('show-about-btn'), profile: document.getElementById('goto-profile-btn') };
     const dashboardElements = { quote: document.getElementById('dashboard-quote') };
     const modalElements = { overlay: document.getElementById('about-modal-overlay'), closeBtn: document.getElementById('close-about-btn') };
+    const profileElements = { form: { salarioBruto: document.getElementById('profile-salario-bruto'), dependentes: document.getElementById('profile-dependentes'), horasDia: document.getElementById('profile-horas-dia'), diasSemana: document.getElementById('profile-dias-semana'), }, buttons: { salvar: document.getElementById('salvar-perfil-btn'), voltar: document.getElementById('back-to-dashboard-from-profile'), }, statusMessage: document.getElementById('profile-status-message'), };
     const salarioElements = { form: { salarioBruto: document.getElementById('salario-bruto'), dependentes: document.getElementById('salario-dependentes') }, buttons: { calcular: document.getElementById('calcular-salario-btn'), voltar: document.getElementById('back-to-dashboard-from-salario') }, results: { container: document.getElementById('salario-results-section'), salarioBruto: document.getElementById('resultado-salario-bruto'), inss: document.getElementById('resultado-inss'), baseIrrf: document.getElementById('resultado-base-irrf'), irrf: document.getElementById('resultado-irrf'), salarioLiquido: document.getElementById('resultado-salario-liquido'), explicacaoInss: document.getElementById('explicacao-inss'), explicacaoIrrf: document.getElementById('explicacao-irrf') } };
     const investimentosElements = { form: { valorInicial: document.getElementById('valor-inicial'), aporteMensal: document.getElementById('aporte-mensal'), taxaJurosAnual: document.getElementById('taxa-juros-anual'), periodoAnos: document.getElementById('periodo-anos') }, buttons: { calcular: document.getElementById('calcular-investimentos-btn'), voltar: document.getElementById('back-to-dashboard-from-investimentos') }, results: { container: document.getElementById('investimentos-results-section'), valorFinal: document.getElementById('resultado-valor-final'), totalInvestido: document.getElementById('resultado-total-investido'), totalJuros: document.getElementById('resultado-total-juros') } };
     const feriasElements = { form: { salarioBruto: document.getElementById('ferias-salario-bruto'), dias: document.getElementById('ferias-dias'), venderDias: document.getElementById('ferias-vender-dias'), adiantar13: document.getElementById('ferias-adiantar-13') }, buttons: { calcular: document.getElementById('calcular-ferias-btn'), voltar: document.getElementById('back-to-dashboard-from-ferias') }, results: { container: document.getElementById('ferias-results-section'), feriasBrutas: document.getElementById('resultado-ferias-brutas'), tercoConstitucional: document.getElementById('resultado-terco-constitucional'), abonoPecuniario: document.getElementById('resultado-abono-pecuniario'), totalBruto: document.getElementById('resultado-total-bruto-ferias'), inss: document.getElementById('resultado-inss-ferias'), irrf: document.getElementById('resultado-irrf-ferias'), adiantamento13: document.getElementById('resultado-adiantamento-13'), liquido: document.getElementById('resultado-liquido-ferias'), abonoLine: document.getElementById('abono-pecuniario-line'), adiantamento13Line: document.getElementById('adiantamento-13-line') } };
@@ -45,39 +47,79 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // PARTE 2: DADOS E CONTEÚDO
     // ----------------------------------------------------------------------------------
-    const dashboardQuotes = [
-        "Um objetivo sem um plano é apenas um desejo. Use as nossas ferramentas para transformar os seus desejos em planos.",
-        "A melhor altura para plantar uma árvore foi há 20 anos. A segunda melhor altura é agora. O mesmo vale para os seus investimentos.",
-        "Cuidado com as pequenas despesas; um pequeno furo pode afundar um grande navio.",
-        "O seu futuro financeiro é criado pelo que você faz hoje, não amanhã. Cada cálculo é um passo na direção certa.",
-        "Saber o valor do seu tempo é o primeiro passo para garantir que ele seja bem recompensado."
-    ];
+    let userProfile = null;
+    const dashboardQuotes = [ "Um objetivo sem um plano é apenas um desejo. Use as nossas ferramentas para transformar os seus desejos em planos.", "A melhor altura para plantar uma árvore foi há 20 anos. A segunda melhor altura é agora. O mesmo vale para os seus investimentos.", "Cuidado com as pequenas despesas; um pequeno furo pode afundar um grande navio.", "O seu futuro financeiro é criado pelo que você faz hoje, não amanhã. Cada cálculo é um passo na direção certa.", "Saber o valor do seu tempo é o primeiro passo para garantir que ele seja bem recompensado." ];
 
     // PARTE 3: FUNÇÕES DE GESTÃO DE TELA E UI
     // ----------------------------------------------------------------------------------
     function showScreen(screenName) { Object.values(screens).forEach(screen => { if (screen) screen.classList.add('hidden'); }); if (screens[screenName]) { screens[screenName].classList.remove('hidden'); console.log(`A exibir a tela: ${screenName}`); } else { console.warn(`AVISO: A tela "${screenName}" ainda não foi criada no index.html.`); alert(`A funcionalidade para "${screenName}" ainda está em desenvolvimento!`); screens.dashboard.classList.remove('hidden'); } }
     
-    function updateUserUI(user) {
+    async function updateUserUI(user) {
         const welcomeMessage = document.getElementById('welcome-message');
         if (user) {
-            if(welcomeMessage) {
-                welcomeMessage.textContent = `Bem-vindo(a), ${user.email}!`;
-            }
-            // Escolhe e exibe uma frase aleatória na dashboard
+            if(welcomeMessage) { welcomeMessage.textContent = `Bem-vindo(a), ${user.email}!`; }
             const randomIndex = Math.floor(Math.random() * dashboardQuotes.length);
             dashboardElements.quote.textContent = dashboardQuotes[randomIndex];
-            
+            await fetchUserProfile(user);
             showScreen('dashboard');
         } else {
+            userProfile = null;
             showScreen('auth');
         }
     }
 
-    // PARTE 4: FUNÇÕES DE AUTENTICAÇÃO
+    // PARTE 4: FUNÇÕES DE AUTENTICAÇÃO E PERFIL
     // ----------------------------------------------------------------------------------
     async function handleLogin(event) { event.preventDefault(); const email = authForms.login.querySelector('#login-email').value; const password = authForms.login.querySelector('#login-password').value; const { error } = await supabaseClient.auth.signInWithPassword({ email, password }); if (error) alert(`Erro no login: ${error.message}`); }
     async function handleSignup(event) { event.preventDefault(); const email = authForms.signup.querySelector('#signup-email').value; const password = authForms.signup.querySelector('#signup-password').value; const { error } = await supabaseClient.auth.signUp({ email, password }); if (error) { alert(`Erro no registo: ${error.message}`); } else { alert('Registo realizado! Verifique o seu e-mail para confirmar a conta e depois faça o login.'); authForms.signup.classList.add('hidden'); authForms.login.classList.remove('hidden'); } }
     async function handleLogout() { await supabaseClient.auth.signOut(); authForms.login.reset(); authForms.signup.reset(); authForms.login.classList.add('hidden'); authForms.signup.classList.add('hidden'); authForms.choices.classList.remove('hidden'); }
+    
+    async function handleSaveProfile() {
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        if (!user) { alert('Precisa de estar autenticado para salvar o perfil.'); return; }
+        const salarioBruto = parseFloat(profileElements.form.salarioBruto.value) || null;
+        const dependentes = parseInt(profileElements.form.dependentes.value);
+        const horasDia = parseFloat(profileElements.form.horasDia.value) || null;
+        const diasSemana = parseInt(profileElements.form.diasSemana.value) || null;
+        const updates = { user_id: user.id, salario_bruto: salarioBruto, dependentes: isNaN(dependentes) ? null : dependentes, horas_dia: horasDia, dias_semana: diasSemana, updated_at: new Date(), };
+        const { error } = await supabaseClient.from('profiles').upsert(updates);
+        if (error) { console.error('Erro ao salvar o perfil:', error); profileElements.statusMessage.textContent = `Erro ao salvar: ${error.message}`; profileElements.statusMessage.classList.remove('hidden');
+        } else { console.log('Perfil salvo com sucesso!'); userProfile = updates; profileElements.statusMessage.textContent = 'Perfil salvo com sucesso!'; profileElements.statusMessage.classList.remove('hidden'); setTimeout(() => { profileElements.statusMessage.classList.add('hidden'); }, 3000); }
+    }
+
+    async function fetchUserProfile(user) {
+        if (!user) return;
+        const { data, error } = await supabaseClient.from('profiles').select('*').eq('user_id', user.id).single();
+        if (error && error.code !== 'PGRST116') { console.error('Erro ao buscar o perfil:', error);
+        } else if (data) { userProfile = data; console.log('Perfil do utilizador carregado:', userProfile);
+        } else { console.log('Nenhum perfil encontrado para este utilizador.'); userProfile = null; }
+    }
+
+    function preencherFormulariosComPerfil() {
+        if (!userProfile) return; // Se não houver perfil, não faz nada
+    
+        // Preenche a tela de Perfil
+        if (userProfile.salario_bruto) profileElements.form.salarioBruto.value = userProfile.salario_bruto;
+        if (userProfile.dependentes !== null) profileElements.form.dependentes.value = userProfile.dependentes;
+        if (userProfile.horas_dia) profileElements.form.horasDia.value = userProfile.horas_dia;
+        if (userProfile.dias_semana) profileElements.form.diasSemana.value = userProfile.dias_semana;
+    
+        // Preenche a tela de Salário
+        if (userProfile.salario_bruto) salarioElements.form.salarioBruto.value = userProfile.salario_bruto;
+        if (userProfile.dependentes !== null) salarioElements.form.dependentes.value = userProfile.dependentes;
+    
+        // Preenche a tela de Férias
+        if (userProfile.salario_bruto) feriasElements.form.salarioBruto.value = userProfile.salario_bruto;
+    
+        // Preenche a tela de 13º Salário
+        if (userProfile.salario_bruto) decimoTerceiroElements.form.salarioBruto.value = userProfile.salario_bruto;
+        if (userProfile.dependentes !== null) decimoTerceiroElements.form.dependentes.value = userProfile.dependentes;
+
+        // Preenche a tela de Valor da Hora
+        if (userProfile.salario_bruto) horaValorElements.form.salario.value = userProfile.salario_bruto;
+        if (userProfile.horas_dia) horaValorElements.form.horasDia.value = userProfile.horas_dia;
+        if (userProfile.dias_semana) horaValorElements.form.diasSemana.value = userProfile.dias_semana;
+    }
 
     // PARTE 5: FUNÇÕES DE CÁLCULO REUTILIZÁVEIS
     // ----------------------------------------------------------------------------------
@@ -87,125 +129,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // PARTE 6: LÓGICA DAS FERRAMENTAS
     // ----------------------------------------------------------------------------------
-    function executarCalculoSalario() {
-        const salarioBruto = parseFloat(salarioElements.form.salarioBruto.value) || 0;
-        const numDependentes = parseInt(salarioElements.form.dependentes.value) || 0;
-        if (salarioBruto <= 0) { alert('Por favor, insira um valor de salário bruto válido.'); return; }
-        const descontoINSS = calcularINSS(salarioBruto);
-        const baseCalculoIRRF = salarioBruto - descontoINSS;
-        const descontoIRRF = calcularIRRF(baseCalculoIRRF, numDependentes);
-        const salarioLiquido = salarioBruto - descontoINSS - descontoIRRF;
-        salarioElements.results.salarioBruto.textContent = `R$ ${salarioBruto.toFixed(2)}`;
-        salarioElements.results.inss.textContent = `- R$ ${descontoINSS.toFixed(2)}`;
-        salarioElements.results.baseIrrf.textContent = `R$ ${(baseCalculoIRRF - (numDependentes * 189.59)).toFixed(2)}`;
-        salarioElements.results.irrf.textContent = `- R$ ${descontoIRRF.toFixed(2)}`;
-        salarioElements.results.salarioLiquido.textContent = `R$ ${salarioLiquido.toFixed(2)}`;
-        salarioElements.results.container.classList.remove('hidden');
-    }
-    
-    function executarSimulacaoInvestimentos() {
-        const valorInicial = parseFloat(investimentosElements.form.valorInicial.value) || 0;
-        const aporteMensal = parseFloat(investimentosElements.form.aporteMensal.value) || 0;
-        const taxaJurosAnual = parseFloat(investimentosElements.form.taxaJurosAnual.value) || 0;
-        const periodoAnos = parseInt(investimentosElements.form.periodoAnos.value) || 0;
-        if (taxaJurosAnual <= 0 || periodoAnos <= 0) { alert('Por favor, insira uma taxa de juros e um período em anos válidos.'); return; }
-        const taxaMensal = (taxaJurosAnual / 100) / 12;
-        const periodoMeses = periodoAnos * 12;
-        let valorAcumulado = valorInicial;
-        for (let i = 0; i < periodoMeses; i++) { valorAcumulado *= (1 + taxaMensal); valorAcumulado += aporteMensal; }
-        const totalInvestido = valorInicial + (aporteMensal * periodoMeses);
-        const totalJuros = valorAcumulado - totalInvestido;
-        investimentosElements.results.valorFinal.textContent = `R$ ${valorAcumulado.toFixed(2)}`;
-        investimentosElements.results.totalInvestido.textContent = `R$ ${totalInvestido.toFixed(2)}`;
-        investimentosElements.results.totalJuros.textContent = `R$ ${totalJuros.toFixed(2)}`;
-        investimentosElements.results.container.classList.remove('hidden');
-    }
-
-    function executarCalculoFerias() {
-        const salarioBruto = parseFloat(feriasElements.form.salarioBruto.value) || 0;
-        const diasFerias = parseInt(feriasElements.form.dias.value) || 0;
-        const venderDias = feriasElements.form.venderDias.checked;
-        const adiantar13 = feriasElements.form.adiantar13.checked;
-        if (salarioBruto <= 0 || diasFerias <= 0) { alert('Por favor, insira valores válidos para salário e dias de férias.'); return; }
-        const feriasBrutas = (salarioBruto / 30) * diasFerias;
-        const tercoConstitucional = feriasBrutas / 3;
-        const totalBrutoFerias = feriasBrutas + tercoConstitucional;
-        const abonoPecuniario = venderDias ? (salarioBruto / 30) * 10 : 0;
-        const adiantamento13 = adiantar13 ? salarioBruto / 2 : 0;
-        const descontoINSS = calcularINSS(totalBrutoFerias);
-        const baseIRRF = totalBrutoFerias - descontoINSS;
-        const descontoIRRF = calcularIRRF(baseIRRF);
-        const liquidoReceber = (totalBrutoFerias - descontoINSS - descontoIRRF) + abonoPecuniario + adiantamento13;
-        feriasElements.results.feriasBrutas.textContent = `R$ ${feriasBrutas.toFixed(2)}`;
-        feriasElements.results.tercoConstitucional.textContent = `R$ ${tercoConstitucional.toFixed(2)}`;
-        feriasElements.results.totalBruto.textContent = `R$ ${totalBrutoFerias.toFixed(2)}`;
-        feriasElements.results.inss.textContent = `- R$ ${descontoINSS.toFixed(2)}`;
-        feriasElements.results.irrf.textContent = `- R$ ${descontoIRRF.toFixed(2)}`;
-        feriasElements.results.liquido.textContent = `R$ ${liquidoReceber.toFixed(2)}`;
-        if (venderDias) { feriasElements.results.abonoPecuniario.textContent = `R$ ${abonoPecuniario.toFixed(2)}`; feriasElements.results.abonoLine.classList.remove('hidden'); } else { feriasElements.results.abonoLine.classList.add('hidden'); }
-        if (adiantar13) { feriasElements.results.adiantamento13.textContent = `R$ ${adiantamento13.toFixed(2)}`; feriasElements.results.adiantamento13Line.classList.remove('hidden'); } else { feriasElements.results.adiantamento13Line.classList.add('hidden'); }
-        feriasElements.results.container.classList.remove('hidden');
-    }
-    
-    function executarCalculo13Salario() {
-        const salarioBruto = parseFloat(decimoTerceiroElements.form.salarioBruto.value) || 0;
-        const mesesTrabalhados = parseInt(decimoTerceiroElements.form.meses.value) || 0;
-        const numDependentes = parseInt(decimoTerceiroElements.form.dependentes.value) || 0;
-        if (salarioBruto <= 0 || mesesTrabalhados <= 0 || mesesTrabalhados > 12) { alert('Por favor, insira valores válidos para salário e meses trabalhados (1 a 12).'); return; }
-        const decimoTerceiroBruto = (salarioBruto / 12) * mesesTrabalhados;
-        const primeiraParcela = decimoTerceiroBruto / 2;
-        const segundaParcelaBruta = decimoTerceiroBruto - primeiraParcela;
-        const descontoINSS = calcularINSS(decimoTerceiroBruto);
-        const baseIRRF = decimoTerceiroBruto - descontoINSS;
-        const descontoIRRF = calcularIRRF(baseIRRF, numDependentes);
-        const segundaParcelaLiquida = segundaParcelaBruta - descontoINSS - descontoIRRF;
-        const totalLiquido = primeiraParcela + segundaParcelaLiquida;
-        decimoTerceiroElements.results.bruto.textContent = `R$ ${decimoTerceiroBruto.toFixed(2)}`;
-        decimoTerceiroElements.results.primeiraParcela.textContent = `R$ ${primeiraParcela.toFixed(2)}`;
-        decimoTerceiroElements.results.segundaParcelaBruta.textContent = `R$ ${segundaParcelaBruta.toFixed(2)}`;
-        decimoTerceiroElements.results.inss.textContent = `- R$ ${descontoINSS.toFixed(2)}`;
-        decimoTerceiroElements.results.irrf.textContent = `- R$ ${descontoIRRF.toFixed(2)}`;
-        decimoTerceiroElements.results.segundaParcelaLiquida.textContent = `R$ ${segundaParcelaLiquida.toFixed(2)}`;
-        decimoTerceiroElements.results.liquidoTotal.textContent = `R$ ${totalLiquido.toFixed(2)}`;
-        decimoTerceiroElements.results.container.classList.remove('hidden');
-    }
-
-    function executarCalculoHoraValor() {
-        const salario = parseFloat(horaValorElements.form.salario.value) || 0;
-        const horasDia = parseFloat(horaValorElements.form.horasDia.value) || 0;
-        const diasSemana = parseInt(horaValorElements.form.diasSemana.value) || 0;
-        if (salario <= 0 || horasDia <= 0 || diasSemana <= 0 || diasSemana > 7) { alert('Por favor, insira valores válidos para salário, horas por dia e dias por semana (1 a 7).'); return; }
-        const horasTrabalhadasMes = horasDia * diasSemana * 4.5;
-        const valorHora = salario / horasTrabalhadasMes;
-        const explicacao = `Cálculo: R$ ${salario.toFixed(2)} / (${diasSemana} dias * ${horasDia} horas * 4.5 semanas) = ${horasTrabalhadasMes.toFixed(1)} horas/mês.`;
-        horaValorElements.results.valorHora.textContent = `R$ ${valorHora.toFixed(2)}`;
-        horaValorElements.results.explicacao.textContent = explicacao;
-        horaValorElements.results.container.classList.remove('hidden');
-    }
-
-    function executarCalculoIRPFAnual() {
-        const rendimentos = parseFloat(irpfElements.form.rendimentosAnuais.value) || 0;
-        const saude = parseFloat(irpfElements.form.despesasSaude.value) || 0;
-        const educacao = parseFloat(irpfElements.form.despesasEducacao.value) || 0;
-        const dependentes = parseInt(irpfElements.form.dependentes.value) || 0;
-        if (rendimentos <= 0) { alert('Por favor, insira o total de rendimentos anuais.'); return; }
-        const DEDUCAO_POR_DEPENDENTE = 2275.08;
-        const LIMITE_DEDUCAO_EDUCACAO = 3561.50;
-        const LIMITE_DESCONTO_SIMPLIFICADO = 16754.34;
-        const deducaoDependentes = dependentes * DEDUCAO_POR_DEPENDENTE;
-        const deducaoEducacao = Math.min(educacao, LIMITE_DEDUCAO_EDUCACAO);
-        const totalDeducoes = deducaoDependentes + deducaoEducacao + saude;
-        const baseCalculoCompleta = rendimentos - totalDeducoes;
-        const impostoDevidoCompleta = calcularImpostoAnual(baseCalculoCompleta);
-        const descontoSimplificado = rendimentos * 0.20;
-        const descontoAplicado = Math.min(descontoSimplificado, LIMITE_DESCONTO_SIMPLIFICADO);
-        const baseCalculoSimplificada = rendimentos - descontoAplicado;
-        const impostoDevidoSimplificada = calcularImpostoAnual(baseCalculoSimplificada);
-        irpfElements.results.completa.textContent = `R$ ${impostoDevidoCompleta.toFixed(2)}`;
-        irpfElements.results.simplificada.textContent = `R$ ${impostoDevidoSimplificada.toFixed(2)}`;
-        if (impostoDevidoCompleta < impostoDevidoSimplificada) { irpfElements.results.recomendacao.textContent = "Recomendação: A Declaração COMPLETA é mais vantajosa!"; } else if (impostoDevidoSimplificada < impostoDevidoCompleta) { irpfElements.results.recomendacao.textContent = "Recomendação: A Declaração SIMPLIFICADA é mais vantajosa!"; } else { irpfElements.results.recomendacao.textContent = "Recomendação: Ambos os modelos resultam no mesmo valor de imposto."; }
-        irpfElements.results.container.classList.remove('hidden');
-    }
+    function executarCalculoSalario() { const salarioBruto = parseFloat(salarioElements.form.salarioBruto.value) || 0; const numDependentes = parseInt(salarioElements.form.dependentes.value) || 0; if (salarioBruto <= 0) { alert('Por favor, insira um valor de salário bruto válido.'); return; } const descontoINSS = calcularINSS(salarioBruto); const baseCalculoIRRF = salarioBruto - descontoINSS; const descontoIRRF = calcularIRRF(baseCalculoIRRF, numDependentes); const salarioLiquido = salarioBruto - descontoINSS - descontoIRRF; salarioElements.results.salarioBruto.textContent = `R$ ${salarioBruto.toFixed(2)}`; salarioElements.results.inss.textContent = `- R$ ${descontoINSS.toFixed(2)}`; salarioElements.results.baseIrrf.textContent = `R$ ${(baseCalculoIRRF - (numDependentes * 189.59)).toFixed(2)}`; salarioElements.results.irrf.textContent = `- R$ ${descontoIRRF.toFixed(2)}`; salarioElements.results.salarioLiquido.textContent = `R$ ${salarioLiquido.toFixed(2)}`; salarioElements.results.container.classList.remove('hidden'); }
+    function executarSimulacaoInvestimentos() { const valorInicial = parseFloat(investimentosElements.form.valorInicial.value) || 0; const aporteMensal = parseFloat(investimentosElements.form.aporteMensal.value) || 0; const taxaJurosAnual = parseFloat(investimentosElements.form.taxaJurosAnual.value) || 0; const periodoAnos = parseInt(investimentosElements.form.periodoAnos.value) || 0; if (taxaJurosAnual <= 0 || periodoAnos <= 0) { alert('Por favor, insira uma taxa de juros e um período em anos válidos.'); return; } const taxaMensal = (taxaJurosAnual / 100) / 12; const periodoMeses = periodoAnos * 12; let valorAcumulado = valorInicial; for (let i = 0; i < periodoMeses; i++) { valorAcumulado *= (1 + taxaMensal); valorAcumulado += aporteMensal; } const totalInvestido = valorInicial + (aporteMensal * periodoMeses); const totalJuros = valorAcumulado - totalInvestido; investimentosElements.results.valorFinal.textContent = `R$ ${valorAcumulado.toFixed(2)}`; investimentosElements.results.totalInvestido.textContent = `R$ ${totalInvestido.toFixed(2)}`; investimentosElements.results.totalJuros.textContent = `R$ ${totalJuros.toFixed(2)}`; investimentosElements.results.container.classList.remove('hidden'); }
+    function executarCalculoFerias() { const salarioBruto = parseFloat(feriasElements.form.salarioBruto.value) || 0; const diasFerias = parseInt(feriasElements.form.dias.value) || 0; const venderDias = feriasElements.form.venderDias.checked; const adiantar13 = feriasElements.form.adiantar13.checked; if (salarioBruto <= 0 || diasFerias <= 0) { alert('Por favor, insira valores válidos para salário e dias de férias.'); return; } const feriasBrutas = (salarioBruto / 30) * diasFerias; const tercoConstitucional = feriasBrutas / 3; const totalBrutoFerias = feriasBrutas + tercoConstitucional; const abonoPecuniario = venderDias ? (salarioBruto / 30) * 10 : 0; const adiantamento13 = adiantar13 ? salarioBruto / 2 : 0; const descontoINSS = calcularINSS(totalBrutoFerias); const baseIRRF = totalBrutoFerias - descontoINSS; const descontoIRRF = calcularIRRF(baseIRRF); const liquidoReceber = (totalBrutoFerias - descontoINSS - descontoIRRF) + abonoPecuniario + adiantamento13; feriasElements.results.feriasBrutas.textContent = `R$ ${feriasBrutas.toFixed(2)}`; feriasElements.results.tercoConstitucional.textContent = `R$ ${tercoConstitucional.toFixed(2)}`; feriasElements.results.totalBruto.textContent = `R$ ${totalBrutoFerias.toFixed(2)}`; feriasElements.results.inss.textContent = `- R$ ${descontoINSS.toFixed(2)}`; feriasElements.results.irrf.textContent = `- R$ ${descontoIRRF.toFixed(2)}`; feriasElements.results.liquido.textContent = `R$ ${liquidoReceber.toFixed(2)}`; if (venderDias) { feriasElements.results.abonoPecuniario.textContent = `R$ ${abonoPecuniario.toFixed(2)}`; feriasElements.results.abonoLine.classList.remove('hidden'); } else { feriasElements.results.abonoLine.classList.add('hidden'); } if (adiantar13) { feriasElements.results.adiantamento13.textContent = `R$ ${adiantamento13.toFixed(2)}`; feriasElements.results.adiantamento13Line.classList.remove('hidden'); } else { feriasElements.results.adiantamento13Line.classList.add('hidden'); } feriasElements.results.container.classList.remove('hidden'); }
+    function executarCalculo13Salario() { const salarioBruto = parseFloat(decimoTerceiroElements.form.salarioBruto.value) || 0; const mesesTrabalhados = parseInt(decimoTerceiroElements.form.meses.value) || 0; const numDependentes = parseInt(decimoTerceiroElements.form.dependentes.value) || 0; if (salarioBruto <= 0 || mesesTrabalhados <= 0 || mesesTrabalhados > 12) { alert('Por favor, insira valores válidos para salário e meses trabalhados (1 a 12).'); return; } const decimoTerceiroBruto = (salarioBruto / 12) * mesesTrabalhados; const primeiraParcela = decimoTerceiroBruto / 2; const segundaParcelaBruta = decimoTerceiroBruto - primeiraParcela; const descontoINSS = calcularINSS(decimoTerceiroBruto); const baseIRRF = decimoTerceiroBruto - descontoINSS; const descontoIRRF = calcularIRRF(baseIRRF, numDependentes); const segundaParcelaLiquida = segundaParcelaBruta - descontoINSS - descontoIRRF; const totalLiquido = primeiraParcela + segundaParcelaLiquida; decimoTerceiroElements.results.bruto.textContent = `R$ ${decimoTerceiroBruto.toFixed(2)}`; decimoTerceiroElements.results.primeiraParcela.textContent = `R$ ${primeiraParcela.toFixed(2)}`; decimoTerceiroElements.results.segundaParcelaBruta.textContent = `R$ ${segundaParcelaBruta.toFixed(2)}`; decimoTerceiroElements.results.inss.textContent = `- R$ ${descontoINSS.toFixed(2)}`; decimoTerceiroElements.results.irrf.textContent = `- R$ ${descontoIRRF.toFixed(2)}`; decimoTerceiroElements.results.segundaParcelaLiquida.textContent = `R$ ${segundaParcelaLiquida.toFixed(2)}`; decimoTerceiroElements.results.liquidoTotal.textContent = `R$ ${totalLiquido.toFixed(2)}`; decimoTerceiroElements.results.container.classList.remove('hidden'); }
+    function executarCalculoHoraValor() { const salario = parseFloat(horaValorElements.form.salario.value) || 0; const horasDia = parseFloat(horaValorElements.form.horasDia.value) || 0; const diasSemana = parseInt(horaValorElements.form.diasSemana.value) || 0; if (salario <= 0 || horasDia <= 0 || diasSemana <= 0 || diasSemana > 7) { alert('Por favor, insira valores válidos para salário, horas por dia e dias por semana (1 a 7).'); return; } const horasTrabalhadasMes = horasDia * diasSemana * 4.5; const valorHora = salario / horasTrabalhadasMes; const explicacao = `Cálculo: R$ ${salario.toFixed(2)} / (${diasSemana} dias * ${horasDia} horas * 4.5 semanas) = ${horasTrabalhadasMes.toFixed(1)} horas/mês.`; horaValorElements.results.valorHora.textContent = `R$ ${valorHora.toFixed(2)}`; horaValorElements.results.explicacao.textContent = explicacao; horaValorElements.results.container.classList.remove('hidden'); }
+    function executarCalculoIRPFAnual() { const rendimentos = parseFloat(irpfElements.form.rendimentosAnuais.value) || 0; const saude = parseFloat(irpfElements.form.despesasSaude.value) || 0; const educacao = parseFloat(irpfElements.form.despesasEducacao.value) || 0; const dependentes = parseInt(irpfElements.form.dependentes.value) || 0; if (rendimentos <= 0) { alert('Por favor, insira o total de rendimentos anuais.'); return; } const DEDUCAO_POR_DEPENDENTE = 2275.08; const LIMITE_DEDUCAO_EDUCACAO = 3561.50; const LIMITE_DESCONTO_SIMPLIFICADO = 16754.34; const deducaoDependentes = dependentes * DEDUCAO_POR_DEPENDENTE; const deducaoEducacao = Math.min(educacao, LIMITE_DEDUCAO_EDUCACAO); const totalDeducoes = deducaoDependentes + deducaoEducacao + saude; const baseCalculoCompleta = rendimentos - totalDeducoes; const impostoDevidoCompleta = calcularImpostoAnual(baseCalculoCompleta); const descontoSimplificado = rendimentos * 0.20; const descontoAplicado = Math.min(descontoSimplificado, LIMITE_DESCONTO_SIMPLIFICADO); const baseCalculoSimplificada = rendimentos - descontoAplicado; const impostoDevidoSimplificada = calcularImpostoAnual(baseCalculoSimplificada); irpfElements.results.completa.textContent = `R$ ${impostoDevidoCompleta.toFixed(2)}`; irpfElements.results.simplificada.textContent = `R$ ${impostoDevidoSimplificada.toFixed(2)}`; if (impostoDevidoCompleta < impostoDevidoSimplificada) { irpfElements.results.recomendacao.textContent = "Recomendação: A Declaração COMPLETA é mais vantajosa!"; } else if (impostoDevidoSimplificada < impostoDevidoCompleta) { irpfElements.results.recomendacao.textContent = "Recomendação: A Declaração SIMPLIFICADA é mais vantajosa!"; } else { irpfElements.results.recomendacao.textContent = "Recomendação: Ambos os modelos resultam no mesmo valor de imposto."; } irpfElements.results.container.classList.remove('hidden'); }
 
     // PARTE 7: REGISTO DE EVENT LISTENERS
     // ----------------------------------------------------------------------------------
@@ -217,13 +146,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if(authForms.signup) authForms.signup.addEventListener('submit', handleSignup);
     if(authButtons.logout) authButtons.logout.addEventListener('click', handleLogout);
 
-    if(dashboardButtons.salario) dashboardButtons.salario.addEventListener('click', () => showScreen('salario'));
+    if(dashboardButtons.salario) dashboardButtons.salario.addEventListener('click', () => { preencherFormulariosComPerfil(); showScreen('salario'); });
     if(dashboardButtons.investimentos) dashboardButtons.investimentos.addEventListener('click', () => showScreen('investimentos'));
-    if(dashboardButtons.ferias) dashboardButtons.ferias.addEventListener('click', () => showScreen('ferias'));
-    if(dashboardButtons.decimoTerceiro) dashboardButtons.decimoTerceiro.addEventListener('click', () => showScreen('decimoTerceiro'));
-    if(dashboardButtons.horaValor) dashboardButtons.horaValor.addEventListener('click', () => showScreen('horaValor'));
+    if(dashboardButtons.ferias) dashboardButtons.ferias.addEventListener('click', () => { preencherFormulariosComPerfil(); showScreen('ferias'); });
+    if(dashboardButtons.decimoTerceiro) dashboardButtons.decimoTerceiro.addEventListener('click', () => { preencherFormulariosComPerfil(); showScreen('decimoTerceiro'); });
+    if(dashboardButtons.horaValor) dashboardButtons.horaValor.addEventListener('click', () => { preencherFormulariosComPerfil(); showScreen('horaValor'); });
     if(dashboardButtons.irpf) dashboardButtons.irpf.addEventListener('click', () => showScreen('irpf'));
-
+    if(dashboardButtons.profile) dashboardButtons.profile.addEventListener('click', () => { preencherFormulariosComPerfil(); showScreen('profile'); });
+    
     if(salarioElements.buttons.calcular) salarioElements.buttons.calcular.addEventListener('click', executarCalculoSalario);
     if(salarioElements.buttons.voltar) salarioElements.buttons.voltar.addEventListener('click', () => showScreen('dashboard'));
     if(investimentosElements.buttons.calcular) investimentosElements.buttons.calcular.addEventListener('click', executarSimulacaoInvestimentos);
@@ -236,19 +166,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if(horaValorElements.buttons.voltar) horaValorElements.buttons.voltar.addEventListener('click', () => showScreen('dashboard'));
     if(irpfElements.buttons.calcular) irpfElements.buttons.calcular.addEventListener('click', executarCalculoIRPFAnual);
     if(irpfElements.buttons.voltar) irpfElements.buttons.voltar.addEventListener('click', () => showScreen('dashboard'));
+    if(profileElements.buttons.salvar) profileElements.buttons.salvar.addEventListener('click', handleSaveProfile);
+    if(profileElements.buttons.voltar) profileElements.buttons.voltar.addEventListener('click', () => showScreen('dashboard'));
     
     // --- Listeners do Modal ---
-    if(dashboardButtons.showAbout) dashboardButtons.showAbout.addEventListener('click', () => {
-        modalElements.overlay.classList.remove('hidden');
-    });
-    if(modalElements.closeBtn) modalElements.closeBtn.addEventListener('click', () => {
-        modalElements.overlay.classList.add('hidden');
-    });
-    if(modalElements.overlay) modalElements.overlay.addEventListener('click', (event) => {
-        if (event.target === modalElements.overlay) {
-            modalElements.overlay.classList.add('hidden');
-        }
-    });
+    if(dashboardButtons.showAbout) dashboardButtons.showAbout.addEventListener('click', () => { modalElements.overlay.classList.remove('hidden'); });
+    if(modalElements.closeBtn) modalElements.closeBtn.addEventListener('click', () => { modalElements.overlay.classList.add('hidden'); });
+    if(modalElements.overlay) modalElements.overlay.addEventListener('click', (event) => { if (event.target === modalElements.overlay) { modalElements.overlay.classList.add('hidden'); } });
 
     // --- Estado de Autenticação ---
     supabaseClient.auth.onAuthStateChange((_event, session) => { updateUserUI(session ? session.user : null); });
