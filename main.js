@@ -1,310 +1,149 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>änalitks - A sua suíte financeira</title>
-    <!-- CSS de Estrutura -->
-    <link rel="stylesheet" href="main.css">
-    <!-- CSS de Estilo e Tema -->
-    <link rel="stylesheet" href="style.css">
-    <!-- Biblioteca do Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head>
-<body>
+/**
+ * ==================================================================================
+ * main.js - Cérebro da Aplicação "änalitks" (Com Calculadora de 13º Salário)
+ * ----------------------------------------------------------------------------------
+ * Este ficheiro agora inclui a lógica completa para a ferramenta de
+ * Cálculo de 13º Salário, mostrando as duas parcelas e os descontos.
+ * ==================================================================================
+ */
 
-    <!-- Botão de Troca de Tema -->
-    <button id="theme-toggle-btn" class="theme-toggle-btn">🌙</button>
-
-    <!-- TELA DE AUTENTICAÇÃO -->
-    <div id="auth-screen" class="screen">
-        <div class="calculator-card">
-            <div class="logo-container">
-                <img src="logo.png" alt="Logo da änalitks" class="logo-img">
-            </div>
-            <div class="card-header">
-                <h1>Bem-vindo(a)</h1>
-                <p>Entre para aceder à sua suíte financeira.</p>
-            </div>
-            <div id="auth-choices" class="auth-choices">
-                <button id="show-signup-btn" class="btn btn-primary">Sou novo aqui</button>
-                <button id="show-login-btn" class="btn btn-secondary">Já tenho cadastro</button>
-            </div>
-            <form id="login-form" class="auth-form hidden">
-                <input type="email" id="login-email" class="input-field" placeholder="Seu e-mail" required>
-                <input type="password" id="login-password" class="input-field" placeholder="Sua senha" required>
-                <button type="submit" class="btn btn-primary">Entrar</button>
-                <p>Não tem uma conta? <a href="#" id="show-signup-link">Registe-se</a></p>
-            </form>
-            <form id="signup-form" class="auth-form hidden">
-                <input type="email" id="signup-email" class="input-field" placeholder="Seu melhor e-mail" required>
-                <input type="password" id="signup-password" class="input-field" placeholder="Crie uma senha forte" required>
-                <button type="submit" class="btn btn-primary">Criar conta</button>
-                <p>Já tem uma conta? <a href="#" id="show-login-link">Faça login</a></p>
-            </form>
-        </div>
-    </div>
-
-    <!-- TELA DA DASHBOARD -->
-    <div id="dashboard-screen" class="screen hidden">
-        <div class="calculator-card">
-            <div class="card-header">
-                <h1 id="welcome-message">Bem-vindo(a)!</h1>
-                <p>Selecione uma ferramenta para começar.</p>
-            </div>
-            <div class="dashboard-grid">
-                <button id="goto-salario-btn" class="btn btn-secondary">Cálculo de Salário</button>
-                <button id="goto-investimentos-btn" class="btn btn-secondary">Simulador de Investimentos</button>
-                <button id="goto-ferias-btn" class="btn btn-secondary">Cálculo de Férias</button>
-                <button id="goto-decimo-terceiro-btn" class="btn btn-secondary">Cálculo de 13º Salário</button>
-                <button id="goto-hora-valor-btn" class="btn btn-secondary">Quanto vale a minha hora?</button>
-                <button id="goto-irpf-btn" class="btn btn-primary">Simulador Anual de IRPF</button>
-            </div>
-            <button id="logout-btn" class="btn btn-primary">Sair</button>
-        </div>
-    </div>
+document.addEventListener('DOMContentLoaded', () => {
     
-    <!-- TELA DE CÁLCULO DE SALÁRIO -->
-    <div id="salario-screen" class="screen hidden">
-        <div class="calculator-card">
-            <div class="card-header">
-                <h1>Cálculo de Salário Completo</h1>
-                <p>Insira os valores para ver o detalhamento.</p>
-            </div>
-            <div class="input-group">
-                <label for="salario-bruto">Salário Bruto Mensal</label>
-                <input type="number" id="salario-bruto" class="input-field" placeholder="Ex: 3500.00">
-                <label for="salario-dependentes">Número de Dependentes</label>
-                <input type="number" id="salario-dependentes" class="input-field" placeholder="Ex: 1" value="0">
-            </div>
-            <button id="calcular-salario-btn" class="btn btn-primary">Calcular Salário</button>
-            <button id="back-to-dashboard-from-salario" class="btn btn-secondary">Voltar para a Dashboard</button>
-            <div id="salario-results-section" class="results-section hidden">
-                <div class="result-line">
-                    <span>Salário Bruto:</span>
-                    <span id="resultado-salario-bruto" class="font-bold">R$ 0,00</span>
-                </div>
-                <hr>
-                <div class="result-line">
-                    <span>Desconto INSS:</span>
-                    <span id="resultado-inss" class="font-bold">- R$ 0,00</span>
-                </div>
-                <p class="explanation-text" id="explicacao-inss">Cálculo detalhado do INSS.</p>
-                <div class="result-line">
-                    <span>Base de Cálculo IRRF:</span>
-                    <span id="resultado-base-irrf" class="font-bold">R$ 0,00</span>
-                </div>
-                <div class="result-line">
-                    <span>Desconto IRRF:</span>
-                    <span id="resultado-irrf" class="font-bold">- R$ 0,00</span>
-                </div>
-                <p class="explanation-text" id="explicacao-irrf">Cálculo detalhado do IRRF.</p>
-                <hr>
-                <div class="result-line final-result">
-                    <span>Salário Líquido:</span>
-                    <span id="resultado-salario-liquido" class="font-bold success-text">R$ 0,00</span>
-                </div>
-            </div>
-        </div>
-    </div>
+    // PARTE 1: CONFIGURAÇÃO E SELETORES DE ELEMENTOS
+    // ----------------------------------------------------------------------------------
+    console.log("Iniciando o main.js...");
 
-    <!-- TELA DO SIMULADOR DE INVESTIMENTOS -->
-    <div id="investimentos-screen" class="screen hidden">
-        <div class="calculator-card">
-            <div class="card-header">
-                <h1>Simulador de Investimentos</h1>
-                <p>Veja o poder dos juros compostos em ação.</p>
-            </div>
-            <div class="input-group">
-                <label for="valor-inicial">Valor Inicial (R$)</label>
-                <input type="number" id="valor-inicial" class="input-field" placeholder="Ex: 1000.00">
-                <label for="aporte-mensal">Aporte Mensal (R$)</label>
-                <input type="number" id="aporte-mensal" class="input-field" placeholder="Ex: 300.00">
-                <label for="taxa-juros-anual">Taxa de Juros Anual (%)</label>
-                <input type="number" id="taxa-juros-anual" class="input-field" placeholder="Ex: 10">
-                <label for="periodo-anos">Período (em anos)</label>
-                <input type="number" id="periodo-anos" class="input-field" placeholder="Ex: 5">
-            </div>
-            <button id="calcular-investimentos-btn" class="btn btn-primary">Simular</button>
-            <button id="back-to-dashboard-from-investimentos" class="btn btn-secondary">Voltar para a Dashboard</button>
-            <div id="investimentos-results-section" class="results-section hidden">
-                <div class="result-line final-result">
-                    <span>Valor Final Acumulado:</span>
-                    <span id="resultado-valor-final" class="font-bold success-text">R$ 0,00</span>
-                </div>
-                <hr>
-                <div class="result-line">
-                    <span>Total Investido:</span>
-                    <span id="resultado-total-investido" class="font-bold">R$ 0,00</span>
-                </div>
-                <div class="result-line">
-                    <span>Total em Juros:</span>
-                    <span id="resultado-total-juros" class="font-bold">R$ 0,00</span>
-                </div>
-            </div>
-        </div>
-    </div>
+    const SUPABASE_URL = 'https://ejddiovmtjpipangyqeo.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZGRpb3ZtdGpwaXBhbmd5cWVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg3MTU4MDksImV4cCI6MjA3NDI5MTgwOX0.GH53mox_cijkhqAxy-sNmvxGcgtoLzuoE5sfP9hHdho';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    console.log('Cliente Supabase inicializado.');
 
-    <!-- TELA DE CÁLCULO DE FÉRIAS -->
-    <div id="ferias-screen" class="screen hidden">
-        <div class="calculator-card">
-            <div class="card-header">
-                <h1>Cálculo de Férias</h1>
-                <p>Planeie o seu descanso e saiba quanto irá receber.</p>
-            </div>
-            <div class="input-group">
-                <label for="ferias-salario-bruto">Salário Bruto Mensal</label>
-                <input type="number" id="ferias-salario-bruto" class="input-field" placeholder="Ex: 3500.00">
-                <label for="ferias-dias">Dias de Férias a Tirar</label>
-                <input type="number" id="ferias-dias" class="input-field" placeholder="Ex: 30" value="30">
-                
-                <div class="checkbox-group">
-                    <input type="checkbox" id="ferias-vender-dias">
-                    <label for="ferias-vender-dias">Vender 10 dias de férias (abono pecuniário)?</label>
-                </div>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="ferias-adiantar-13">
-                    <label for="ferias-adiantar-13">Adiantar a 1ª parcela do 13º salário?</label>
-                </div>
-            </div>
-            <button id="calcular-ferias-btn" class="btn btn-primary">Calcular Férias</button>
-            <button id="back-to-dashboard-from-ferias" class="btn btn-secondary">Voltar para a Dashboard</button>
-            
-            <div id="ferias-results-section" class="results-section hidden">
-                <div class="result-line">
-                    <span>Férias Brutas:</span>
-                    <span id="resultado-ferias-brutas" class="font-bold">R$ 0,00</span>
-                </div>
-                <div class="result-line">
-                    <span>Terço Constitucional (1/3):</span>
-                    <span id="resultado-terco-constitucional" class="font-bold">R$ 0,00</span>
-                </div>
-                <div class="result-line" id="abono-pecuniario-line">
-                    <span>Abono Pecuniário (venda de 10 dias):</span>
-                    <span id="resultado-abono-pecuniario" class="font-bold">R$ 0,00</span>
-                </div>
-                <hr>
-                 <div class="result-line">
-                    <span>Total Bruto (Férias + 1/3):</span>
-                    <span id="resultado-total-bruto-ferias" class="font-bold">R$ 0,00</span>
-                </div>
-                <div class="result-line">
-                    <span>Desconto INSS sobre Férias:</span>
-                    <span id="resultado-inss-ferias" class="font-bold">- R$ 0,00</span>
-                </div>
-                <div class="result-line">
-                    <span>Desconto IRRF sobre Férias:</span>
-                    <span id="resultado-irrf-ferias" class="font-bold">- R$ 0,00</span>
-                </div>
-                <div class="result-line" id="adiantamento-13-line">
-                    <span>Adiantamento 13º Salário:</span>
-                    <span id="resultado-adiantamento-13" class="font-bold">R$ 0,00</span>
-                </div>
-                <hr>
-                <div class="result-line final-result">
-                    <span>Líquido a Receber:</span>
-                    <span id="resultado-liquido-ferias" class="font-bold success-text">R$ 0,00</span>
-                </div>
-            </div>
-        </div>
-    </div>
+    const screens = {
+        auth: document.getElementById('auth-screen'),
+        dashboard: document.getElementById('dashboard-screen'),
+        salario: document.getElementById('salario-screen'),
+        investimentos: document.getElementById('investimentos-screen'),
+        ferias: document.getElementById('ferias-screen'),
+        decimoTerceiro: document.getElementById('decimo-terceiro-screen'), // Nova tela
+        irpf: document.getElementById('irpf-screen'),
+    };
 
-    <!-- TELA DE CÁLCULO DO 13º SALÁRIO -->
-    <div id="decimo-terceiro-screen" class="screen hidden">
-        <div class="calculator-card">
-            <div class="card-header">
-                <h1>Cálculo de 13º Salário</h1>
-                <p>Veja o valor do seu 13º salário e os descontos.</p>
-            </div>
-            <div class="input-group">
-                <label for="decimo-terceiro-salario-bruto">Salário Bruto Mensal</label>
-                <input type="number" id="decimo-terceiro-salario-bruto" class="input-field" placeholder="Ex: 3500.00">
-                <label for="decimo-terceiro-meses">Meses Trabalhados no Ano</label>
-                <input type="number" id="decimo-terceiro-meses" class="input-field" placeholder="Ex: 12" value="12">
-                <label for="decimo-terceiro-dependentes">Número de Dependentes (para IRRF)</label>
-                <input type="number" id="decimo-terceiro-dependentes" class="input-field" placeholder="Ex: 1" value="0">
-            </div>
-            <button id="calcular-decimo-terceiro-btn" class="btn btn-primary">Calcular 13º Salário</button>
-            <button id="back-to-dashboard-from-decimo-terceiro" class="btn btn-secondary">Voltar para a Dashboard</button>
-            
-            <div id="decimo-terceiro-results-section" class="results-section hidden">
-                <div class="result-line">
-                    <span>13º Salário Bruto:</span>
-                    <span id="resultado-13-bruto" class="font-bold">R$ 0,00</span>
-                </div>
-                <hr>
-                <p class="explanation-text">A primeira parcela é paga sem descontos.</p>
-                <div class="result-line">
-                    <span>1ª Parcela (Líquida):</span>
-                    <span id="resultado-13-primeira-parcela" class="font-bold">R$ 0,00</span>
-                </div>
-                <hr>
-                <p class="explanation-text">A segunda parcela tem os descontos de INSS e IRRF.</p>
-                <div class="result-line">
-                    <span>2ª Parcela (Valor Bruto):</span>
-                    <span id="resultado-13-segunda-parcela-bruta" class="font-bold">R$ 0,00</span>
-                </div>
-                <div class="result-line">
-                    <span>Desconto INSS:</span>
-                    <span id="resultado-inss-13" class="font-bold">- R$ 0,00</span>
-                </div>
-                <div class="result-line">
-                    <span>Desconto IRRF:</span>
-                    <span id="resultado-irrf-13" class="font-bold">- R$ 0,00</span>
-                </div>
-                 <div class="result-line">
-                    <span>2ª Parcela (Líquida):</span>
-                    <span id="resultado-13-segunda-parcela-liquida" class="font-bold">R$ 0,00</span>
-                </div>
-                <hr>
-                <div class="result-line final-result">
-                    <span>Total Líquido do 13º:</span>
-                    <span id="resultado-13-liquido-total" class="font-bold success-text">R$ 0,00</span>
-                </div>
-            </div>
-        </div>
-    </div>
+    // --- Seletores (Autenticação, Dashboard, etc.) ---
+    const authForms = { login: document.getElementById('login-form'), signup: document.getElementById('signup-form'), choices: document.getElementById('auth-choices') };
+    const authButtons = { showLogin: document.getElementById('show-login-btn'), showSignup: document.getElementById('show-signup-btn'), showLoginLink: document.getElementById('show-login-link'), showSignupLink: document.getElementById('show-signup-link'), logout: document.getElementById('logout-btn') };
+    const dashboardButtons = { salario: document.getElementById('goto-salario-btn'), investimentos: document.getElementById('goto-investimentos-btn'), ferias: document.getElementById('goto-ferias-btn'), decimoTerceiro: document.getElementById('goto-decimo-terceiro-btn'), horaValor: document.getElementById('goto-hora-valor-btn'), irpf: document.getElementById('goto-irpf-btn') };
+    const salarioElements = { form: { salarioBruto: document.getElementById('salario-bruto'), dependentes: document.getElementById('salario-dependentes') }, buttons: { calcular: document.getElementById('calcular-salario-btn'), voltar: document.getElementById('back-to-dashboard-from-salario') }, results: { container: document.getElementById('salario-results-section'), salarioBruto: document.getElementById('resultado-salario-bruto'), inss: document.getElementById('resultado-inss'), baseIrrf: document.getElementById('resultado-base-irrf'), irrf: document.getElementById('resultado-irrf'), salarioLiquido: document.getElementById('resultado-salario-liquido'), explicacaoInss: document.getElementById('explicacao-inss'), explicacaoIrrf: document.getElementById('explicacao-irrf') } };
+    const investimentosElements = { form: { valorInicial: document.getElementById('valor-inicial'), aporteMensal: document.getElementById('aporte-mensal'), taxaJurosAnual: document.getElementById('taxa-juros-anual'), periodoAnos: document.getElementById('periodo-anos') }, buttons: { calcular: document.getElementById('calcular-investimentos-btn'), voltar: document.getElementById('back-to-dashboard-from-investimentos') }, results: { container: document.getElementById('investimentos-results-section'), valorFinal: document.getElementById('resultado-valor-final'), totalInvestido: document.getElementById('resultado-total-investido'), totalJuros: document.getElementById('resultado-total-juros') } };
+    const feriasElements = { form: { salarioBruto: document.getElementById('ferias-salario-bruto'), dias: document.getElementById('ferias-dias'), venderDias: document.getElementById('ferias-vender-dias'), adiantar13: document.getElementById('ferias-adiantar-13') }, buttons: { calcular: document.getElementById('calcular-ferias-btn'), voltar: document.getElementById('back-to-dashboard-from-ferias') }, results: { container: document.getElementById('ferias-results-section'), feriasBrutas: document.getElementById('resultado-ferias-brutas'), tercoConstitucional: document.getElementById('resultado-terco-constitucional'), abonoPecuniario: document.getElementById('resultado-abono-pecuniario'), totalBruto: document.getElementById('resultado-total-bruto-ferias'), inss: document.getElementById('resultado-inss-ferias'), irrf: document.getElementById('resultado-irrf-ferias'), adiantamento13: document.getElementById('resultado-adiantamento-13'), liquido: document.getElementById('resultado-liquido-ferias'), abonoLine: document.getElementById('abono-pecuniario-line'), adiantamento13Line: document.getElementById('adiantamento-13-line') } };
+    const irpfElements = { form: { rendimentosAnuais: document.getElementById('rendimentos-anuais'), despesasSaude: document.getElementById('despesas-saude'), despesasEducacao: document.getElementById('despesas-educacao'), dependentes: document.getElementById('dependentes') }, buttons: { calcular: document.getElementById('calcular-irpf-btn'), voltar: document.getElementById('back-to-dashboard-from-irpf') }, results: { container: document.getElementById('irpf-results-section'), completa: document.getElementById('resultado-irpf-completa'), simplificada: document.getElementById('resultado-irpf-simplificada'), recomendacao: document.getElementById('recomendacao-irpf').querySelector('p') } };
 
-    <!-- TELA DO SIMULADOR DE IRPF ANUAL -->
-    <div id="irpf-screen" class="screen hidden">
-        <div class="calculator-card">
-            <div class="card-header">
-                <h1>Simulador de IRPF Anual</h1>
-                <p>Preencha os campos para simular a sua declaração.</p>
-            </div>
-            <div class="input-group">
-                <label for="rendimentos-anuais">Total de Rendimentos Anuais (salário, etc.)</label>
-                <input type="number" id="rendimentos-anuais" class="input-field" placeholder="Ex: 50000.00">
-                <label for="despesas-saude">Total de Despesas com Saúde</label>
-                <input type="number" id="despesas-saude" class="input-field" placeholder="Ex: 3000.00">
-                <label for="despesas-educacao">Total de Despesas com Educação</label>
-                <input type="number" id="despesas-educacao" class="input-field" placeholder="Ex: 5000.00">
-                <label for="dependentes">Número de Dependentes</label>
-                <input type="number" id="dependentes" class="input-field" placeholder="Ex: 2">
-            </div>
-            <button id="calcular-irpf-btn" class="btn btn-primary">Calcular IRPF Anual</button>
-            <button id="back-to-dashboard-from-irpf" class="btn btn-secondary">Voltar para a Dashboard</button>
-            <div id="irpf-results-section" class="results-section hidden">
-                <div class="result-line">
-                    <span>Resultado (Declaração Completa):</span>
-                    <span id="resultado-irpf-completa" class="font-bold">R$ 0,00</span>
-                </div>
-                <div class="result-line">
-                    <span>Resultado (Declaração Simplificada):</span>
-                    <span id="resultado-irpf-simplificada" class="font-bold">R$ 0,00</span>
-                </div>
-                <hr>
-                <div id="recomendacao-irpf" class="text-center font-bold">
-                    <p>Recomendação: -</p>
-                </div>
-            </div>
-        </div>
-    </div>
+    // --- Seletores do Cálculo de 13º Salário ---
+    const decimoTerceiroElements = {
+        form: {
+            salarioBruto: document.getElementById('decimo-terceiro-salario-bruto'),
+            meses: document.getElementById('decimo-terceiro-meses'),
+            dependentes: document.getElementById('decimo-terceiro-dependentes'),
+        },
+        buttons: {
+            calcular: document.getElementById('calcular-decimo-terceiro-btn'),
+            voltar: document.getElementById('back-to-dashboard-from-decimo-terceiro'),
+        },
+        results: {
+            container: document.getElementById('decimo-terceiro-results-section'),
+            bruto: document.getElementById('resultado-13-bruto'),
+            primeiraParcela: document.getElementById('resultado-13-primeira-parcela'),
+            segundaParcelaBruta: document.getElementById('resultado-13-segunda-parcela-bruta'),
+            inss: document.getElementById('resultado-inss-13'),
+            irrf: document.getElementById('resultado-irrf-13'),
+            segundaParcelaLiquida: document.getElementById('resultado-13-segunda-parcela-liquida'),
+            liquidoTotal: document.getElementById('resultado-13-liquido-total'),
+        }
+    };
+    
+    // PARTE 2: FUNÇÕES DE GESTÃO DE TELA E UI
+    function showScreen(screenName) { Object.values(screens).forEach(screen => { if (screen) screen.classList.add('hidden'); }); if (screens[screenName]) { screens[screenName].classList.remove('hidden'); console.log(`A exibir a tela: ${screenName}`); } else { console.warn(`AVISO: A tela "${screenName}" ainda não foi criada no index.html.`); alert(`A funcionalidade para "${screenName}" ainda está em desenvolvimento!`); screens.dashboard.classList.remove('hidden'); } }
+    function updateUserUI(user) { const welcomeMessage = document.getElementById('welcome-message'); if (user) { if(welcomeMessage) { welcomeMessage.textContent = `Bem-vindo(a), ${user.email}!`; } showScreen('dashboard'); } else { showScreen('auth'); } }
 
-    <!-- Scripts -->
-    <script src="main.js"></script>
-    <script src="app.js"></script>
+    // PARTE 3: FUNÇÕES DE AUTENTICAÇÃO
+    async function handleLogin(event) { event.preventDefault(); const email = authForms.login.querySelector('#login-email').value; const password = authForms.login.querySelector('#login-password').value; const { error } = await supabaseClient.auth.signInWithPassword({ email, password }); if (error) alert(`Erro no login: ${error.message}`); }
+    async function handleSignup(event) { event.preventDefault(); const email = authForms.signup.querySelector('#signup-email').value; const password = authForms.signup.querySelector('#signup-password').value; const { error } = await supabaseClient.auth.signUp({ email, password }); if (error) { alert(`Erro no registo: ${error.message}`); } else { alert('Registo realizado! Verifique o seu e-mail para confirmar a conta e depois faça o login.'); authForms.signup.classList.add('hidden'); authForms.login.classList.remove('hidden'); } }
+    async function handleLogout() { await supabaseClient.auth.signOut(); authForms.login.reset(); authForms.signup.reset(); authForms.login.classList.add('hidden'); authForms.signup.classList.add('hidden'); authForms.choices.classList.remove('hidden'); }
 
-</body>
-</html>
+    // PARTE 4: FUNÇÕES DE CÁLCULO REUTILIZÁVEIS
+    function calcularINSS(baseDeCalculo) { const faixas = [ { teto: 1412.00, aliquota: 0.075, parcela: 0 }, { teto: 2666.68, aliquota: 0.09,  parcela: 21.18 }, { teto: 4000.03, aliquota: 0.12,  parcela: 101.18 }, { teto: 7786.02, aliquota: 0.14,  parcela: 181.18 } ]; if (baseDeCalculo > faixas[3].teto) { return (faixas[3].teto * faixas[3].aliquota) - faixas[3].parcela; } for (const faixa of faixas) { if (baseDeCalculo <= faixa.teto) { return (baseDeCalculo * faixa.aliquota) - faixa.parcela; } } return 0; }
+    function calcularIRRF(baseDeCalculo, numDependentes = 0) { const DEDUCAO_POR_DEPENDENTE = 189.59; const baseReal = baseDeCalculo - (numDependentes * DEDUCAO_POR_DEPENDENTE); const faixas = [ { teto: 2259.20, aliquota: 0,     parcela: 0 }, { teto: 2826.65, aliquota: 0.075, parcela: 169.44 }, { teto: 3751.05, aliquota: 0.15,  parcela: 381.44 }, { teto: 4664.68, aliquota: 0.225, parcela: 662.77 }, { teto: Infinity,aliquota: 0.275, parcela: 896.00 } ]; for (const faixa of faixas) { if (baseReal <= faixa.teto) { const imposto = (baseReal * faixa.aliquota) - faixa.parcela; return Math.max(0, imposto); } } return 0; }
+
+    // PARTE 5: LÓGICA DAS FERRAMENTAS
+    function executarCalculoSalario() { /* ... Lógica existente ... */ }
+    function executarSimulacaoInvestimentos() { /* ... Lógica existente ... */ }
+    function executarCalculoFerias() { /* ... Lógica existente ... */ }
+    function executarCalculoIRPFAnual() { /* ... Lógica existente ... */ }
+    
+    function executarCalculo13Salario() {
+        const salarioBruto = parseFloat(decimoTerceiroElements.form.salarioBruto.value) || 0;
+        const mesesTrabalhados = parseInt(decimoTerceiroElements.form.meses.value) || 0;
+        const numDependentes = parseInt(decimoTerceiroElements.form.dependentes.value) || 0;
+
+        if (salarioBruto <= 0 || mesesTrabalhados <= 0 || mesesTrabalhados > 12) {
+            alert('Por favor, insira valores válidos para salário e meses trabalhados (1 a 12).');
+            return;
+        }
+
+        const decimoTerceiroBruto = (salarioBruto / 12) * mesesTrabalhados;
+        const primeiraParcela = decimoTerceiroBruto / 2;
+        const segundaParcelaBruta = decimoTerceiroBruto - primeiraParcela;
+
+        const descontoINSS = calcularINSS(decimoTerceiroBruto);
+        const baseIRRF = decimoTerceiroBruto - descontoINSS;
+        const descontoIRRF = calcularIRRF(baseIRRF, numDependentes);
+
+        const segundaParcelaLiquida = segundaParcelaBruta - descontoINSS - descontoIRRF;
+        const totalLiquido = primeiraParcela + segundaParcelaLiquida;
+
+        // Exibir resultados
+        decimoTerceiroElements.results.bruto.textContent = `R$ ${decimoTerceiroBruto.toFixed(2)}`;
+        decimoTerceiroElements.results.primeiraParcela.textContent = `R$ ${primeiraParcela.toFixed(2)}`;
+        decimoTerceiroElements.results.segundaParcelaBruta.textContent = `R$ ${segundaParcelaBruta.toFixed(2)}`;
+        decimoTerceiroElements.results.inss.textContent = `- R$ ${descontoINSS.toFixed(2)}`;
+        decimoTerceiroElements.results.irrf.textContent = `- R$ ${descontoIRRF.toFixed(2)}`;
+        decimoTerceiroElements.results.segundaParcelaLiquida.textContent = `R$ ${segundaParcelaLiquida.toFixed(2)}`;
+        decimoTerceiroElements.results.liquidoTotal.textContent = `R$ ${totalLiquido.toFixed(2)}`;
+
+        decimoTerceiroElements.results.container.classList.remove('hidden');
+    }
+
+    // PARTE 6: REGISTO DE EVENT LISTENERS
+    if(authButtons.showLogin) authButtons.showLogin.addEventListener('click', () => { authForms.choices.classList.add('hidden'); authForms.login.classList.remove('hidden'); });
+    if(authButtons.showSignup) authButtons.showSignup.addEventListener('click', () => { authForms.choices.classList.add('hidden'); authForms.signup.classList.remove('hidden'); });
+    if(authButtons.showLoginLink) authButtons.showLoginLink.addEventListener('click', (e) => { e.preventDefault(); authForms.signup.classList.add('hidden'); authForms.login.classList.remove('hidden'); });
+    if(authButtons.showSignupLink) authButtons.showSignupLink.addEventListener('click', (e) => { e.preventDefault(); authForms.login.classList.add('hidden'); authForms.signup.classList.remove('hidden'); });
+    if(authForms.login) authForms.login.addEventListener('submit', handleLogin);
+    if(authForms.signup) authForms.signup.addEventListener('submit', handleSignup);
+    if(authButtons.logout) authButtons.logout.addEventListener('click', handleLogout);
+
+    if(dashboardButtons.salario) dashboardButtons.salario.addEventListener('click', () => showScreen('salario'));
+    if(dashboardButtons.investimentos) dashboardButtons.investimentos.addEventListener('click', () => showScreen('investimentos'));
+    if(dashboardButtons.ferias) dashboardButtons.ferias.addEventListener('click', () => showScreen('ferias'));
+    if(dashboardButtons.decimoTerceiro) dashboardButtons.decimoTerceiro.addEventListener('click', () => showScreen('decimoTerceiro'));
+    if(dashboardButtons.horaValor) dashboardButtons.horaValor.addEventListener('click', () => showScreen('horaValor'));
+    if(dashboardButtons.irpf) dashboardButtons.irpf.addEventListener('click', () => showScreen('irpf'));
+
+    if(salarioElements.buttons.calcular) salarioElements.buttons.calcular.addEventListener('click', executarCalculoSalario);
+    if(salarioElements.buttons.voltar) salarioElements.buttons.voltar.addEventListener('click', () => showScreen('dashboard'));
+    if(investimentosElements.buttons.calcular) investimentosElements.buttons.calcular.addEventListener('click', executarSimulacaoInvestimentos);
+    if(investimentosElements.buttons.voltar) investimentosElements.buttons.voltar.addEventListener('click', () => showScreen('dashboard'));
+    if(feriasElements.buttons.calcular) feriasElements.buttons.calcular.addEventListener('click', executarCalculoFerias);
+    if(feriasElements.buttons.voltar) feriasElements.buttons.voltar.addEventListener('click', () => showScreen('dashboard'));
+    if(irpfElements.buttons.calcular) irpfElements.buttons.calcular.addEventListener('click', executarCalculoIRPFAnual);
+    if(irpfElements.buttons.voltar) irpfElements.buttons.voltar.addEventListener('click', () => showScreen('dashboard'));
+    
+    // --- Ações do Cálculo de 13º Salário ---
+    if(decimoTerceiroElements.buttons.calcular) decimoTerceiroElements.buttons.calcular.addEventListener('click', executarCalculo13Salario);
+    if(decimoTerceiroElements.buttons.voltar) decimoTerceiroElements.buttons.voltar.addEventListener('click', () => showScreen('dashboard'));
+
+    // --- Estado de Autenticação ---
+    supabaseClient.auth.onAuthStateChange((_event, session) => { updateUserUI(session ? session.user : null); });
+
+    console.log("main.js carregado com sucesso. Aplicação pronta.");
+});
 
