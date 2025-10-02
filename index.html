@@ -71,19 +71,14 @@
                 <h1>Cálculo de Salário Completo</h1>
                 <p>Insira os valores para ver o detalhamento.</p>
             </div>
-
             <div class="input-group">
                 <label for="salario-bruto">Salário Bruto Mensal</label>
                 <input type="number" id="salario-bruto" class="input-field" placeholder="Ex: 3500.00">
-                
                 <label for="salario-dependentes">Número de Dependentes</label>
                 <input type="number" id="salario-dependentes" class="input-field" placeholder="Ex: 1" value="0">
             </div>
-
             <button id="calcular-salario-btn" class="btn btn-primary">Calcular Salário</button>
             <button id="back-to-dashboard-from-salario" class="btn btn-secondary">Voltar para a Dashboard</button>
-
-            <!-- Seção de Resultados do Salário -->
             <div id="salario-results-section" class="results-section hidden">
                 <div class="result-line">
                     <span>Salário Bruto:</span>
@@ -95,12 +90,10 @@
                     <span id="resultado-inss" class="font-bold">- R$ 0,00</span>
                 </div>
                 <p class="explanation-text" id="explicacao-inss">Cálculo detalhado do INSS.</p>
-                
                 <div class="result-line">
                     <span>Base de Cálculo IRRF:</span>
                     <span id="resultado-base-irrf" class="font-bold">R$ 0,00</span>
                 </div>
-
                 <div class="result-line">
                     <span>Desconto IRRF:</span>
                     <span id="resultado-irrf" class="font-bold">- R$ 0,00</span>
@@ -110,6 +103,43 @@
                 <div class="result-line final-result">
                     <span>Salário Líquido:</span>
                     <span id="resultado-salario-liquido" class="font-bold success-text">R$ 0,00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TELA DO SIMULADOR DE INVESTIMENTOS -->
+    <div id="investimentos-screen" class="screen hidden">
+        <div class="calculator-card">
+            <div class="card-header">
+                <h1>Simulador de Investimentos</h1>
+                <p>Veja o poder dos juros compostos em ação.</p>
+            </div>
+            <div class="input-group">
+                <label for="valor-inicial">Valor Inicial (R$)</label>
+                <input type="number" id="valor-inicial" class="input-field" placeholder="Ex: 1000.00">
+                <label for="aporte-mensal">Aporte Mensal (R$)</label>
+                <input type="number" id="aporte-mensal" class="input-field" placeholder="Ex: 300.00">
+                <label for="taxa-juros-anual">Taxa de Juros Anual (%)</label>
+                <input type="number" id="taxa-juros-anual" class="input-field" placeholder="Ex: 10">
+                <label for="periodo-anos">Período (em anos)</label>
+                <input type="number" id="periodo-anos" class="input-field" placeholder="Ex: 5">
+            </div>
+            <button id="calcular-investimentos-btn" class="btn btn-primary">Simular</button>
+            <button id="back-to-dashboard-from-investimentos" class="btn btn-secondary">Voltar para a Dashboard</button>
+            <div id="investimentos-results-section" class="results-section hidden">
+                <div class="result-line final-result">
+                    <span>Valor Final Acumulado:</span>
+                    <span id="resultado-valor-final" class="font-bold success-text">R$ 0,00</span>
+                </div>
+                <hr>
+                <div class="result-line">
+                    <span>Total Investido:</span>
+                    <span id="resultado-total-investido" class="font-bold">R$ 0,00</span>
+                </div>
+                <div class="result-line">
+                    <span>Total em Juros:</span>
+                    <span id="resultado-total-juros" class="font-bold">R$ 0,00</span>
                 </div>
             </div>
         </div>
