@@ -45,13 +45,15 @@
         </div>
     </div>
 
-    <!-- TELA DA DASHBOARD -->
+    <!-- TELA DA DASHBOARD (ATUALIZADA) -->
     <div id="dashboard-screen" class="screen hidden">
         <div class="calculator-card">
             <div class="card-header">
                 <h1 id="welcome-message">Bem-vindo(a)!</h1>
                 <p>Selecione uma ferramenta para começar.</p>
+                <p id="dashboard-quote" class="explanation-text"></p> <!-- Espaço para a frase/dica -->
             </div>
+            
             <div class="dashboard-grid">
                 <button id="goto-salario-btn" class="btn btn-secondary">Cálculo de Salário</button>
                 <button id="goto-investimentos-btn" class="btn btn-secondary">Simulador de Investimentos</button>
@@ -60,7 +62,11 @@
                 <button id="goto-hora-valor-btn" class="btn btn-secondary">Quanto vale a minha hora?</button>
                 <button id="goto-irpf-btn" class="btn btn-primary">Simulador Anual de IRPF</button>
             </div>
-            <button id="logout-btn" class="btn btn-primary">Sair</button>
+
+            <div class="dashboard-footer">
+                <button id="show-about-btn" class="btn btn-secondary">Sobre o Projeto</button>
+                <button id="logout-btn" class="btn btn-primary">Sair</button>
+            </div>
         </div>
     </div>
     
@@ -265,7 +271,7 @@
         </div>
     </div>
 
-    <!-- TELA "QUANTO VALE A MINHA HORA?" (ATUALIZADA) -->
+    <!-- TELA "QUANTO VALE A MINHA HORA?" -->
     <div id="hora-valor-screen" class="screen hidden">
         <div class="calculator-card">
             <div class="card-header">
@@ -328,6 +334,29 @@
             </div>
         </div>
     </div>
+
+    <!-- MODAL SOBRE NÓS (NOVO) -->
+    <div id="about-modal-overlay" class="modal-overlay hidden">
+        <div class="calculator-card">
+            <div class="modal-header">
+                <h1>Sobre a änalitks</h1>
+                <button id="close-about-btn" class="close-btn">&times;</button>
+            </div>
+            <p class="brasao">"aqui o futuro e o passado tem a mesma frase"</p>
+            
+            <h2>A Nossa Missão</h2>
+            <p>A "änalitks" nasceu de uma pergunta simples: como podemos dar ao trabalhador brasileiro as mesmas ferramentas de análise financeira que os grandes especialistas usam, mas de forma simples, transparente e gratuita?</p>
+            <p>A nossa missão é descodificar o "financês". Acreditamos que, ao entender exatamente para onde vai cada cêntimo do seu salário, como os seus investimentos podem crescer e como se planear para o futuro, você ganha o poder de tomar as melhores decisões.</p>
+            
+            <h2>Desenvolvimento</h2>
+            <ul>
+                <li><strong>Criado por:</strong> Sandro V. Lima, Kauan S. Mota e Erick C. Cardoso</li>
+                <li><strong>Projeto:</strong> Trabalho de Conclusão de Curso - Análise e Desenvolvimento de Sistemas (ADS)</li>
+                <li><strong>Tecnologias:</strong> Construído com HTML, CSS e JavaScript puros, com o Supabase a potenciar a gestão segura de utilizadores.</li>
+            </ul>
+        </div>
+    </div>
+
 
     <!-- Scripts -->
     <script src="main.js"></script>

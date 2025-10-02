@@ -1,10 +1,10 @@
 /**
  * ==================================================================================
- * main.js - Cérebro da Aplicação "änalitks" (Versão Completa e Corrigida)
+ * main.js - Cérebro da Aplicação "änalitks" (Versão com Polimento Final)
  * ----------------------------------------------------------------------------------
- * Este ficheiro inclui a lógica para todas as ferramentas financeiras planeadas,
- * concluindo o escopo inicial do projeto.
- * A calculadora "Quanto vale a minha hora?" foi atualizada para ser mais flexível e transparente.
+ * Este ficheiro inclui a lógica para todas as ferramentas e as novas
+ * funcionalidades de interface: frases dinâmicas e modal "Sobre".
+ * CÓDIGO COMPLETO E NÃO SIMPLIFICADO.
  * ==================================================================================
  */
 
@@ -33,46 +33,60 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Seletores (Autenticação, Dashboard, etc.) ---
     const authForms = { login: document.getElementById('login-form'), signup: document.getElementById('signup-form'), choices: document.getElementById('auth-choices') };
     const authButtons = { showLogin: document.getElementById('show-login-btn'), showSignup: document.getElementById('show-signup-btn'), showLoginLink: document.getElementById('show-login-link'), showSignupLink: document.getElementById('show-signup-link'), logout: document.getElementById('logout-btn') };
-    const dashboardButtons = { salario: document.getElementById('goto-salario-btn'), investimentos: document.getElementById('goto-investimentos-btn'), ferias: document.getElementById('goto-ferias-btn'), decimoTerceiro: document.getElementById('goto-decimo-terceiro-btn'), horaValor: document.getElementById('goto-hora-valor-btn'), irpf: document.getElementById('goto-irpf-btn') };
+    const dashboardButtons = { salario: document.getElementById('goto-salario-btn'), investimentos: document.getElementById('goto-investimentos-btn'), ferias: document.getElementById('goto-ferias-btn'), decimoTerceiro: document.getElementById('goto-decimo-terceiro-btn'), horaValor: document.getElementById('goto-hora-valor-btn'), irpf: document.getElementById('goto-irpf-btn'), showAbout: document.getElementById('show-about-btn') };
+    const dashboardElements = { quote: document.getElementById('dashboard-quote') };
+    const modalElements = { overlay: document.getElementById('about-modal-overlay'), closeBtn: document.getElementById('close-about-btn') };
     const salarioElements = { form: { salarioBruto: document.getElementById('salario-bruto'), dependentes: document.getElementById('salario-dependentes') }, buttons: { calcular: document.getElementById('calcular-salario-btn'), voltar: document.getElementById('back-to-dashboard-from-salario') }, results: { container: document.getElementById('salario-results-section'), salarioBruto: document.getElementById('resultado-salario-bruto'), inss: document.getElementById('resultado-inss'), baseIrrf: document.getElementById('resultado-base-irrf'), irrf: document.getElementById('resultado-irrf'), salarioLiquido: document.getElementById('resultado-salario-liquido'), explicacaoInss: document.getElementById('explicacao-inss'), explicacaoIrrf: document.getElementById('explicacao-irrf') } };
     const investimentosElements = { form: { valorInicial: document.getElementById('valor-inicial'), aporteMensal: document.getElementById('aporte-mensal'), taxaJurosAnual: document.getElementById('taxa-juros-anual'), periodoAnos: document.getElementById('periodo-anos') }, buttons: { calcular: document.getElementById('calcular-investimentos-btn'), voltar: document.getElementById('back-to-dashboard-from-investimentos') }, results: { container: document.getElementById('investimentos-results-section'), valorFinal: document.getElementById('resultado-valor-final'), totalInvestido: document.getElementById('resultado-total-investido'), totalJuros: document.getElementById('resultado-total-juros') } };
     const feriasElements = { form: { salarioBruto: document.getElementById('ferias-salario-bruto'), dias: document.getElementById('ferias-dias'), venderDias: document.getElementById('ferias-vender-dias'), adiantar13: document.getElementById('ferias-adiantar-13') }, buttons: { calcular: document.getElementById('calcular-ferias-btn'), voltar: document.getElementById('back-to-dashboard-from-ferias') }, results: { container: document.getElementById('ferias-results-section'), feriasBrutas: document.getElementById('resultado-ferias-brutas'), tercoConstitucional: document.getElementById('resultado-terco-constitucional'), abonoPecuniario: document.getElementById('resultado-abono-pecuniario'), totalBruto: document.getElementById('resultado-total-bruto-ferias'), inss: document.getElementById('resultado-inss-ferias'), irrf: document.getElementById('resultado-irrf-ferias'), adiantamento13: document.getElementById('resultado-adiantamento-13'), liquido: document.getElementById('resultado-liquido-ferias'), abonoLine: document.getElementById('abono-pecuniario-line'), adiantamento13Line: document.getElementById('adiantamento-13-line') } };
     const decimoTerceiroElements = { form: { salarioBruto: document.getElementById('decimo-terceiro-salario-bruto'), meses: document.getElementById('decimo-terceiro-meses'), dependentes: document.getElementById('decimo-terceiro-dependentes') }, buttons: { calcular: document.getElementById('calcular-decimo-terceiro-btn'), voltar: document.getElementById('back-to-dashboard-from-decimo-terceiro') }, results: { container: document.getElementById('decimo-terceiro-results-section'), bruto: document.getElementById('resultado-13-bruto'), primeiraParcela: document.getElementById('resultado-13-primeira-parcela'), segundaParcelaBruta: document.getElementById('resultado-13-segunda-parcela-bruta'), inss: document.getElementById('resultado-inss-13'), irrf: document.getElementById('resultado-irrf-13'), segundaParcelaLiquida: document.getElementById('resultado-13-segunda-parcela-liquida'), liquidoTotal: document.getElementById('resultado-13-liquido-total') } };
+    const horaValorElements = { form: { salario: document.getElementById('hora-valor-salario'), horasDia: document.getElementById('hora-valor-horas-dia'), diasSemana: document.getElementById('hora-valor-dias-semana') }, buttons: { calcular: document.getElementById('calcular-hora-valor-btn'), voltar: document.getElementById('back-to-dashboard-from-hora-valor') }, results: { container: document.getElementById('hora-valor-results-section'), valorHora: document.getElementById('resultado-hora-valor'), explicacao: document.getElementById('explicacao-hora-valor') } };
     const irpfElements = { form: { rendimentosAnuais: document.getElementById('rendimentos-anuais'), despesasSaude: document.getElementById('despesas-saude'), despesasEducacao: document.getElementById('despesas-educacao'), dependentes: document.getElementById('dependentes') }, buttons: { calcular: document.getElementById('calcular-irpf-btn'), voltar: document.getElementById('back-to-dashboard-from-irpf') }, results: { container: document.getElementById('irpf-results-section'), completa: document.getElementById('resultado-irpf-completa'), simplificada: document.getElementById('resultado-irpf-simplificada'), recomendacao: document.getElementById('recomendacao-irpf').querySelector('p') } };
-    
-    // --- Seletores do "Quanto Vale a Minha Hora?" (ATUALIZADO) ---
-    const horaValorElements = {
-        form: {
-            salario: document.getElementById('hora-valor-salario'),
-            horasDia: document.getElementById('hora-valor-horas-dia'),
-            diasSemana: document.getElementById('hora-valor-dias-semana'), // Novo
-        },
-        buttons: {
-            calcular: document.getElementById('calcular-hora-valor-btn'),
-            voltar: document.getElementById('back-to-dashboard-from-hora-valor'),
-        },
-        results: {
-            container: document.getElementById('hora-valor-results-section'),
-            valorHora: document.getElementById('resultado-hora-valor'),
-            explicacao: document.getElementById('explicacao-hora-valor'), // Novo
-        }
-    };
 
-    // PARTE 2: FUNÇÕES DE GESTÃO DE TELA E UI
+    // PARTE 2: DADOS E CONTEÚDO
+    // ----------------------------------------------------------------------------------
+    const dashboardQuotes = [
+        "Um objetivo sem um plano é apenas um desejo. Use as nossas ferramentas para transformar os seus desejos em planos.",
+        "A melhor altura para plantar uma árvore foi há 20 anos. A segunda melhor altura é agora. O mesmo vale para os seus investimentos.",
+        "Cuidado com as pequenas despesas; um pequeno furo pode afundar um grande navio.",
+        "O seu futuro financeiro é criado pelo que você faz hoje, não amanhã. Cada cálculo é um passo na direção certa.",
+        "Saber o valor do seu tempo é o primeiro passo para garantir que ele seja bem recompensado."
+    ];
+
+    // PARTE 3: FUNÇÕES DE GESTÃO DE TELA E UI
+    // ----------------------------------------------------------------------------------
     function showScreen(screenName) { Object.values(screens).forEach(screen => { if (screen) screen.classList.add('hidden'); }); if (screens[screenName]) { screens[screenName].classList.remove('hidden'); console.log(`A exibir a tela: ${screenName}`); } else { console.warn(`AVISO: A tela "${screenName}" ainda não foi criada no index.html.`); alert(`A funcionalidade para "${screenName}" ainda está em desenvolvimento!`); screens.dashboard.classList.remove('hidden'); } }
-    function updateUserUI(user) { const welcomeMessage = document.getElementById('welcome-message'); if (user) { if(welcomeMessage) { welcomeMessage.textContent = `Bem-vindo(a), ${user.email}!`; } showScreen('dashboard'); } else { showScreen('auth'); } }
+    
+    function updateUserUI(user) {
+        const welcomeMessage = document.getElementById('welcome-message');
+        if (user) {
+            if(welcomeMessage) {
+                welcomeMessage.textContent = `Bem-vindo(a), ${user.email}!`;
+            }
+            // Escolhe e exibe uma frase aleatória na dashboard
+            const randomIndex = Math.floor(Math.random() * dashboardQuotes.length);
+            dashboardElements.quote.textContent = dashboardQuotes[randomIndex];
+            
+            showScreen('dashboard');
+        } else {
+            showScreen('auth');
+        }
+    }
 
-    // PARTE 3: FUNÇÕES DE AUTENTICAÇÃO
+    // PARTE 4: FUNÇÕES DE AUTENTICAÇÃO
+    // ----------------------------------------------------------------------------------
     async function handleLogin(event) { event.preventDefault(); const email = authForms.login.querySelector('#login-email').value; const password = authForms.login.querySelector('#login-password').value; const { error } = await supabaseClient.auth.signInWithPassword({ email, password }); if (error) alert(`Erro no login: ${error.message}`); }
     async function handleSignup(event) { event.preventDefault(); const email = authForms.signup.querySelector('#signup-email').value; const password = authForms.signup.querySelector('#signup-password').value; const { error } = await supabaseClient.auth.signUp({ email, password }); if (error) { alert(`Erro no registo: ${error.message}`); } else { alert('Registo realizado! Verifique o seu e-mail para confirmar a conta e depois faça o login.'); authForms.signup.classList.add('hidden'); authForms.login.classList.remove('hidden'); } }
     async function handleLogout() { await supabaseClient.auth.signOut(); authForms.login.reset(); authForms.signup.reset(); authForms.login.classList.add('hidden'); authForms.signup.classList.add('hidden'); authForms.choices.classList.remove('hidden'); }
 
-    // PARTE 4: FUNÇÕES DE CÁLCULO REUTILIZÁVEIS
+    // PARTE 5: FUNÇÕES DE CÁLCULO REUTILIZÁVEIS
+    // ----------------------------------------------------------------------------------
     function calcularINSS(baseDeCalculo) { const faixas = [ { teto: 1412.00, aliquota: 0.075, parcela: 0 }, { teto: 2666.68, aliquota: 0.09,  parcela: 21.18 }, { teto: 4000.03, aliquota: 0.12,  parcela: 101.18 }, { teto: 7786.02, aliquota: 0.14,  parcela: 181.18 } ]; if (baseDeCalculo > faixas[3].teto) { return (faixas[3].teto * faixas[3].aliquota) - faixas[3].parcela; } for (const faixa of faixas) { if (baseDeCalculo <= faixa.teto) { return (baseDeCalculo * faixa.aliquota) - faixa.parcela; } } return 0; }
     function calcularIRRF(baseDeCalculo, numDependentes = 0) { const DEDUCAO_POR_DEPENDENTE = 189.59; const baseReal = baseDeCalculo - (numDependentes * DEDUCAO_POR_DEPENDENTE); const faixas = [ { teto: 2259.20, aliquota: 0,     parcela: 0 }, { teto: 2826.65, aliquota: 0.075, parcela: 169.44 }, { teto: 3751.05, aliquota: 0.15,  parcela: 381.44 }, { teto: 4664.68, aliquota: 0.225, parcela: 662.77 }, { teto: Infinity,aliquota: 0.275, parcela: 896.00 } ]; for (const faixa of faixas) { if (baseReal <= faixa.teto) { const imposto = (baseReal * faixa.aliquota) - faixa.parcela; return Math.max(0, imposto); } } return 0; }
     function calcularImpostoAnual(baseDeCalculo) { const faixas = [ { limite: 24511.92, aliquota: 0,     deducao: 0 }, { limite: 33919.80, aliquota: 0.075, deducao: 1838.39 }, { limite: 45012.60, aliquota: 0.15,  deducao: 4382.38 }, { limite: 55976.16, aliquota: 0.225, deducao: 7758.32 }, { limite: Infinity, aliquota: 0.275, deducao: 10557.13 } ]; for (const faixa of faixas) { if (baseDeCalculo <= faixa.limite) { const imposto = (baseDeCalculo * faixa.aliquota) - faixa.deducao; return imposto > 0 ? imposto : 0; } } return 0; }
 
-    // PARTE 5: LÓGICA DAS FERRAMENTAS
+    // PARTE 6: LÓGICA DAS FERRAMENTAS
+    // ----------------------------------------------------------------------------------
     function executarCalculoSalario() {
         const salarioBruto = parseFloat(salarioElements.form.salarioBruto.value) || 0;
         const numDependentes = parseInt(salarioElements.form.dependentes.value) || 0;
@@ -156,25 +170,14 @@ document.addEventListener('DOMContentLoaded', () => {
         decimoTerceiroElements.results.container.classList.remove('hidden');
     }
 
-    // --- Lógica do "Quanto Vale a Minha Hora?" (ATUALIZADA) ---
     function executarCalculoHoraValor() {
         const salario = parseFloat(horaValorElements.form.salario.value) || 0;
         const horasDia = parseFloat(horaValorElements.form.horasDia.value) || 0;
         const diasSemana = parseInt(horaValorElements.form.diasSemana.value) || 0;
-
-        if (salario <= 0 || horasDia <= 0 || diasSemana <= 0 || diasSemana > 7) {
-            alert('Por favor, insira valores válidos para salário, horas por dia e dias por semana (1 a 7).');
-            return;
-        }
-
-        // Usando 4.5 semanas como uma média mais precisa para um mês
+        if (salario <= 0 || horasDia <= 0 || diasSemana <= 0 || diasSemana > 7) { alert('Por favor, insira valores válidos para salário, horas por dia e dias por semana (1 a 7).'); return; }
         const horasTrabalhadasMes = horasDia * diasSemana * 4.5;
         const valorHora = salario / horasTrabalhadasMes;
-
-        // Gerar a explicação dinâmica
         const explicacao = `Cálculo: R$ ${salario.toFixed(2)} / (${diasSemana} dias * ${horasDia} horas * 4.5 semanas) = ${horasTrabalhadasMes.toFixed(1)} horas/mês.`;
-
-        // Exibir resultado e explicação
         horaValorElements.results.valorHora.textContent = `R$ ${valorHora.toFixed(2)}`;
         horaValorElements.results.explicacao.textContent = explicacao;
         horaValorElements.results.container.classList.remove('hidden');
@@ -204,7 +207,8 @@ document.addEventListener('DOMContentLoaded', () => {
         irpfElements.results.container.classList.remove('hidden');
     }
 
-    // PARTE 6: REGISTO DE EVENT LISTENERS
+    // PARTE 7: REGISTO DE EVENT LISTENERS
+    // ----------------------------------------------------------------------------------
     if(authButtons.showLogin) authButtons.showLogin.addEventListener('click', () => { authForms.choices.classList.add('hidden'); authForms.login.classList.remove('hidden'); });
     if(authButtons.showSignup) authButtons.showSignup.addEventListener('click', () => { authForms.choices.classList.add('hidden'); authForms.signup.classList.remove('hidden'); });
     if(authButtons.showLoginLink) authButtons.showLoginLink.addEventListener('click', (e) => { e.preventDefault(); authForms.signup.classList.add('hidden'); authForms.login.classList.remove('hidden'); });
@@ -233,6 +237,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if(irpfElements.buttons.calcular) irpfElements.buttons.calcular.addEventListener('click', executarCalculoIRPFAnual);
     if(irpfElements.buttons.voltar) irpfElements.buttons.voltar.addEventListener('click', () => showScreen('dashboard'));
     
+    // --- Listeners do Modal ---
+    if(dashboardButtons.showAbout) dashboardButtons.showAbout.addEventListener('click', () => {
+        modalElements.overlay.classList.remove('hidden');
+    });
+    if(modalElements.closeBtn) modalElements.closeBtn.addEventListener('click', () => {
+        modalElements.overlay.classList.add('hidden');
+    });
+    if(modalElements.overlay) modalElements.overlay.addEventListener('click', (event) => {
+        if (event.target === modalElements.overlay) {
+            modalElements.overlay.classList.add('hidden');
+        }
+    });
+
     // --- Estado de Autenticação ---
     supabaseClient.auth.onAuthStateChange((_event, session) => { updateUserUI(session ? session.user : null); });
 

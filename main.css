@@ -1,11 +1,12 @@
 /**
  * ==================================================================================
- * main.css - Estilos de Layout e Estrutura da "änalitks" (Versão Otimizada)
+ * main.css - Estilos de Layout e Estrutura da "änalitks" (Versão com Modal)
  * ----------------------------------------------------------------------------------
  * Responsabilidades:
  * 1. Definir o layout principal da página de forma eficiente.
  * 2. Gerenciar a visibilidade das "telas" (sem animações de fade para evitar bugs).
  * 3. Estruturar os cards, formulários e botões para performance.
+ * 4. Adicionar a estrutura de layout para o modal "Sobre".
  * ==================================================================================
  */
 
@@ -28,7 +29,7 @@ body {
     align-items: center;
 }
 
-/* A classe .hidden agora controla a visibilidade de forma instantânea, corrigindo o bug. */
+/* A classe .hidden agora controla a visibilidade de forma instantânea. */
 .hidden {
     display: none !important; 
 }
@@ -87,6 +88,12 @@ body {
     padding: 10px 0;
 }
 
+.dashboard-footer {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
 
 /* --- Botão Fixo de Troca de Tema --- */
 .theme-toggle-btn {
@@ -94,5 +101,27 @@ body {
     top: 20px;
     right: 20px;
     z-index: 1000;
+}
+
+/* --- ESTRUTURA DO MODAL (NOVO) --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
 }
 

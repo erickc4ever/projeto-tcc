@@ -1,12 +1,13 @@
 /**
  * ==================================================================================
- * style.css - Estilos Visuais e Temas da "änalitks" (Versão Otimizada)
+ * style.css - Estilos Visuais e Temas da "änalitks" (Versão com Modal)
  * ----------------------------------------------------------------------------------
  * Responsabilidades:
  * 1. Definir a paleta de cores e a tipografia.
  * 2. Implementar os temas claro e escuro.
  * 3. Estilizar os componentes com foco na estética e animações de botões.
  * 4. Criar o visual "Apple-like" com cantos suavemente arredondados.
+ * 5. Adicionar estilos para o modal "Sobre".
  * ==================================================================================
  */
 
@@ -66,21 +67,26 @@ h1 {
     margin: 0;
     color: var(--cor-texto-primario);
 }
-
+h2 {
+    font-family: 'Lora', serif;
+    font-size: 22px;
+    margin-top: 1.5rem;
+    color: var(--cor-texto-primario);
+    border-bottom: 1px solid var(--cor-borda);
+    padding-bottom: 0.5rem;
+}
 p {
     margin: 0;
     color: var(--cor-texto-secundario);
     font-size: 16px;
     line-height: 1.5;
 }
-
 a {
     color: var(--cor-primaria);
     text-decoration: none;
     font-weight: 500;
     transition: color 0.2s ease;
 }
-
 a:hover {
     text-decoration: underline;
     color: var(--cor-primaria-hover);
@@ -93,7 +99,6 @@ label {
     color: var(--cor-texto-secundario);
     margin-bottom: -5px; /* Aproxima a label do seu input */
 }
-
 .input-field {
     width: 100%;
     padding: 12px;
@@ -105,7 +110,6 @@ label {
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
     box-sizing: border-box;
 }
-
 .input-field:focus {
     outline: none;
     border-color: var(--cor-primaria);
@@ -125,28 +129,25 @@ label {
     transition: transform 0.15s ease, background-color 0.15s ease;
     box-shadow: var(--sombra-botao);
 }
-
 .btn-primary {
     background-color: var(--cor-primaria);
     color: #ffffff;
 }
-
 .btn:hover {
-    background-color: var(--cor-primaria-hover);
     transform: translateY(-3px);
 }
-
+.btn-primary:hover {
+     background-color: var(--cor-primaria-hover);
+}
 .btn:active {
     transform: translateY(1px) scale(0.99);
     box-shadow: none;
 }
-
 .btn-secondary {
     background-color: var(--cor-fundo);
     color: var(--cor-primaria);
     border: 1px solid var(--cor-borda);
 }
-
 .btn-secondary:hover {
     background-color: var(--cor-primaria);
     border-color: var(--cor-primaria);
@@ -159,19 +160,21 @@ label {
     margin-top: 10px;
     padding-top: 20px;
 }
-
 hr {
     border: none;
     border-top: 1px solid var(--cor-borda);
     margin: 10px 0;
 }
-
 .font-bold {
     font-weight: 700;
 }
-
 .text-center {
     text-align: center;
+}
+.explanation-text {
+    font-size: 14px;
+    font-style: italic;
+    margin-top: 8px !important;
 }
 
 /* --- Estilo do Botão de Tema --- */
@@ -187,8 +190,49 @@ hr {
     box-shadow: var(--sombra-card);
     transition: transform 0.2s ease;
 }
-
 .theme-toggle-btn:hover {
     transform: scale(1.1) rotate(15deg);
+}
+
+/* --- ESTILOS DO MODAL (NOVO) --- */
+.modal-overlay {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.modal-overlay .calculator-card {
+    max-width: 500px; /* Um pouco maior para o texto */
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    font-weight: 300;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--cor-texto-secundario);
+    transition: color 0.2s ease;
+}
+.close-btn:hover {
+    color: var(--cor-texto-primario);
+}
+
+.brasao {
+    font-style: italic;
+    text-align: center;
+    color: var(--cor-texto-secundario);
+    margin-bottom: 1.5rem;
+    padding: 0.5rem;
+    background-color: var(--cor-fundo);
+    border-radius: 6px;
+}
+
+.modal-overlay ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 0.5rem;
+}
+.modal-overlay li {
+    margin-bottom: 0.5rem;
 }
 
