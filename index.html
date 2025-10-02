@@ -45,7 +45,7 @@
         </div>
     </div>
 
-    <!-- TELA DA DASHBOARD (ATUALIZADA) -->
+    <!-- TELA DA DASHBOARD -->
     <div id="dashboard-screen" class="screen hidden">
         <div class="calculator-card">
             <div class="card-header">
@@ -65,7 +65,7 @@
 
             <div class="dashboard-footer">
                 <button id="goto-profile-btn" class="btn btn-secondary">Meu Perfil</button>
-                <button id="goto-reports-btn" class="btn btn-secondary">Minha Visão Geral</button> <!-- NOVO BOTÃO -->
+                <button id="goto-reports-btn" class="btn btn-secondary">Minha Visão Geral</button>
                 <button id="show-about-btn" class="btn btn-secondary">Sobre o Projeto</button>
                 <button id="logout-btn" class="btn btn-primary">Sair</button>
             </div>
@@ -360,7 +360,7 @@
         </div>
     </div>
 
-    <!-- TELA DE RELATÓRIOS / VISÃO GERAL (NOVA) -->
+    <!-- TELA DE RELATÓRIOS / VISÃO GERAL (ATUALIZADA) -->
     <div id="reports-screen" class="screen hidden">
         <div class="calculator-card">
             <div class="card-header">
@@ -379,7 +379,18 @@
                         <canvas id="investment-chart"></canvas>
                     </div>
                 </div>
-                <!-- Futuro espaço para cartões de resumo -->
+                
+                <!-- Cartões de Resumo (NOVOS) -->
+                <div class="summary-cards-grid">
+                    <div class="summary-card">
+                        <h3>Valor do Dia de Trabalho</h3>
+                        <p id="summary-daily-value" class="font-bold">R$ 0,00</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3>13º Salário Estimado (Bruto)</h3>
+                        <p id="summary-13th-value" class="font-bold">R$ 0,00</p>
+                    </div>
+                </div>
             </div>
 
             <p id="reports-notice" class="explanation-text text-center hidden">

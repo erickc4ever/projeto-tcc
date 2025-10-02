@@ -1,9 +1,9 @@
 /**
  * ==================================================================================
- * main.js - Cérebro da Aplicação "änalitks" (Etapa 3: Segundo Gráfico - Corrigido)
+ * main.js - Cérebro da Aplicação "änalitks" (Etapa 4: Detalhes Finais)
  * ----------------------------------------------------------------------------------
- * Este ficheiro agora inclui a lógica para renderizar o segundo gráfico
- * (projeção de investimentos) na tela de "Visão Geral".
+ * Este ficheiro agora inclui a lógica final para a tela de "Visão Geral",
+ * incluindo os cartões de resumo.
  * CÓDIGO COMPLETO E NÃO SIMPLIFICADO.
  * ==================================================================================
  */
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         horaValor: document.getElementById('hora-valor-screen'),
         irpf: document.getElementById('irpf-screen'),
         profile: document.getElementById('profile-screen'),
-        reports: document.getElementById('reports-screen'), // Nova tela
+        reports: document.getElementById('reports-screen'),
     };
 
     // --- Seletores ---
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const dashboardElements = { quote: document.getElementById('dashboard-quote') };
     const modalElements = { overlay: document.getElementById('about-modal-overlay'), closeBtn: document.getElementById('close-about-btn') };
     const profileElements = { form: { salarioBruto: document.getElementById('profile-salario-bruto'), dependentes: document.getElementById('profile-dependentes'), horasDia: document.getElementById('profile-horas-dia'), diasSemana: document.getElementById('profile-dias-semana'), }, buttons: { salvar: document.getElementById('salvar-perfil-btn'), voltar: document.getElementById('back-to-dashboard-from-profile'), }, statusMessage: document.getElementById('profile-status-message'), };
-    const reportsElements = { salaryChart: document.getElementById('salary-chart'), investmentChart: document.getElementById('investment-chart'), notice: document.getElementById('reports-notice'), content: document.getElementById('reports-content'), backButton: document.getElementById('back-to-dashboard-from-reports'), };
+    const reportsElements = { salaryChart: document.getElementById('salary-chart'), investmentChart: document.getElementById('investment-chart'), notice: document.getElementById('reports-notice'), content: document.getElementById('reports-content'), backButton: document.getElementById('back-to-dashboard-from-reports'), summary: { dailyValue: document.getElementById('summary-daily-value'), thirteenthValue: document.getElementById('summary-13th-value') } };
     const salarioElements = { form: { salarioBruto: document.getElementById('salario-bruto'), dependentes: document.getElementById('salario-dependentes') }, buttons: { calcular: document.getElementById('calcular-salario-btn'), voltar: document.getElementById('back-to-dashboard-from-salario') }, results: { container: document.getElementById('salario-results-section'), salarioBruto: document.getElementById('resultado-salario-bruto'), inss: document.getElementById('resultado-inss'), baseIrrf: document.getElementById('resultado-base-irrf'), irrf: document.getElementById('resultado-irrf'), salarioLiquido: document.getElementById('resultado-salario-liquido'), explicacaoInss: document.getElementById('explicacao-inss'), explicacaoIrrf: document.getElementById('explicacao-irrf') } };
     const investimentosElements = { form: { valorInicial: document.getElementById('valor-inicial'), aporteMensal: document.getElementById('aporte-mensal'), taxaJurosAnual: document.getElementById('taxa-juros-anual'), periodoAnos: document.getElementById('periodo-anos') }, buttons: { calcular: document.getElementById('calcular-investimentos-btn'), voltar: document.getElementById('back-to-dashboard-from-investimentos') }, results: { container: document.getElementById('investimentos-results-section'), valorFinal: document.getElementById('resultado-valor-final'), totalInvestido: document.getElementById('resultado-total-investido'), totalJuros: document.getElementById('resultado-total-juros') } };
     const feriasElements = { form: { salarioBruto: document.getElementById('ferias-salario-bruto'), dias: document.getElementById('ferias-dias'), venderDias: document.getElementById('ferias-vender-dias'), adiantar13: document.getElementById('ferias-adiantar-13') }, buttons: { calcular: document.getElementById('calcular-ferias-btn'), voltar: document.getElementById('back-to-dashboard-from-ferias') }, results: { container: document.getElementById('ferias-results-section'), feriasBrutas: document.getElementById('resultado-ferias-brutas'), tercoConstitucional: document.getElementById('resultado-terco-constitucional'), abonoPecuniario: document.getElementById('resultado-abono-pecuniario'), totalBruto: document.getElementById('resultado-total-bruto-ferias'), inss: document.getElementById('resultado-inss-ferias'), irrf: document.getElementById('resultado-irrf-ferias'), adiantamento13: document.getElementById('resultado-adiantamento-13'), liquido: document.getElementById('resultado-liquido-ferias'), abonoLine: document.getElementById('abono-pecuniario-line'), adiantamento13Line: document.getElementById('adiantamento-13-line') } };
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ----------------------------------------------------------------------------------
     let userProfile = null;
     let salaryChartInstance = null;
-    let investmentChartInstance = null; // Variável para o novo gráfico
+    let investmentChartInstance = null;
     const dashboardQuotes = [ "Um objetivo sem um plano é apenas um desejo. Use as nossas ferramentas para transformar os seus desejos em planos.", "A melhor altura para plantar uma árvore foi há 20 anos. A segunda melhor altura é agora. O mesmo vale para os seus investimentos.", "Cuidado com as pequenas despesas; um pequeno furo pode afundar um grande navio.", "O seu futuro financeiro é criado pelo que você faz hoje, não amanhã. Cada cálculo é um passo na direção certa.", "Saber o valor do seu tempo é o primeiro passo para garantir que ele seja bem recompensado." ];
 
     // PARTE 3: FUNÇÕES DE GESTÃO DE TELA E UI
@@ -99,8 +99,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (investmentChartInstance) { investmentChartInstance.destroy(); }
         if (!userProfile || !userProfile.salario_bruto) { return; }
         const salarioBruto = parseFloat(userProfile.salario_bruto);
-        const aporteMensal = salarioBruto * 0.10; // 10% do salário
-        const taxaJurosAnual = 0.08; // 8% ao ano como padrão
+        const aporteMensal = salarioBruto * 0.10;
+        const taxaJurosAnual = 0.08;
         const periodoAnos = 5;
         const taxaMensal = taxaJurosAnual / 12;
         const periodoMeses = periodoAnos * 12;
@@ -109,10 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const labels = [];
         for (let i = 1; i <= periodoMeses; i++) {
             valorAcumulado = (valorAcumulado + aporteMensal) * (1 + taxaMensal);
-            if (i % 12 === 0) { // Adiciona um ponto de dados a cada ano
-                labels.push(`Ano ${i / 12}`);
-                dataPoints.push(valorAcumulado.toFixed(2));
-            }
+            if (i % 12 === 0) { labels.push(`Ano ${i / 12}`); dataPoints.push(valorAcumulado.toFixed(2)); }
         }
         const ctx = reportsElements.investmentChart.getContext('2d');
         investmentChartInstance = new Chart(ctx, {
@@ -125,6 +122,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function renderSummaryCards() {
+        if (!userProfile || !userProfile.salario_bruto) { return; }
+        const { salario_bruto, horas_dia, dias_semana } = userProfile;
+        const horasTrabalhadasMes = horas_dia * dias_semana * 4.5;
+        const valorHora = salario_bruto / horasTrabalhadasMes;
+        const valorDia = valorHora * horas_dia;
+        reportsElements.summary.dailyValue.textContent = `R$ ${valorDia.toFixed(2)}`;
+        reportsElements.summary.thirteenthValue.textContent = `R$ ${salario_bruto.toFixed(2)}`;
+    }
 
     // PARTE 6: LÓGICA DAS FERRAMENTAS
     // ----------------------------------------------------------------------------------
@@ -152,7 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(dashboardButtons.horaValor) dashboardButtons.horaValor.addEventListener('click', () => { preencherFormulariosComPerfil(); showScreen('horaValor'); });
     if(dashboardButtons.irpf) dashboardButtons.irpf.addEventListener('click', () => showScreen('irpf'));
     if(dashboardButtons.profile) dashboardButtons.profile.addEventListener('click', () => { preencherFormulariosComPerfil(); showScreen('profile'); });
-    if(dashboardButtons.reports) dashboardButtons.reports.addEventListener('click', () => { renderSalaryChart(); renderInvestmentChart(); showScreen('reports'); });
+    if(dashboardButtons.reports) dashboardButtons.reports.addEventListener('click', () => { renderSalaryChart(); renderInvestmentChart(); renderSummaryCards(); showScreen('reports'); });
     
     if(salarioElements.buttons.calcular) salarioElements.buttons.calcular.addEventListener('click', executarCalculoSalario);
     if(salarioElements.buttons.voltar) salarioElements.buttons.voltar.addEventListener('click', () => showScreen('dashboard'));
@@ -168,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(irpfElements.buttons.voltar) irpfElements.buttons.voltar.addEventListener('click', () => showScreen('dashboard'));
     if(profileElements.buttons.salvar) profileElements.buttons.salvar.addEventListener('click', handleSaveProfile);
     if(profileElements.buttons.voltar) profileElements.buttons.voltar.addEventListener('click', () => showScreen('dashboard'));
-    if(reportsElements.backButton) reportsElements.backButton.addEventListener('click', () => showScreen('dashboard')); // Novo listener
+    if(reportsElements.backButton) reportsElements.backButton.addEventListener('click', () => showScreen('dashboard'));
     
     // --- Listeners do Modal ---
     if(dashboardButtons.showAbout) dashboardButtons.showAbout.addEventListener('click', () => { modalElements.overlay.classList.remove('hidden'); });
