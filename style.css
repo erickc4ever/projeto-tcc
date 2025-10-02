@@ -1,13 +1,12 @@
 /**
  * ==================================================================================
- * style.css - Estilos Visuais e Temas da "änalitks" (Versão com Modal)
+ * style.css - Estilos Visuais e Temas da "änalitks" (Versão "Página Inteira")
  * ----------------------------------------------------------------------------------
  * Responsabilidades:
  * 1. Definir a paleta de cores e a tipografia.
  * 2. Implementar os temas claro e escuro.
- * 3. Estilizar os componentes com foco na estética e animações de botões.
- * 4. Criar o visual "Apple-like" com cantos suavemente arredondados.
- * 5. Adicionar estilos para o modal "Sobre".
+ * 3. Estilizar os componentes com o novo layout amplo e minimalista.
+ * 4. Manter o estilo de "card" apenas para a autenticação e o modal.
  * ==================================================================================
  */
 
@@ -50,20 +49,30 @@ body {
     transition: background-color 0.3s ease;
 }
 
-/* --- Estilo do Card "Apple-like" --- */
+/* --- Estilo "Página Inteira" (Antigo Card) --- */
 .calculator-card {
+    background-color: transparent;
+    padding: 48px 0; /* Mais espaço vertical, sem padding horizontal */
+    border-radius: 0;
+    box-shadow: none;
+    border: none;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* --- EXCEÇÃO: Manter o estilo de card na autenticação e no modal --- */
+#auth-screen .calculator-card,
+.modal-overlay .calculator-card {
     background-color: var(--cor-card);
     padding: 32px;
     border-radius: 12px;
     box-shadow: var(--sombra-card);
     border: 1px solid var(--cor-borda);
-    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 /* --- Tipografia --- */
 h1 {
     font-family: 'Lora', serif;
-    font-size: 28px;
+    font-size: 36px; /* Aumentado para maior impacto */
     margin: 0;
     color: var(--cor-texto-primario);
 }
@@ -92,12 +101,18 @@ a:hover {
     color: var(--cor-primaria-hover);
 }
 
-/* --- Estilo dos Formulários --- */
+/* --- Estilo dos Formulários (com Grid) --- */
+.input-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Grid responsivo */
+    gap: 24px;
+}
+
 label {
     font-size: 14px;
     font-weight: 500;
     color: var(--cor-texto-secundario);
-    margin-bottom: -5px; /* Aproxima a label do seu input */
+    margin-bottom: -15px; /* Ajustado para o grid */
 }
 .input-field {
     width: 100%;
@@ -157,13 +172,13 @@ label {
 /* --- Estilos para Resultados e Classes Utilitárias --- */
 .results-section {
     border-top: 1px solid var(--cor-borda);
-    margin-top: 10px;
-    padding-top: 20px;
+    margin-top: 20px;
+    padding-top: 30px;
 }
 hr {
     border: none;
     border-top: 1px solid var(--cor-borda);
-    margin: 10px 0;
+    margin: 15px 0;
 }
 .font-bold {
     font-weight: 700;
@@ -194,7 +209,7 @@ hr {
     transform: scale(1.1) rotate(15deg);
 }
 
-/* --- ESTILOS DO MODAL (NOVO) --- */
+/* --- ESTILOS DO MODAL --- */
 .modal-overlay {
     background-color: rgba(0, 0, 0, 0.6);
 }

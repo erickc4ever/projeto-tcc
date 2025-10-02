@@ -1,11 +1,11 @@
 /**
  * ==================================================================================
- * main.css - Estilos de Layout e Estrutura da "änalitks" (Versão com Modal)
+ * main.css - Estilos de Layout e Estrutura da "änalitks" (Versão com Layout Amplo)
  * ----------------------------------------------------------------------------------
  * Responsabilidades:
  * 1. Definir o layout principal da página de forma eficiente.
- * 2. Gerenciar a visibilidade das "telas" (sem animações de fade para evitar bugs).
- * 3. Estruturar os cards, formulários e botões para performance.
+ * 2. Gerenciar a visibilidade das "telas".
+ * 3. Estruturar os formulários e botões para performance.
  * 4. Adicionar a estrutura de layout para o modal "Sobre".
  * ==================================================================================
  */
@@ -29,19 +29,19 @@ body {
     align-items: center;
 }
 
-/* A classe .hidden agora controla a visibilidade de forma instantânea. */
 .hidden {
     display: none !important; 
 }
 
-/* --- Estrutura do Card Principal --- */
+/* --- Estrutura do Conteúdo Principal (Layout Amplo) --- */
 .calculator-card {
     width: 100%;
-    max-width: 420px;
+    /* ATUALIZAÇÃO: Aumentamos a largura para criar o layout de "página inteira". */
+    max-width: 700px; 
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    gap: 20px; /* Espaçamento entre elementos dentro do card */
+    gap: 20px;
 }
 
 .card-header {
@@ -103,7 +103,7 @@ body {
     z-index: 1000;
 }
 
-/* --- ESTRUTURA DO MODAL (NOVO) --- */
+/* --- ESTRUTURA DO MODAL --- */
 .modal-overlay {
     position: fixed;
     top: 0;
