@@ -51,7 +51,7 @@
             <div class="card-header">
                 <h1 id="welcome-message">Bem-vindo(a)!</h1>
                 <p>Selecione uma ferramenta para começar.</p>
-                <p id="dashboard-quote" class="explanation-text"></p> <!-- Espaço para a frase/dica -->
+                <p id="dashboard-quote" class="explanation-text"></p>
             </div>
             
             <div class="dashboard-grid">
@@ -64,7 +64,8 @@
             </div>
 
             <div class="dashboard-footer">
-                <button id="goto-profile-btn" class="btn btn-secondary">Meu Perfil</button> <!-- NOVO BOTÃO -->
+                <button id="goto-profile-btn" class="btn btn-secondary">Meu Perfil</button>
+                <button id="goto-reports-btn" class="btn btn-secondary">Minha Visão Geral</button> <!-- NOVO BOTÃO -->
                 <button id="show-about-btn" class="btn btn-secondary">Sobre o Projeto</button>
                 <button id="logout-btn" class="btn btn-primary">Sair</button>
             </div>
@@ -336,7 +337,7 @@
         </div>
     </div>
 
-    <!-- TELA DE PERFIL DO UTILIZADOR (NOVA) -->
+    <!-- TELA DE PERFIL DO UTILIZADOR -->
     <div id="profile-screen" class="screen hidden">
         <div class="calculator-card">
             <div class="card-header">
@@ -356,6 +357,36 @@
             <button id="salvar-perfil-btn" class="btn btn-primary">Salvar Perfil</button>
             <button id="back-to-dashboard-from-profile" class="btn btn-secondary">Voltar para a Dashboard</button>
             <p id="profile-status-message" class="explanation-text text-center hidden"></p>
+        </div>
+    </div>
+
+    <!-- TELA DE RELATÓRIOS / VISÃO GERAL (NOVA) -->
+    <div id="reports-screen" class="screen hidden">
+        <div class="calculator-card">
+            <div class="card-header">
+                <h1>Minha Visão Geral</h1>
+                <p>Um resumo visual das suas finanças com base nos dados do seu perfil.</p>
+            </div>
+
+            <div id="reports-content">
+                <div class="reports-grid">
+                    <div class="chart-container">
+                        <h2>Composição do Salário</h2>
+                        <canvas id="salary-chart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h2>Projeção de Investimentos</h2>
+                        <canvas id="investment-chart"></canvas>
+                    </div>
+                </div>
+                <!-- Futuro espaço para cartões de resumo -->
+            </div>
+
+            <p id="reports-notice" class="explanation-text text-center hidden">
+                Para ver os seus relatórios, primeiro salve as suas informações na tela 'Meu Perfil'.
+            </p>
+
+            <button id="back-to-dashboard-from-reports" class="btn btn-secondary">Voltar para a Dashboard</button>
         </div>
     </div>
 
@@ -381,9 +412,9 @@
         </div>
     </div>
 
-    <!--api´s-->
-     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="main.js"></script>
     <script src="app.js"></script>
 
