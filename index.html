@@ -209,6 +209,62 @@
         </div>
     </div>
 
+    <!-- TELA DE CÁLCULO DO 13º SALÁRIO -->
+    <div id="decimo-terceiro-screen" class="screen hidden">
+        <div class="calculator-card">
+            <div class="card-header">
+                <h1>Cálculo de 13º Salário</h1>
+                <p>Veja o valor do seu 13º salário e os descontos.</p>
+            </div>
+            <div class="input-group">
+                <label for="decimo-terceiro-salario-bruto">Salário Bruto Mensal</label>
+                <input type="number" id="decimo-terceiro-salario-bruto" class="input-field" placeholder="Ex: 3500.00">
+                <label for="decimo-terceiro-meses">Meses Trabalhados no Ano</label>
+                <input type="number" id="decimo-terceiro-meses" class="input-field" placeholder="Ex: 12" value="12">
+                <label for="decimo-terceiro-dependentes">Número de Dependentes (para IRRF)</label>
+                <input type="number" id="decimo-terceiro-dependentes" class="input-field" placeholder="Ex: 1" value="0">
+            </div>
+            <button id="calcular-decimo-terceiro-btn" class="btn btn-primary">Calcular 13º Salário</button>
+            <button id="back-to-dashboard-from-decimo-terceiro" class="btn btn-secondary">Voltar para a Dashboard</button>
+            
+            <div id="decimo-terceiro-results-section" class="results-section hidden">
+                <div class="result-line">
+                    <span>13º Salário Bruto:</span>
+                    <span id="resultado-13-bruto" class="font-bold">R$ 0,00</span>
+                </div>
+                <hr>
+                <p class="explanation-text">A primeira parcela é paga sem descontos.</p>
+                <div class="result-line">
+                    <span>1ª Parcela (Líquida):</span>
+                    <span id="resultado-13-primeira-parcela" class="font-bold">R$ 0,00</span>
+                </div>
+                <hr>
+                <p class="explanation-text">A segunda parcela tem os descontos de INSS e IRRF.</p>
+                <div class="result-line">
+                    <span>2ª Parcela (Valor Bruto):</span>
+                    <span id="resultado-13-segunda-parcela-bruta" class="font-bold">R$ 0,00</span>
+                </div>
+                <div class="result-line">
+                    <span>Desconto INSS:</span>
+                    <span id="resultado-inss-13" class="font-bold">- R$ 0,00</span>
+                </div>
+                <div class="result-line">
+                    <span>Desconto IRRF:</span>
+                    <span id="resultado-irrf-13" class="font-bold">- R$ 0,00</span>
+                </div>
+                 <div class="result-line">
+                    <span>2ª Parcela (Líquida):</span>
+                    <span id="resultado-13-segunda-parcela-liquida" class="font-bold">R$ 0,00</span>
+                </div>
+                <hr>
+                <div class="result-line final-result">
+                    <span>Total Líquido do 13º:</span>
+                    <span id="resultado-13-liquido-total" class="font-bold success-text">R$ 0,00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- TELA DO SIMULADOR DE IRPF ANUAL -->
     <div id="irpf-screen" class="screen hidden">
         <div class="calculator-card">
