@@ -181,7 +181,7 @@
                 </div>
                 <div class="result-line" id="abono-pecuniario-line">
                     <span>Abono Pecuniário (venda de 10 dias):</span>
-                    <span id="resultado-abono-pecuniário" class="font-bold">R$ 0,00</span>
+                    <span id="resultado-abono-pecuniario" class="font-bold">R$ 0,00</span>
                 </div>
                 <hr>
                  <div class="result-line">
@@ -265,7 +265,7 @@
         </div>
     </div>
 
-    <!-- TELA "QUANTO VALE A MINHA HORA?" -->
+    <!-- TELA "QUANTO VALE A MINHA HORA?" (ATUALIZADA) -->
     <div id="hora-valor-screen" class="screen hidden">
         <div class="calculator-card">
             <div class="card-header">
@@ -277,6 +277,8 @@
                 <input type="number" id="hora-valor-salario" class="input-field" placeholder="Ex: 3500.00">
                 <label for="hora-valor-horas-dia">Horas Trabalhadas por Dia</label>
                 <input type="number" id="hora-valor-horas-dia" class="input-field" placeholder="Ex: 8" value="8">
+                <label for="hora-valor-dias-semana">Dias Trabalhados na Semana</label>
+                <input type="number" id="hora-valor-dias-semana" class="input-field" placeholder="Ex: 5" value="5">
             </div>
             <button id="calcular-hora-valor-btn" class="btn btn-primary">Calcular Valor da Hora</button>
             <button id="back-to-dashboard-from-hora-valor" class="btn btn-secondary">Voltar para a Dashboard</button>
@@ -286,6 +288,7 @@
                     <span>O valor da sua hora é:</span>
                     <span id="resultado-hora-valor" class="font-bold success-text">R$ 0,00</span>
                 </div>
+                <p class="explanation-text" id="explicacao-hora-valor"></p>
             </div>
         </div>
     </div>

@@ -4,6 +4,7 @@
  * ----------------------------------------------------------------------------------
  * Este ficheiro inclui a lógica para todas as ferramentas financeiras planeadas,
  * concluindo o escopo inicial do projeto.
+ * A calculadora "Quanto vale a minha hora?" foi atualizada para ser mais flexível e transparente.
  * ==================================================================================
  */
 
@@ -14,7 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log("Iniciando o main.js...");
 
     const SUPABASE_URL = 'https://ejddiovmtjpipangyqeo.supabase.co';
-    // CHAVE CORRIGIDA: Removido o erro de digitação.
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZGRpb3ZtdGpwaXBhbmd5cWVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg3MTU4MDksImV4cCI6MjA3NDI5MTgwOX0.GH53mox_cijkhqAxy-sNmvxGcgtoLzuoE5sfP9hHdho';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     console.log('Cliente Supabase inicializado.');
@@ -38,8 +38,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const investimentosElements = { form: { valorInicial: document.getElementById('valor-inicial'), aporteMensal: document.getElementById('aporte-mensal'), taxaJurosAnual: document.getElementById('taxa-juros-anual'), periodoAnos: document.getElementById('periodo-anos') }, buttons: { calcular: document.getElementById('calcular-investimentos-btn'), voltar: document.getElementById('back-to-dashboard-from-investimentos') }, results: { container: document.getElementById('investimentos-results-section'), valorFinal: document.getElementById('resultado-valor-final'), totalInvestido: document.getElementById('resultado-total-investido'), totalJuros: document.getElementById('resultado-total-juros') } };
     const feriasElements = { form: { salarioBruto: document.getElementById('ferias-salario-bruto'), dias: document.getElementById('ferias-dias'), venderDias: document.getElementById('ferias-vender-dias'), adiantar13: document.getElementById('ferias-adiantar-13') }, buttons: { calcular: document.getElementById('calcular-ferias-btn'), voltar: document.getElementById('back-to-dashboard-from-ferias') }, results: { container: document.getElementById('ferias-results-section'), feriasBrutas: document.getElementById('resultado-ferias-brutas'), tercoConstitucional: document.getElementById('resultado-terco-constitucional'), abonoPecuniario: document.getElementById('resultado-abono-pecuniario'), totalBruto: document.getElementById('resultado-total-bruto-ferias'), inss: document.getElementById('resultado-inss-ferias'), irrf: document.getElementById('resultado-irrf-ferias'), adiantamento13: document.getElementById('resultado-adiantamento-13'), liquido: document.getElementById('resultado-liquido-ferias'), abonoLine: document.getElementById('abono-pecuniario-line'), adiantamento13Line: document.getElementById('adiantamento-13-line') } };
     const decimoTerceiroElements = { form: { salarioBruto: document.getElementById('decimo-terceiro-salario-bruto'), meses: document.getElementById('decimo-terceiro-meses'), dependentes: document.getElementById('decimo-terceiro-dependentes') }, buttons: { calcular: document.getElementById('calcular-decimo-terceiro-btn'), voltar: document.getElementById('back-to-dashboard-from-decimo-terceiro') }, results: { container: document.getElementById('decimo-terceiro-results-section'), bruto: document.getElementById('resultado-13-bruto'), primeiraParcela: document.getElementById('resultado-13-primeira-parcela'), segundaParcelaBruta: document.getElementById('resultado-13-segunda-parcela-bruta'), inss: document.getElementById('resultado-inss-13'), irrf: document.getElementById('resultado-irrf-13'), segundaParcelaLiquida: document.getElementById('resultado-13-segunda-parcela-liquida'), liquidoTotal: document.getElementById('resultado-13-liquido-total') } };
-    const horaValorElements = { form: { salario: document.getElementById('hora-valor-salario'), horasDia: document.getElementById('hora-valor-horas-dia') }, buttons: { calcular: document.getElementById('calcular-hora-valor-btn'), voltar: document.getElementById('back-to-dashboard-from-hora-valor') }, results: { container: document.getElementById('hora-valor-results-section'), valorHora: document.getElementById('resultado-hora-valor') } };
     const irpfElements = { form: { rendimentosAnuais: document.getElementById('rendimentos-anuais'), despesasSaude: document.getElementById('despesas-saude'), despesasEducacao: document.getElementById('despesas-educacao'), dependentes: document.getElementById('dependentes') }, buttons: { calcular: document.getElementById('calcular-irpf-btn'), voltar: document.getElementById('back-to-dashboard-from-irpf') }, results: { container: document.getElementById('irpf-results-section'), completa: document.getElementById('resultado-irpf-completa'), simplificada: document.getElementById('resultado-irpf-simplificada'), recomendacao: document.getElementById('recomendacao-irpf').querySelector('p') } };
+    
+    // --- Seletores do "Quanto Vale a Minha Hora?" (ATUALIZADO) ---
+    const horaValorElements = {
+        form: {
+            salario: document.getElementById('hora-valor-salario'),
+            horasDia: document.getElementById('hora-valor-horas-dia'),
+            diasSemana: document.getElementById('hora-valor-dias-semana'), // Novo
+        },
+        buttons: {
+            calcular: document.getElementById('calcular-hora-valor-btn'),
+            voltar: document.getElementById('back-to-dashboard-from-hora-valor'),
+        },
+        results: {
+            container: document.getElementById('hora-valor-results-section'),
+            valorHora: document.getElementById('resultado-hora-valor'),
+            explicacao: document.getElementById('explicacao-hora-valor'), // Novo
+        }
+    };
 
     // PARTE 2: FUNÇÕES DE GESTÃO DE TELA E UI
     function showScreen(screenName) { Object.values(screens).forEach(screen => { if (screen) screen.classList.add('hidden'); }); if (screens[screenName]) { screens[screenName].classList.remove('hidden'); console.log(`A exibir a tela: ${screenName}`); } else { console.warn(`AVISO: A tela "${screenName}" ainda não foi criada no index.html.`); alert(`A funcionalidade para "${screenName}" ainda está em desenvolvimento!`); screens.dashboard.classList.remove('hidden'); } }
@@ -139,13 +156,27 @@ document.addEventListener('DOMContentLoaded', () => {
         decimoTerceiroElements.results.container.classList.remove('hidden');
     }
 
+    // --- Lógica do "Quanto Vale a Minha Hora?" (ATUALIZADA) ---
     function executarCalculoHoraValor() {
         const salario = parseFloat(horaValorElements.form.salario.value) || 0;
         const horasDia = parseFloat(horaValorElements.form.horasDia.value) || 0;
-        if (salario <= 0 || horasDia <= 0) { alert('Por favor, insira valores válidos para salário e horas por dia.'); return; }
-        const horasTrabalhadasMes = horasDia * 22;
+        const diasSemana = parseInt(horaValorElements.form.diasSemana.value) || 0;
+
+        if (salario <= 0 || horasDia <= 0 || diasSemana <= 0 || diasSemana > 7) {
+            alert('Por favor, insira valores válidos para salário, horas por dia e dias por semana (1 a 7).');
+            return;
+        }
+
+        // Usando 4.5 semanas como uma média mais precisa para um mês
+        const horasTrabalhadasMes = horasDia * diasSemana * 4.5;
         const valorHora = salario / horasTrabalhadasMes;
+
+        // Gerar a explicação dinâmica
+        const explicacao = `Cálculo: R$ ${salario.toFixed(2)} / (${diasSemana} dias * ${horasDia} horas * 4.5 semanas) = ${horasTrabalhadasMes.toFixed(1)} horas/mês.`;
+
+        // Exibir resultado e explicação
         horaValorElements.results.valorHora.textContent = `R$ ${valorHora.toFixed(2)}`;
+        horaValorElements.results.explicacao.textContent = explicacao;
         horaValorElements.results.container.classList.remove('hidden');
     }
 
