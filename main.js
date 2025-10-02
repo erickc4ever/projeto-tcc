@@ -1,6 +1,6 @@
 /**
  * ==================================================================================
- * main.js - Cérebro da Aplicação "änalitks" (Etapa 3: Segundo Gráfico)
+ * main.js - Cérebro da Aplicação "änalitks" (Etapa 3: Segundo Gráfico - Corrigido)
  * ----------------------------------------------------------------------------------
  * Este ficheiro agora inclui a lógica para renderizar o segundo gráfico
  * (projeção de investimentos) na tela de "Visão Geral".
@@ -98,19 +98,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderInvestmentChart() {
         if (investmentChartInstance) { investmentChartInstance.destroy(); }
         if (!userProfile || !userProfile.salario_bruto) { return; }
-
         const salarioBruto = parseFloat(userProfile.salario_bruto);
         const aporteMensal = salarioBruto * 0.10; // 10% do salário
         const taxaJurosAnual = 0.08; // 8% ao ano como padrão
         const periodoAnos = 5;
-
         const taxaMensal = taxaJurosAnual / 12;
         const periodoMeses = periodoAnos * 12;
-
         let valorAcumulado = 0;
         const dataPoints = [];
         const labels = [];
-
         for (let i = 1; i <= periodoMeses; i++) {
             valorAcumulado = (valorAcumulado + aporteMensal) * (1 + taxaMensal);
             if (i % 12 === 0) { // Adiciona um ponto de dados a cada ano
@@ -118,7 +114,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 dataPoints.push(valorAcumulado.toFixed(2));
             }
         }
-
         const ctx = reportsElements.investmentChart.getContext('2d');
         investmentChartInstance = new Chart(ctx, {
             type: 'line',
@@ -157,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(dashboardButtons.horaValor) dashboardButtons.horaValor.addEventListener('click', () => { preencherFormulariosComPerfil(); showScreen('horaValor'); });
     if(dashboardButtons.irpf) dashboardButtons.irpf.addEventListener('click', () => showScreen('irpf'));
     if(dashboardButtons.profile) dashboardButtons.profile.addEventListener('click', () => { preencherFormulariosComPerfil(); showScreen('profile'); });
-    if(dashboardButtons.reports) dashboardButtons.reports.addEventListener('click', () => { renderSalaryChart(); showScreen('reports'); }); // Novo listener
+    if(dashboardButtons.reports) dashboardButtons.reports.addEventListener('click', () => { renderSalaryChart(); renderInvestmentChart(); showScreen('reports'); });
     
     if(salarioElements.buttons.calcular) salarioElements.buttons.calcular.addEventListener('click', executarCalculoSalario);
     if(salarioElements.buttons.voltar) salarioElements.buttons.voltar.addEventListener('click', () => showScreen('dashboard'));
