@@ -45,7 +45,7 @@
         </div>
     </div>
 
-    <!-- TELA DE ESCOLHA DE PERFIL (NOVA - ETAPA 0) -->
+    <!-- TELA DE ESCOLHA DE PERFIL -->
     <div id="welcome-screen" class="screen hidden">
         <div class="calculator-card">
             <div class="card-header">
@@ -86,6 +86,24 @@
         </div>
     </div>
     
+    <!-- TELA DA DASHBOARD PJ (NOVA - ETAPA 1) -->
+    <div id="pj-dashboard-screen" class="screen hidden">
+        <div class="calculator-card">
+            <div class="card-header">
+                <h1>Dashboard PJ / Freelancer</h1>
+                <p>Ferramentas para simplificar a sua vida financeira.</p>
+            </div>
+            <div class="dashboard-grid">
+                <button id="goto-simples-nacional-btn" class="btn btn-secondary">Calcular Imposto (Simples Nacional)</button>
+                <button id="goto-pj-hora-valor-btn" class="btn btn-secondary">Calcular Valor da Hora Freelancer</button>
+            </div>
+            <div class="dashboard-footer">
+                <button id="back-to-welcome-from-pj" class="btn btn-secondary">Voltar para a Escolha</button>
+                <button id="logout-btn-pj" class="btn btn-primary">Sair</button>
+            </div>
+        </div>
+    </div>
+
     <!-- TELA DE CÁLCULO DE SALÁRIO -->
     <div id="salario-screen" class="screen hidden">
         <div class="calculator-card">
@@ -100,7 +118,7 @@
                 <input type="number" id="salario-dependentes" class="input-field" placeholder="Ex: 1" value="0">
             </div>
             <button id="calcular-salario-btn" class="btn btn-primary">Calcular Salário</button>
-            <button id="back-to-dashboard-from-salario" class="btn btn-secondary">Voltar para a Dashboard</button>
+            <button id="back-to-dashboard-from-salario" class="btn btn-secondary">Voltar para a Dashboard CLT</button>
             <div id="salario-results-section" class="results-section hidden">
                 <div class="result-line">
                     <span>Salário Bruto:</span>
@@ -148,7 +166,7 @@
                 <input type="number" id="periodo-anos" class="input-field" placeholder="Ex: 5">
             </div>
             <button id="calcular-investimentos-btn" class="btn btn-primary">Simular</button>
-            <button id="back-to-dashboard-from-investimentos" class="btn btn-secondary">Voltar para a Dashboard</button>
+            <button id="back-to-dashboard-from-investimentos" class="btn btn-secondary">Voltar para a Dashboard CLT</button>
             <div id="investimentos-results-section" class="results-section hidden">
                 <div class="result-line final-result">
                     <span>Valor Final Acumulado:</span>
@@ -190,7 +208,7 @@
                 </div>
             </div>
             <button id="calcular-ferias-btn" class="btn btn-primary">Calcular Férias</button>
-            <button id="back-to-dashboard-from-ferias" class="btn btn-secondary">Voltar para a Dashboard</button>
+            <button id="back-to-dashboard-from-ferias" class="btn btn-secondary">Voltar para a Dashboard CLT</button>
             
             <div id="ferias-results-section" class="results-section hidden">
                 <div class="result-line">
@@ -247,7 +265,7 @@
                 <input type="number" id="decimo-terceiro-dependentes" class="input-field" placeholder="Ex: 1" value="0">
             </div>
             <button id="calcular-decimo-terceiro-btn" class="btn btn-primary">Calcular 13º Salário</button>
-            <button id="back-to-dashboard-from-decimo-terceiro" class="btn btn-secondary">Voltar para a Dashboard</button>
+            <button id="back-to-dashboard-from-decimo-terceiro" class="btn btn-secondary">Voltar para a Dashboard CLT</button>
             
             <div id="decimo-terceiro-results-section" class="results-section hidden">
                 <div class="result-line">
@@ -303,7 +321,7 @@
                 <input type="number" id="hora-valor-dias-semana" class="input-field" placeholder="Ex: 5" value="5">
             </div>
             <button id="calcular-hora-valor-btn" class="btn btn-primary">Calcular Valor da Hora</button>
-            <button id="back-to-dashboard-from-hora-valor" class="btn btn-secondary">Voltar para a Dashboard</button>
+            <button id="back-to-dashboard-from-hora-valor" class="btn btn-secondary">Voltar para a Dashboard CLT</button>
             
             <div id="hora-valor-results-section" class="results-section hidden">
                 <div class="result-line final-result">
@@ -333,7 +351,7 @@
                 <input type="number" id="dependentes" class="input-field" placeholder="Ex: 2">
             </div>
             <button id="calcular-irpf-btn" class="btn btn-primary">Calcular IRPF Anual</button>
-            <button id="back-to-dashboard-from-irpf" class="btn btn-secondary">Voltar para a Dashboard</button>
+            <button id="back-to-dashboard-from-irpf" class="btn btn-secondary">Voltar para a Dashboard CLT</button>
             <div id="irpf-results-section" class="results-section hidden">
                 <div class="result-line">
                     <span>Resultado (Declaração Completa):</span>
@@ -369,7 +387,7 @@
                 <input type="number" id="profile-dias-semana" class="input-field" placeholder="Ex: 5" value="5">
             </div>
             <button id="salvar-perfil-btn" class="btn btn-primary">Salvar Perfil</button>
-            <button id="back-to-dashboard-from-profile" class="btn btn-secondary">Voltar para a Dashboard</button>
+            <button id="back-to-dashboard-from-profile" class="btn btn-secondary">Voltar para a Dashboard CLT</button>
             <p id="profile-status-message" class="explanation-text text-center hidden"></p>
         </div>
     </div>
@@ -406,7 +424,7 @@
             <p id="reports-notice" class="explanation-text text-center hidden">
                 Para ver os seus relatórios, primeiro salve as suas informações na tela 'Meu Perfil'.
             </p>
-            <button id="back-to-dashboard-from-reports" class="btn btn-secondary">Voltar para a Dashboard</button>
+            <button id="back-to-dashboard-from-reports" class="btn btn-secondary">Voltar para a Dashboard CLT</button>
         </div>
     </div>
 

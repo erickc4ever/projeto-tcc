@@ -1,9 +1,9 @@
 /**
  * ==================================================================================
- * main.js - Cérebro da "änalitks" (Etapa 0 - Módulo PJ: Bifurcação)
+ * main.js - Cérebro da "änalitks" (Etapa 1 - Módulo PJ: Casca da Central PJ)
  * ----------------------------------------------------------------------------------
- * Este ficheiro foi modificado para incluir a nova tela de escolha de perfil
- * (CLT ou PJ) que aparece após o login.
+ * Este ficheiro foi modificado para incluir a nova tela da Dashboard PJ e
+ * a lógica de navegação para ela.
  * CÓDIGO COMPLETO E NÃO SIMPLIFICADO.
  * ==================================================================================
  */
@@ -21,8 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const screens = {
         auth: document.getElementById('auth-screen'),
-        welcome: document.getElementById('welcome-screen'), // NOVA TELA
+        welcome: document.getElementById('welcome-screen'),
         dashboard: document.getElementById('dashboard-screen'),
+        pjDashboard: document.getElementById('pj-dashboard-screen'), // NOVA TELA
         salario: document.getElementById('salario-screen'),
         investimentos: document.getElementById('investimentos-screen'),
         ferias: document.getElementById('ferias-screen'),
@@ -35,15 +36,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Seletores ---
     const authForms = { login: document.getElementById('login-form'), signup: document.getElementById('signup-form'), choices: document.getElementById('auth-choices') };
-    const authButtons = { showLogin: document.getElementById('show-login-btn'), showSignup: document.getElementById('show-signup-btn'), showLoginLink: document.getElementById('show-login-link'), showSignupLink: document.getElementById('show-signup-link'), logout: document.getElementById('logout-btn') };
-    const welcomeScreenElements = { // NOVOS SELETORES
-        welcomeMessage: document.getElementById('welcome-message-choice'),
-        buttons: {
-            clt: document.getElementById('goto-clt-dashboard-btn'),
-            pj: document.getElementById('goto-pj-dashboard-btn')
-        }
-    };
+    const authButtons = { showLogin: document.getElementById('show-login-btn'), showSignup: document.getElementById('show-signup-btn'), showLoginLink: document.getElementById('show-login-link'), showSignupLink: document.getElementById('show-signup-link'), logout: document.getElementById('logout-btn'), logoutPj: document.getElementById('logout-btn-pj') };
+    const welcomeScreenElements = { welcomeMessage: document.getElementById('welcome-message-choice'), buttons: { clt: document.getElementById('goto-clt-dashboard-btn'), pj: document.getElementById('goto-pj-dashboard-btn') } };
     const dashboardButtons = { salario: document.getElementById('goto-salario-btn'), investimentos: document.getElementById('goto-investimentos-btn'), ferias: document.getElementById('goto-ferias-btn'), decimoTerceiro: document.getElementById('goto-decimo-terceiro-btn'), horaValor: document.getElementById('goto-hora-valor-btn'), irpf: document.getElementById('goto-irpf-btn'), showAbout: document.getElementById('show-about-btn'), profile: document.getElementById('goto-profile-btn'), reports: document.getElementById('goto-reports-btn') };
+    const pjDashboardButtons = { // NOVOS SELETORES
+        simples: document.getElementById('goto-simples-nacional-btn'),
+        horaValorPj: document.getElementById('goto-pj-hora-valor-btn'),
+        backToWelcome: document.getElementById('back-to-welcome-from-pj')
+    };
     const dashboardElements = { quote: document.getElementById('dashboard-quote') };
     const modalElements = { overlay: document.getElementById('about-modal-overlay'), closeBtn: document.getElementById('close-about-btn') };
     const profileElements = { form: { salarioBruto: document.getElementById('profile-salario-bruto'), dependentes: document.getElementById('profile-dependentes'), horasDia: document.getElementById('profile-horas-dia'), diasSemana: document.getElementById('profile-dias-semana'), }, buttons: { salvar: document.getElementById('salvar-perfil-btn'), voltar: document.getElementById('back-to-dashboard-from-profile'), }, statusMessage: document.getElementById('profile-status-message'), };
@@ -114,22 +114,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if(authForms.login) authForms.login.addEventListener('submit', handleLogin);
     if(authForms.signup) authForms.signup.addEventListener('submit', handleSignup);
     if(authButtons.logout) authButtons.logout.addEventListener('click', handleLogout);
+    if(authButtons.logoutPj) authButtons.logoutPj.addEventListener('click', handleLogout); // NOVO LISTENER
 
-    // NOVOS LISTENERS PARA A TELA DE ESCOLHA
+    // LISTENERS DA TELA DE ESCOLHA
     if(welcomeScreenElements.buttons.clt) welcomeScreenElements.buttons.clt.addEventListener('click', async () => {
         const { data: { user } } = await supabaseClient.auth.getUser();
         const welcomeMessage = document.getElementById('welcome-message');
-        if (welcomeMessage && user) {
-             welcomeMessage.textContent = `Bem-vindo(a), ${user.email}!`;
-        }
+        if (welcomeMessage && user) { welcomeMessage.textContent = `Bem-vindo(a), ${user.email}!`; }
         const randomIndex = Math.floor(Math.random() * dashboardQuotes.length);
         dashboardElements.quote.textContent = dashboardQuotes[randomIndex];
         showScreen('dashboard');
     });
-    if(welcomeScreenElements.buttons.pj) welcomeScreenElements.buttons.pj.addEventListener('click', () => {
-        alert('O Módulo PJ / Freelancer está em desenvolvimento! Fique atento para futuras atualizações.');
-    });
+    if(welcomeScreenElements.buttons.pj) welcomeScreenElements.buttons.pj.addEventListener('click', () => showScreen('pjDashboard'));
 
+    // LISTENERS DA DASHBOARD CLT
     if(dashboardButtons.salario) dashboardButtons.salario.addEventListener('click', () => { preencherFormulariosComPerfil(); showScreen('salario'); });
     if(dashboardButtons.investimentos) dashboardButtons.investimentos.addEventListener('click', () => showScreen('investimentos'));
     if(dashboardButtons.ferias) dashboardButtons.ferias.addEventListener('click', () => { preencherFormulariosComPerfil(); showScreen('ferias'); });
@@ -139,6 +137,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if(dashboardButtons.profile) dashboardButtons.profile.addEventListener('click', () => { preencherFormulariosComPerfil(); showScreen('profile'); });
     if(dashboardButtons.reports) dashboardButtons.reports.addEventListener('click', () => { renderSalaryChart(); renderInvestmentChart(); renderSummaryCards(); showScreen('reports'); });
     
+    // LISTENERS DA DASHBOARD PJ
+    if(pjDashboardButtons.simples) pjDashboardButtons.simples.addEventListener('click', () => alert('Em desenvolvimento!'));
+    if(pjDashboardButtons.horaValorPj) pjDashboardButtons.horaValorPj.addEventListener('click', () => alert('Em desenvolvimento!'));
+    if(pjDashboardButtons.backToWelcome) pjDashboardButtons.backToWelcome.addEventListener('click', () => showScreen('welcome'));
+
+    // LISTENERS DAS CALCULADORAS
     if(salarioElements.buttons.calcular) salarioElements.buttons.calcular.addEventListener('click', executarCalculoSalario);
     if(salarioElements.buttons.voltar) salarioElements.buttons.voltar.addEventListener('click', () => showScreen('dashboard'));
     if(investimentosElements.buttons.calcular) investimentosElements.buttons.calcular.addEventListener('click', executarSimulacaoInvestimentos);
@@ -155,12 +159,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if(profileElements.buttons.voltar) profileElements.buttons.voltar.addEventListener('click', () => showScreen('dashboard'));
     if(reportsElements.backButton) reportsElements.backButton.addEventListener('click', () => showScreen('dashboard'));
     
-    // --- Listeners do Modal ---
+    // LISTENERS DO MODAL
     if(dashboardButtons.showAbout) dashboardButtons.showAbout.addEventListener('click', () => { modalElements.overlay.classList.remove('hidden'); });
     if(modalElements.closeBtn) modalElements.closeBtn.addEventListener('click', () => { modalElements.overlay.classList.add('hidden'); });
     if(modalElements.overlay) modalElements.overlay.addEventListener('click', (event) => { if (event.target === modalElements.overlay) { modalElements.overlay.classList.add('hidden'); } });
 
-    // --- Estado de Autenticação ---
+    // ESTADO DE AUTENTICAÇÃO
     supabaseClient.auth.onAuthStateChange((_event, session) => { updateUserUI(session ? session.user : null); });
 
     console.log("main.js carregado com sucesso. Aplicação pronta.");
