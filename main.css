@@ -1,9 +1,9 @@
 /**
  * ==================================================================================
- * main.css - Estilos de Layout e Estrutura da "änalitks" (Versão com Layout Amplo)
+ * main.css - Estilos de Layout e Estrutura da "änalitks" (Versão "Wall Street")
  * ----------------------------------------------------------------------------------
  * Responsabilidades:
- * 1. Definir o layout principal da página de forma eficiente.
+ * 1. Definir o layout principal da página de forma eficiente e centralizada.
  * 2. Gerenciar a visibilidade das "telas".
  * 3. Estruturar os formulários e botões para performance.
  * 4. Adicionar a estrutura de layout para o modal "Sobre".
@@ -36,17 +36,17 @@ body {
 /* --- Estrutura do Conteúdo Principal (Layout Amplo) --- */
 .calculator-card {
     width: 100%;
-    /* ATUALIZAÇÃO: Aumentamos a largura para criar o layout de "página inteira". */
-    max-width: 700px; 
+    /* ATUALIZAÇÃO: Aumentado para um layout mais imponente, "Wall Street" */
+    max-width: 960px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 24px; /* Aumentado o espaçamento geral */
 }
 
 .card-header {
     text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 16px; /* Aumentado o espaçamento */
 }
 
 /* --- Estrutura do Logo --- */
@@ -67,17 +67,38 @@ body {
     flex-direction: column;
     gap: 15px; 
     width: 100%;
+    max-width: 400px; /* Limita a largura na tela de auth */
+    margin: 0 auto; /* Centraliza */
 }
 
 
 /* --- Estrutura Interna dos Cards e Seções --- */
-.input-group,
-.results-section,
-.dashboard-grid {
+/* ATUALIZAÇÃO: Estilo para os formulários das calculadoras, agora em um layout de 2 colunas. */
+.input-group {
+    display: grid;
+    grid-template-columns: auto 1fr; /* Coluna de label (auto) e input (flexível) */
+    gap: 16px 20px; /* Espaçamento vertical e horizontal */
+    align-items: center; /* Alinha verticalmente label e input */
+    max-width: 600px; /* Limita a largura para melhor legibilidade */
+    margin: 20px auto 0; /* Centraliza o grupo de inputs e adiciona margem no topo */
+}
+
+/* Em telas menores, os campos ficam um abaixo do outro */
+@media (max-width: 640px) {
+    .input-group {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+}
+
+
+.results-section {
     display: flex;
     flex-direction: column;
     gap: 15px;
     width: 100%;
+    max-width: 600px; /* Alinha com a largura do formulário */
+    margin: 0 auto; /* Centraliza a seção de resultados */
 }
 
 .result-line {
@@ -88,10 +109,21 @@ body {
     padding: 10px 0;
 }
 
+.dashboard-grid {
+    display: grid;
+    /* ATUALIZAÇÃO: Ajustado para cartões maiores, estilo "Pokémon" */
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+    width: 100%;
+}
+
+
 .dashboard-footer {
     display: flex;
+    flex-wrap: wrap; /* Permite que os botões quebrem a linha em telas menores */
     gap: 1rem;
     margin-top: 1.5rem;
+    justify-content: center; /* Centraliza os botões do rodapé */
 }
 
 

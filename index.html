@@ -34,7 +34,7 @@
                 <input type="email" id="login-email" class="input-field" placeholder="Seu e-mail" required>
                 <input type="password" id="login-password" class="input-field" placeholder="Sua senha" required>
                 <button type="submit" class="btn btn-primary">Entrar</button>
-                <p>Não tem uma conta? <a href="#" id="show-signup-link">Registre-se</a></p>
+                <p>Não tem uma conta? <a href="#" id="show-signup-link">Registe-se</a></p>
             </form>
             <form id="signup-form" class="auth-form hidden">
                 <input type="email" id="signup-email" class="input-field" placeholder="Seu melhor e-mail" required>
@@ -58,23 +58,93 @@
             </div>
         </div>
     </div>
-
-    <!-- TELA DA DASHBOARD (CLT) -->
+    <!-- TELA DA DASHBOARD (CLT) - ATUALIZADA COM CARTÕES FLIP -->
     <div id="dashboard-screen" class="screen hidden">
         <div class="calculator-card">
             <div class="card-header">
                 <h1 id="welcome-message">Dashboard CLT</h1>
-                <p>Selecione uma ferramenta para começar.</p>
+                <p>Passe o rato sobre um cartão para saber mais.</p>
                 <p id="dashboard-quote" class="explanation-text"></p>
             </div>
             
             <div class="dashboard-grid">
-                <button id="goto-salario-btn" class="btn btn-secondary">Cálculo de Salário</button>
-                <button id="goto-investimentos-btn" class="btn btn-secondary">Simulador de Investimentos</button>
-                <button id="goto-ferias-btn" class="btn btn-secondary">Cálculo de Férias</button>
-                <button id="goto-decimo-terceiro-btn" class="btn btn-secondary">Cálculo de 13º Salário</button>
-                <button id="goto-hora-valor-btn" class="btn btn-secondary">Quanto vale a minha hora?</button>
-                <button id="goto-irpf-btn" class="btn btn-primary">Simulador Anual de IRPF</button>
+                <!-- Card 1: Cálculo de Salário -->
+                <div class="card-container">
+                    <div class="flipping-card-inner">
+                        <div class="card-front card-clt">
+                            <h3>Cálculo de Salário</h3>
+                        </div>
+                        <div class="card-back card-clt">
+                            <p>Descubra o valor líquido do seu salário após todos os descontos de INSS e IRRF.</p>
+                            <button id="goto-salario-btn" class="btn btn-primary">Calcular Agora</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Simulador de Investimentos -->
+                <div class="card-container">
+                    <div class="flipping-card-inner">
+                        <div class="card-front card-clt">
+                            <h3>Simulador de Investimentos</h3>
+                        </div>
+                        <div class="card-back card-clt">
+                            <p>Veja o poder dos juros compostos e projete o crescimento do seu património ao longo do tempo.</p>
+                            <button id="goto-investimentos-btn" class="btn btn-primary">Simular Agora</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: Cálculo de Férias -->
+                <div class="card-container">
+                    <div class="flipping-card-inner">
+                        <div class="card-front card-clt">
+                            <h3>Cálculo de Férias</h3>
+                        </div>
+                        <div class="card-back card-clt">
+                            <p>Planeie o seu descanso e saiba exatamente quanto irá receber, incluindo o terço constitucional.</p>
+                            <button id="goto-ferias-btn" class="btn btn-primary">Planear Férias</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4: Cálculo de 13º Salário -->
+                <div class="card-container">
+                    <div class="flipping-card-inner">
+                        <div class="card-front card-clt">
+                            <h3>Cálculo de 13º Salário</h3>
+                        </div>
+                        <div class="card-back card-clt">
+                            <p>Estime o valor do seu 13º, com o detalhe das parcelas e descontos aplicáveis.</p>
+                            <button id="goto-decimo-terceiro-btn" class="btn btn-primary">Calcular 13º</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 5: Quanto Vale a Minha Hora? -->
+                <div class="card-container">
+                    <div class="flipping-card-inner">
+                        <div class="card-front card-clt">
+                            <h3>Quanto Vale a Minha Hora?</h3>
+                        </div>
+                        <div class="card-back card-clt">
+                            <p>Descubra o valor real de uma hora do seu trabalho com base no seu salário e jornada.</p>
+                            <button id="goto-hora-valor-btn" class="btn btn-primary">Descobrir Valor</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 6: Simulador Anual de IRPF -->
+                <div class="card-container">
+                    <div class="flipping-card-inner">
+                        <div class="card-front card-clt">
+                            <h3>Simulador Anual de IRPF</h3>
+                        </div>
+                        <div class="card-back card-clt">
+                            <p>Compare a declaração completa com a simplificada e descubra qual é a mais vantajosa para si.</p>
+                            <button id="goto-irpf-btn" class="btn btn-primary">Simular IRPF</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="dashboard-footer">
@@ -86,16 +156,38 @@
         </div>
     </div>
     
-    <!-- TELA DA DASHBOARD PJ -->
+    <!-- TELA DA DASHBOARD PJ - ATUALIZADA COM CARTÕES FLIP -->
     <div id="pj-dashboard-screen" class="screen hidden">
         <div class="calculator-card">
             <div class="card-header">
                 <h1>Dashboard PJ / Freelancer</h1>
-                <p>Ferramentas para simplificar a sua vida financeira.</p>
+                <p>Passe o rato sobre um cartão para saber mais.</p>
             </div>
             <div class="dashboard-grid">
-                <button id="goto-simples-nacional-btn" class="btn btn-secondary">Calcular Imposto (Simples Nacional)</button>
-                <button id="goto-pj-hora-valor-btn" class="btn btn-secondary">Calcular Valor da Hora Freelancer</button>
+                <!-- Card 1: Simples Nacional -->
+                <div class="card-container">
+                    <div class="flipping-card-inner">
+                        <div class="card-front card-pj">
+                            <h3>Calcular Simples Nacional</h3>
+                        </div>
+                        <div class="card-back card-pj">
+                            <p>Estime o valor do seu imposto mensal (DAS) com base no seu faturamento e anexo de serviço.</p>
+                            <button id="goto-simples-nacional-btn" class="btn btn-primary">Calcular Imposto</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 2: Valor da Hora Freelancer -->
+                <div class="card-container">
+                    <div class="flipping-card-inner">
+                        <div class="card-front card-pj">
+                            <h3>Valor da Hora Freelancer</h3>
+                        </div>
+                        <div class="card-back card-pj">
+                            <p>Defina o preço da sua hora de trabalho incluindo seu salário, custos fixos e dias de descanso.</p>
+                            <button id="goto-pj-hora-valor-btn" class="btn btn-primary">Definir Preço</button>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="dashboard-footer">
                 <button id="back-to-welcome-from-pj" class="btn btn-secondary">Voltar para a Escolha</button>
@@ -143,48 +235,27 @@
         </div>
     </div>
 
-    <!-- ======================================================================= -->
-    <!-- TELA DE CÁLCULO DE VALOR DA HORA PJ (NOVA - ETAPA 3)                    -->
-    <!-- Este é o contentor principal para a nova ferramenta.                   -->
-    <!-- ======================================================================= -->
+    <!-- TELA DE CÁLCULO DE VALOR DA HORA PJ -->
     <div id="pj-hora-valor-screen" class="screen hidden">
-        <!-- O 'calculator-card' mantém a consistência visual com as outras telas. -->
         <div class="calculator-card">
-            
-            <!-- Bloco do cabeçalho: Título e subtítulo da ferramenta. -->
             <div class="card-header">
                 <h1>Valor da Hora para Freelancer/PJ</h1>
                 <p>Calcule quanto cobrar pela sua hora de trabalho, incluindo custos e tempo livre.</p>
             </div>
-
-            <!-- Bloco de inputs: Agrupa todos os campos que o utilizador precisa de preencher. -->
             <div class="input-group">
-                <!-- Campo para o salário/pró-labore líquido desejado. -->
                 <label for="pj-salario-desejado">Salário Mensal Desejado (Líquido)</label>
                 <input type="number" id="pj-salario-desejado" class="input-field" placeholder="Ex: 5000.00">
-                
-                <!-- Campo para os custos fixos mensais do negócio. -->
                 <label for="pj-custos-fixos">Custos Fixos Mensais (R$)</label>
                 <input type="number" id="pj-custos-fixos" class="input-field" placeholder="Aluguer, software, etc.">
-
-                <!-- Campo para os dias de férias que o freelancer planeia tirar no ano. -->
                 <label for="pj-ferias-ano">Dias de Férias por Ano</label>
                 <input type="number" id="pj-ferias-ano" class="input-field" placeholder="Ex: 30" value="30">
-
-                <!-- Campo para as horas de trabalho diárias. -->
                 <label for="pj-horas-dia">Horas Trabalhadas por Dia</label>
                 <input type="number" id="pj-horas-dia" class="input-field" placeholder="Ex: 8" value="8">
-
-                <!-- Campo para os dias de trabalho semanais. -->
                 <label for="pj-dias-semana">Dias Trabalhados por Semana</label>
                 <input type="number" id="pj-dias-semana" class="input-field" placeholder="Ex: 5" value="5">
             </div>
-
-            <!-- Bloco de botões: Ações principais da tela. -->
             <button id="calcular-pj-hora-valor-btn" class="btn btn-primary">Calcular Valor da Hora</button>
             <button id="back-to-pj-dashboard-from-hora" class="btn btn-secondary">Voltar para a Dashboard PJ</button>
-            
-            <!-- Bloco de resultados: Fica escondido até que o cálculo seja feito. -->
             <div id="pj-hora-valor-results-section" class="results-section hidden">
                 <div class="result-line final-result">
                     <span>O valor mínimo da sua hora deve ser:</span>
@@ -194,6 +265,7 @@
             </div>
         </div>
     </div>
+
 
     <!-- TELA DE CÁLCULO DE SALÁRIO -->
     <div id="salario-screen" class="screen hidden">
