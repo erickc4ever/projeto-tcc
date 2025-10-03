@@ -1,9 +1,9 @@
 /**
  * ==================================================================================
- * main.js - Cérebro da "änalitks" (Etapa 2 - Módulo PJ: Calculadora Simples Nacional)
+ * main.js - Cérebro da "änalitks" (Etapa 3 - Módulo PJ: Calculadora Hora Freelancer)
  * ----------------------------------------------------------------------------------
  * Este ficheiro foi modificado para incluir a lógica completa da nova calculadora
- * do Simples Nacional.
+ * de Valor da Hora para Freelancer/PJ.
  * CÓDIGO COMPLETO E NÃO SIMPLIFICADO.
  * ==================================================================================
  */
@@ -24,7 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
         welcome: document.getElementById('welcome-screen'),
         dashboard: document.getElementById('dashboard-screen'),
         pjDashboard: document.getElementById('pj-dashboard-screen'),
-        simplesNacional: document.getElementById('simples-nacional-screen'), // NOVA TELA
+        simplesNacional: document.getElementById('simples-nacional-screen'),
+        pjHoraValor: document.getElementById('pj-hora-valor-screen'), // NOVA TELA
         salario: document.getElementById('salario-screen'),
         investimentos: document.getElementById('investimentos-screen'),
         ferias: document.getElementById('ferias-screen'),
@@ -41,21 +42,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const welcomeScreenElements = { welcomeMessage: document.getElementById('welcome-message-choice'), buttons: { clt: document.getElementById('goto-clt-dashboard-btn'), pj: document.getElementById('goto-pj-dashboard-btn') } };
     const dashboardButtons = { salario: document.getElementById('goto-salario-btn'), investimentos: document.getElementById('goto-investimentos-btn'), ferias: document.getElementById('goto-ferias-btn'), decimoTerceiro: document.getElementById('goto-decimo-terceiro-btn'), horaValor: document.getElementById('goto-hora-valor-btn'), irpf: document.getElementById('goto-irpf-btn'), showAbout: document.getElementById('show-about-btn'), profile: document.getElementById('goto-profile-btn'), reports: document.getElementById('goto-reports-btn') };
     const pjDashboardButtons = { simples: document.getElementById('goto-simples-nacional-btn'), horaValorPj: document.getElementById('goto-pj-hora-valor-btn'), backToWelcome: document.getElementById('back-to-welcome-from-pj') };
-    const simplesNacionalElements = { // NOVOS SELETORES
+    const simplesNacionalElements = { form: { faturamentoMensal: document.getElementById('faturamento-mensal'), anexo: document.getElementById('anexo-simples') }, buttons: { calcular: document.getElementById('calcular-simples-btn'), voltar: document.getElementById('back-to-pj-dashboard-from-simples') }, results: { container: document.getElementById('simples-results-section'), rbt12: document.getElementById('resultado-rbt12'), aliquotaEfetiva: document.getElementById('resultado-aliquota-efetiva'), valorDas: document.getElementById('resultado-valor-das'), explicacao: document.getElementById('explicacao-simples') } };
+    const pjHoraValorElements = { // NOVOS SELETORES
         form: {
-            faturamentoMensal: document.getElementById('faturamento-mensal'),
-            anexo: document.getElementById('anexo-simples')
+            salarioDesejado: document.getElementById('pj-salario-desejado'),
+            custosFixos: document.getElementById('pj-custos-fixos'),
+            feriasAno: document.getElementById('pj-ferias-ano'),
+            horasDia: document.getElementById('pj-horas-dia'),
+            diasSemana: document.getElementById('pj-dias-semana')
         },
         buttons: {
-            calcular: document.getElementById('calcular-simples-btn'),
-            voltar: document.getElementById('back-to-pj-dashboard-from-simples')
+            calcular: document.getElementById('calcular-pj-hora-valor-btn'),
+            voltar: document.getElementById('back-to-pj-dashboard-from-hora')
         },
         results: {
-            container: document.getElementById('simples-results-section'),
-            rbt12: document.getElementById('resultado-rbt12'),
-            aliquotaEfetiva: document.getElementById('resultado-aliquota-efetiva'),
-            valorDas: document.getElementById('resultado-valor-das'),
-            explicacao: document.getElementById('explicacao-simples')
+            container: document.getElementById('pj-hora-valor-results-section'),
+            valorHora: document.getElementById('resultado-pj-hora-valor'),
+            explicacao: document.getElementById('explicacao-pj-hora-valor')
         }
     };
     const dashboardElements = { quote: document.getElementById('dashboard-quote') };
@@ -80,16 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ----------------------------------------------------------------------------------
     function showScreen(screenName) { Object.values(screens).forEach(screen => { if (screen) screen.classList.add('hidden'); }); if (screens[screenName]) { screens[screenName].classList.remove('hidden'); console.log(`A exibir a tela: ${screenName}`); } else { console.warn(`AVISO: A tela "${screenName}" ainda não foi criada no index.html.`); alert(`A funcionalidade para "${screenName}" ainda está em desenvolvimento!`); screens.dashboard.classList.remove('hidden'); } }
     
-    async function updateUserUI(user) {
-        if (user) {
-            welcomeScreenElements.welcomeMessage.textContent = `Olá, ${user.email}!`;
-            await fetchUserProfile(user);
-            showScreen('welcome');
-        } else {
-            userProfile = null;
-            showScreen('auth');
-        }
-    }
+    async function updateUserUI(user) { if (user) { welcomeScreenElements.welcomeMessage.textContent = `Olá, ${user.email}!`; await fetchUserProfile(user); showScreen('welcome'); } else { userProfile = null; showScreen('auth'); } }
 
     // PARTE 4: FUNÇÕES DE AUTENTICAÇÃO E PERFIL
     // ----------------------------------------------------------------------------------
@@ -117,64 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function executarCalculo13Salario() { const salarioBruto = parseFloat(decimoTerceiroElements.form.salarioBruto.value) || 0; const mesesTrabalhados = parseInt(decimoTerceiroElements.form.meses.value) || 0; const numDependentes = parseInt(decimoTerceiroElements.form.dependentes.value) || 0; if (salarioBruto <= 0 || mesesTrabalhados <= 0 || mesesTrabalhados > 12) { alert('Por favor, insira valores válidos para salário e meses trabalhados (1 a 12).'); return; } const decimoTerceiroBruto = (salarioBruto / 12) * mesesTrabalhados; const primeiraParcela = decimoTerceiroBruto / 2; const segundaParcelaBruta = decimoTerceiroBruto - primeiraParcela; const descontoINSS = calcularINSS(decimoTerceiroBruto); const baseIRRF = decimoTerceiroBruto - descontoINSS; const descontoIRRF = calcularIRRF(baseIRRF, numDependentes); const segundaParcelaLiquida = segundaParcelaBruta - descontoINSS - descontoIRRF; const totalLiquido = primeiraParcela + segundaParcelaLiquida; decimoTerceiroElements.results.bruto.textContent = `R$ ${decimoTerceiroBruto.toFixed(2)}`; decimoTerceiroElements.results.primeiraParcela.textContent = `R$ ${primeiraParcela.toFixed(2)}`; decimoTerceiroElements.results.segundaParcelaBruta.textContent = `R$ ${segundaParcelaBruta.toFixed(2)}`; decimoTerceiroElements.results.inss.textContent = `- R$ ${descontoINSS.toFixed(2)}`; decimoTerceiroElements.results.irrf.textContent = `- R$ ${descontoIRRF.toFixed(2)}`; decimoTerceiroElements.results.segundaParcelaLiquida.textContent = `R$ ${segundaParcelaLiquida.toFixed(2)}`; decimoTerceiroElements.results.liquidoTotal.textContent = `R$ ${totalLiquido.toFixed(2)}`; decimoTerceiroElements.results.container.classList.remove('hidden'); }
     function executarCalculoHoraValor() { const salario = parseFloat(horaValorElements.form.salario.value) || 0; const horasDia = parseFloat(horaValorElements.form.horasDia.value) || 0; const diasSemana = parseInt(horaValorElements.form.diasSemana.value) || 0; if (salario <= 0 || horasDia <= 0 || diasSemana <= 0 || diasSemana > 7) { alert('Por favor, insira valores válidos para salário, horas por dia e dias por semana (1 a 7).'); return; } const horasTrabalhadasMes = horasDia * diasSemana * 4.5; const valorHora = salario / horasTrabalhadasMes; const explicacao = `Baseado no salário de R$ ${salario.toFixed(2)} que você informou, o cálculo é: R$ ${salario.toFixed(2)} / (${horasTrabalhadasMes.toFixed(1)} horas/mês).`; horaValorElements.results.valorHora.textContent = `R$ ${valorHora.toFixed(2)}`; horaValorElements.results.explicacao.textContent = explicacao; horaValorElements.results.container.classList.remove('hidden'); }
     function executarCalculoIRPFAnual() { const rendimentos = parseFloat(irpfElements.form.rendimentosAnuais.value) || 0; const saude = parseFloat(irpfElements.form.despesasSaude.value) || 0; const educacao = parseFloat(irpfElements.form.despesasEducacao.value) || 0; const dependentes = parseInt(irpfElements.form.dependentes.value) || 0; if (rendimentos <= 0) { alert('Por favor, insira o total de rendimentos anuais.'); return; } const DEDUCAO_POR_DEPENDENTE = 2275.08; const LIMITE_DEDUCAO_EDUCACAO = 3561.50; const LIMITE_DESCONTO_SIMPLIFICADO = 16754.34; const deducaoDependentes = dependentes * DEDUCAO_POR_DEPENDENTE; const deducaoEducacao = Math.min(educacao, LIMITE_DEDUCAO_EDUCACAO); const totalDeducoes = deducaoDependentes + deducaoEducacao + saude; const baseCalculoCompleta = rendimentos - totalDeducoes; const impostoDevidoCompleta = calcularImpostoAnual(baseCalculoCompleta); const descontoSimplificado = rendimentos * 0.20; const descontoAplicado = Math.min(descontoSimplificado, LIMITE_DESCONTO_SIMPLIFICADO); const baseCalculoSimplificada = rendimentos - descontoAplicado; const impostoDevidoSimplificada = calcularImpostoAnual(baseCalculoSimplificada); irpfElements.results.completa.textContent = `R$ ${impostoDevidoCompleta.toFixed(2)}`; irpfElements.results.simplificada.textContent = `R$ ${impostoDevidoSimplificada.toFixed(2)}`; if (impostoDevidoCompleta < impostoDevidoSimplificada) { irpfElements.results.recomendacao.textContent = "Recomendação: A Declaração COMPLETA é mais vantajosa!"; } else if (impostoDevidoSimplificada < impostoDevidoCompleta) { irpfElements.results.recomendacao.textContent = "Recomendação: A Declaração SIMPLIFICADA é mais vantajosa!"; } else { irpfElements.results.recomendacao.textContent = "Recomendação: Ambos os modelos resultam no mesmo valor de imposto."; } irpfElements.results.container.classList.remove('hidden'); }
-
-    // NOVA FUNÇÃO
-    function executarCalculoSimplesNacional() {
-        const faturamentoMensal = parseFloat(simplesNacionalElements.form.faturamentoMensal.value) || 0;
-        const anexo = simplesNacionalElements.form.anexo.value;
-
-        if (faturamentoMensal <= 0) {
-            alert('Por favor, insira um valor de faturamento mensal válido.');
-            return;
-        }
-
-        const rbt12 = faturamentoMensal * 12; // Receita Bruta Total nos últimos 12 meses (estimativa)
-
-        const tabelas = {
-            anexo3: [
-                { ate: 180000, aliquota: 0.06, deduzir: 0 },
-                { ate: 360000, aliquota: 0.112, deduzir: 9360 },
-                { ate: 720000, aliquota: 0.135, deduzir: 17640 },
-                { ate: 1800000, aliquota: 0.16, deduzir: 35640 },
-                { ate: 3600000, aliquota: 0.21, deduzir: 125640 },
-                { ate: 4800000, aliquota: 0.33, deduzir: 648000 }
-            ],
-            anexo5: [
-                { ate: 180000, aliquota: 0.155, deduzir: 0 },
-                { ate: 360000, aliquota: 0.18, deduzir: 4500 },
-                { ate: 720000, aliquota: 0.195, deduzir: 9900 },
-                { ate: 1800000, aliquota: 0.205, deduzir: 17100 },
-                { ate: 3600000, aliquota: 0.23, deduzir: 62100 },
-                { ate: 4800000, aliquota: 0.305, deduzir: 540000 }
-            ]
-        };
-
-        const tabelaSelecionada = tabelas[anexo];
-        let faixaEncontrada = null;
-
-        for (const faixa of tabelaSelecionada) {
-            if (rbt12 <= faixa.ate) {
-                faixaEncontrada = faixa;
-                break;
-            }
-        }
-
-        if (!faixaEncontrada) {
-            alert('Faturamento anual excede o limite do Simples Nacional (R$ 4.800.000,00).');
-            return;
-        }
-
-        const { aliquota, deduzir } = faixaEncontrada;
-        const aliquotaEfetiva = ((rbt12 * aliquota) - deduzir) / rbt12;
-        const valorDAS = faturamentoMensal * aliquotaEfetiva;
-
-        // Exibir resultados
-        simplesNacionalElements.results.rbt12.textContent = `R$ ${rbt12.toFixed(2)}`;
-        simplesNacionalElements.results.aliquotaEfetiva.textContent = `${(aliquotaEfetiva * 100).toFixed(2)}%`;
-        simplesNacionalElements.results.valorDas.textContent = `R$ ${valorDAS.toFixed(2)}`;
-        simplesNacionalElements.results.explicacao.textContent = `Cálculo: ((R$${rbt12.toFixed(2)} * ${aliquota * 100}%) - R$${deduzir}) / R$${rbt12.toFixed(2)} = Alíquota Efetiva de ${(aliquotaEfetiva * 100).toFixed(2)}%.`;
-        simplesNacionalElements.results.container.classList.remove('hidden');
-    }
+    function executarCalculoSimplesNacional() { const faturamentoMensal = parseFloat(simplesNacionalElements.form.faturamentoMensal.value) || 0; const anexo = simplesNacionalElements.form.anexo.value; if (faturamentoMensal <= 0) { alert('Por favor, insira um valor de faturamento mensal válido.'); return; } const rbt12 = faturamentoMensal * 12; const tabelas = { anexo3: [ { ate: 180000, aliquota: 0.06, deduzir: 0 }, { ate: 360000, aliquota: 0.112, deduzir: 9360 }, { ate: 720000, aliquota: 0.135, deduzir: 17640 }, { ate: 1800000, aliquota: 0.16, deduzir: 35640 }, { ate: 3600000, aliquota: 0.21, deduzir: 125640 }, { ate: 4800000, aliquota: 0.33, deduzir: 648000 } ], anexo5: [ { ate: 180000, aliquota: 0.155, deduzir: 0 }, { ate: 360000, aliquota: 0.18, deduzir: 4500 }, { ate: 720000, aliquota: 0.195, deduzir: 9900 }, { ate: 1800000, aliquota: 0.205, deduzir: 17100 }, { ate: 3600000, aliquota: 0.23, deduzir: 62100 }, { ate: 4800000, aliquota: 0.305, deduzir: 540000 } ] }; const tabelaSelecionada = tabelas[anexo]; let faixaEncontrada = null; for (const faixa of tabelaSelecionada) { if (rbt12 <= faixa.ate) { faixaEncontrada = faixa; break; } } if (!faixaEncontrada) { alert('Faturamento anual excede o limite do Simples Nacional (R$ 4.800.000,00).'); return; } const { aliquota, deduzir } = faixaEncontrada; const aliquotaEfetiva = ((rbt12 * aliquota) - deduzir) / rbt12; const valorDAS = faturamentoMensal * aliquotaEfetiva; simplesNacionalElements.results.rbt12.textContent = `R$ ${rbt12.toFixed(2)}`; simplesNacionalElements.results.aliquotaEfetiva.textContent = `${(aliquotaEfetiva * 100).toFixed(2)}%`; simplesNacionalElements.results.valorDas.textContent = `R$ ${valorDAS.toFixed(2)}`; simplesNacionalElements.results.explicacao.textContent = `Cálculo: ((R$${rbt12.toFixed(2)} * ${aliquota * 100}%) - R$${deduzir}) / R$${rbt12.toFixed(2)} = Alíquota Efetiva de ${(aliquotaEfetiva * 100).toFixed(2)}%.`; simplesNacionalElements.results.container.classList.remove('hidden'); }
 
     // PARTE 7: REGISTO DE EVENT LISTENERS
     // ----------------------------------------------------------------------------------
@@ -187,18 +124,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if(authButtons.logout) authButtons.logout.addEventListener('click', handleLogout);
     if(authButtons.logoutPj) authButtons.logoutPj.addEventListener('click', handleLogout);
 
-    // LISTENERS DA TELA DE ESCOLHA
-    if(welcomeScreenElements.buttons.clt) welcomeScreenElements.buttons.clt.addEventListener('click', async () => {
-        const { data: { user } } = await supabaseClient.auth.getUser();
-        const welcomeMessage = document.getElementById('welcome-message');
-        if (welcomeMessage && user) { welcomeMessage.textContent = `Bem-vindo(a), ${user.email}!`; }
-        const randomIndex = Math.floor(Math.random() * dashboardQuotes.length);
-        dashboardElements.quote.textContent = dashboardQuotes[randomIndex];
-        showScreen('dashboard');
-    });
+    if(welcomeScreenElements.buttons.clt) welcomeScreenElements.buttons.clt.addEventListener('click', async () => { const { data: { user } } = await supabaseClient.auth.getUser(); const welcomeMessage = document.getElementById('welcome-message'); if (welcomeMessage && user) { welcomeMessage.textContent = `Bem-vindo(a), ${user.email}!`; } const randomIndex = Math.floor(Math.random() * dashboardQuotes.length); dashboardElements.quote.textContent = dashboardQuotes[randomIndex]; showScreen('dashboard'); });
     if(welcomeScreenElements.buttons.pj) welcomeScreenElements.buttons.pj.addEventListener('click', () => showScreen('pjDashboard'));
 
-    // LISTENERS DA DASHBOARD CLT
     if(dashboardButtons.salario) dashboardButtons.salario.addEventListener('click', () => { preencherFormulariosComPerfil(); showScreen('salario'); });
     if(dashboardButtons.investimentos) dashboardButtons.investimentos.addEventListener('click', () => showScreen('investimentos'));
     if(dashboardButtons.ferias) dashboardButtons.ferias.addEventListener('click', () => { preencherFormulariosComPerfil(); showScreen('ferias'); });
@@ -208,12 +136,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if(dashboardButtons.profile) dashboardButtons.profile.addEventListener('click', () => { preencherFormulariosComPerfil(); showScreen('profile'); });
     if(dashboardButtons.reports) dashboardButtons.reports.addEventListener('click', () => { renderSalaryChart(); renderInvestmentChart(); renderSummaryCards(); showScreen('reports'); });
     
-    // LISTENERS DA DASHBOARD PJ
     if(pjDashboardButtons.simples) pjDashboardButtons.simples.addEventListener('click', () => showScreen('simplesNacional'));
     if(pjDashboardButtons.horaValorPj) pjDashboardButtons.horaValorPj.addEventListener('click', () => alert('Em desenvolvimento!'));
     if(pjDashboardButtons.backToWelcome) pjDashboardButtons.backToWelcome.addEventListener('click', () => showScreen('welcome'));
 
-    // LISTENERS DAS CALCULADORAS
     if(salarioElements.buttons.calcular) salarioElements.buttons.calcular.addEventListener('click', executarCalculoSalario);
     if(salarioElements.buttons.voltar) salarioElements.buttons.voltar.addEventListener('click', () => showScreen('dashboard'));
     if(investimentosElements.buttons.calcular) investimentosElements.buttons.calcular.addEventListener('click', executarSimulacaoInvestimentos);
@@ -229,15 +155,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if(profileElements.buttons.salvar) profileElements.buttons.salvar.addEventListener('click', handleSaveProfile);
     if(profileElements.buttons.voltar) profileElements.buttons.voltar.addEventListener('click', () => showScreen('dashboard'));
     if(reportsElements.backButton) reportsElements.backButton.addEventListener('click', () => showScreen('dashboard'));
-    if(simplesNacionalElements.buttons.calcular) simplesNacionalElements.buttons.calcular.addEventListener('click', executarCalculoSimplesNacional); // NOVO
-    if(simplesNacionalElements.buttons.voltar) simplesNacionalElements.buttons.voltar.addEventListener('click', () => showScreen('pjDashboard')); // NOVO
+    if(simplesNacionalElements.buttons.calcular) simplesNacionalElements.buttons.calcular.addEventListener('click', executarCalculoSimplesNacional);
+    if(simplesNacionalElements.buttons.voltar) simplesNacionalElements.buttons.voltar.addEventListener('click', () => showScreen('pjDashboard'));
     
-    // LISTENERS DO MODAL
     if(dashboardButtons.showAbout) dashboardButtons.showAbout.addEventListener('click', () => { modalElements.overlay.classList.remove('hidden'); });
     if(modalElements.closeBtn) modalElements.closeBtn.addEventListener('click', () => { modalElements.overlay.classList.add('hidden'); });
     if(modalElements.overlay) modalElements.overlay.addEventListener('click', (event) => { if (event.target === modalElements.overlay) { modalElements.overlay.classList.add('hidden'); } });
 
-    // ESTADO DE AUTENTICAÇÃO
     supabaseClient.auth.onAuthStateChange((_event, session) => { updateUserUI(session ? session.user : null); });
 
     console.log("main.js carregado com sucesso. Aplicação pronta.");

@@ -34,7 +34,7 @@
                 <input type="email" id="login-email" class="input-field" placeholder="Seu e-mail" required>
                 <input type="password" id="login-password" class="input-field" placeholder="Sua senha" required>
                 <button type="submit" class="btn btn-primary">Entrar</button>
-                <p>Não tem uma conta? <a href="#" id="show-signup-link">Registe-se</a></p>
+                <p>Não tem uma conta? <a href="#" id="show-signup-link">Registre-se</a></p>
             </form>
             <form id="signup-form" class="auth-form hidden">
                 <input type="email" id="signup-email" class="input-field" placeholder="Seu melhor e-mail" required>
@@ -104,7 +104,7 @@
         </div>
     </div>
 
-    <!-- TELA DE CÁLCULO DO SIMPLES NACIONAL (NOVA - ETAPA 2) -->
+    <!-- TELA DE CÁLCULO DO SIMPLES NACIONAL -->
     <div id="simples-nacional-screen" class="screen hidden">
         <div class="calculator-card">
             <div class="card-header">
@@ -139,6 +139,58 @@
                     <span id="resultado-valor-das" class="font-bold success-text">R$ 0,00</span>
                 </div>
                 <p class="explanation-text" id="explicacao-simples">Cálculo detalhado do imposto.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================================= -->
+    <!-- TELA DE CÁLCULO DE VALOR DA HORA PJ (NOVA - ETAPA 3)                    -->
+    <!-- Este é o contentor principal para a nova ferramenta.                   -->
+    <!-- ======================================================================= -->
+    <div id="pj-hora-valor-screen" class="screen hidden">
+        <!-- O 'calculator-card' mantém a consistência visual com as outras telas. -->
+        <div class="calculator-card">
+            
+            <!-- Bloco do cabeçalho: Título e subtítulo da ferramenta. -->
+            <div class="card-header">
+                <h1>Valor da Hora para Freelancer/PJ</h1>
+                <p>Calcule quanto cobrar pela sua hora de trabalho, incluindo custos e tempo livre.</p>
+            </div>
+
+            <!-- Bloco de inputs: Agrupa todos os campos que o utilizador precisa de preencher. -->
+            <div class="input-group">
+                <!-- Campo para o salário/pró-labore líquido desejado. -->
+                <label for="pj-salario-desejado">Salário Mensal Desejado (Líquido)</label>
+                <input type="number" id="pj-salario-desejado" class="input-field" placeholder="Ex: 5000.00">
+                
+                <!-- Campo para os custos fixos mensais do negócio. -->
+                <label for="pj-custos-fixos">Custos Fixos Mensais (R$)</label>
+                <input type="number" id="pj-custos-fixos" class="input-field" placeholder="Aluguer, software, etc.">
+
+                <!-- Campo para os dias de férias que o freelancer planeia tirar no ano. -->
+                <label for="pj-ferias-ano">Dias de Férias por Ano</label>
+                <input type="number" id="pj-ferias-ano" class="input-field" placeholder="Ex: 30" value="30">
+
+                <!-- Campo para as horas de trabalho diárias. -->
+                <label for="pj-horas-dia">Horas Trabalhadas por Dia</label>
+                <input type="number" id="pj-horas-dia" class="input-field" placeholder="Ex: 8" value="8">
+
+                <!-- Campo para os dias de trabalho semanais. -->
+                <label for="pj-dias-semana">Dias Trabalhados por Semana</label>
+                <input type="number" id="pj-dias-semana" class="input-field" placeholder="Ex: 5" value="5">
+            </div>
+
+            <!-- Bloco de botões: Ações principais da tela. -->
+            <button id="calcular-pj-hora-valor-btn" class="btn btn-primary">Calcular Valor da Hora</button>
+            <button id="back-to-pj-dashboard-from-hora" class="btn btn-secondary">Voltar para a Dashboard PJ</button>
+            
+            <!-- Bloco de resultados: Fica escondido até que o cálculo seja feito. -->
+            <div id="pj-hora-valor-results-section" class="results-section hidden">
+                <div class="result-line final-result">
+                    <span>O valor mínimo da sua hora deve ser:</span>
+                    <span id="resultado-pj-hora-valor" class="font-bold success-text">R$ 0,00</span>
+                </div>
+                <p class="explanation-text" id="explicacao-pj-hora-valor">Este valor cobre o seu salário desejado, custos, férias e impostos.</p>
             </div>
         </div>
     </div>
