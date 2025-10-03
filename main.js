@@ -118,6 +118,64 @@ document.addEventListener('DOMContentLoaded', () => {
     function executarCalculoHoraValor() { const salario = parseFloat(horaValorElements.form.salario.value) || 0; const horasDia = parseFloat(horaValorElements.form.horasDia.value) || 0; const diasSemana = parseInt(horaValorElements.form.diasSemana.value) || 0; if (salario <= 0 || horasDia <= 0 || diasSemana <= 0 || diasSemana > 7) { alert('Por favor, insira valores válidos para salário, horas por dia e dias por semana (1 a 7).'); return; } const horasTrabalhadasMes = horasDia * diasSemana * 4.5; const valorHora = salario / horasTrabalhadasMes; const explicacao = `Baseado no salário de R$ ${salario.toFixed(2)} que você informou, o cálculo é: R$ ${salario.toFixed(2)} / (${horasTrabalhadasMes.toFixed(1)} horas/mês).`; horaValorElements.results.valorHora.textContent = `R$ ${valorHora.toFixed(2)}`; horaValorElements.results.explicacao.textContent = explicacao; horaValorElements.results.container.classList.remove('hidden'); }
     function executarCalculoIRPFAnual() { const rendimentos = parseFloat(irpfElements.form.rendimentosAnuais.value) || 0; const saude = parseFloat(irpfElements.form.despesasSaude.value) || 0; const educacao = parseFloat(irpfElements.form.despesasEducacao.value) || 0; const dependentes = parseInt(irpfElements.form.dependentes.value) || 0; if (rendimentos <= 0) { alert('Por favor, insira o total de rendimentos anuais.'); return; } const DEDUCAO_POR_DEPENDENTE = 2275.08; const LIMITE_DEDUCAO_EDUCACAO = 3561.50; const LIMITE_DESCONTO_SIMPLIFICADO = 16754.34; const deducaoDependentes = dependentes * DEDUCAO_POR_DEPENDENTE; const deducaoEducacao = Math.min(educacao, LIMITE_DEDUCAO_EDUCACAO); const totalDeducoes = deducaoDependentes + deducaoEducacao + saude; const baseCalculoCompleta = rendimentos - totalDeducoes; const impostoDevidoCompleta = calcularImpostoAnual(baseCalculoCompleta); const descontoSimplificado = rendimentos * 0.20; const descontoAplicado = Math.min(descontoSimplificado, LIMITE_DESCONTO_SIMPLIFICADO); const baseCalculoSimplificada = rendimentos - descontoAplicado; const impostoDevidoSimplificada = calcularImpostoAnual(baseCalculoSimplificada); irpfElements.results.completa.textContent = `R$ ${impostoDevidoCompleta.toFixed(2)}`; irpfElements.results.simplificada.textContent = `R$ ${impostoDevidoSimplificada.toFixed(2)}`; if (impostoDevidoCompleta < impostoDevidoSimplificada) { irpfElements.results.recomendacao.textContent = "Recomendação: A Declaração COMPLETA é mais vantajosa!"; } else if (impostoDevidoSimplificada < impostoDevidoCompleta) { irpfElements.results.recomendacao.textContent = "Recomendação: A Declaração SIMPLIFICADA é mais vantajosa!"; } else { irpfElements.results.recomendacao.textContent = "Recomendação: Ambos os modelos resultam no mesmo valor de imposto."; } irpfElements.results.container.classList.remove('hidden'); }
 
+    // NOVA FUNÇÃO
+    function executarCalculoSimplesNacional() {
+        const faturamentoMensal = parseFloat(simplesNacionalElements.form.faturamentoMensal.value) || 0;
+        const anexo = simplesNacionalElements.form.anexo.value;
+
+        if (faturamentoMensal <= 0) {
+            alert('Por favor, insira um valor de faturamento mensal válido.');
+            return;
+        }
+
+        const rbt12 = faturamentoMensal * 12; // Receita Bruta Total nos últimos 12 meses (estimativa)
+
+        const tabelas = {
+            anexo3: [
+                { ate: 180000, aliquota: 0.06, deduzir: 0 },
+                { ate: 360000, aliquota: 0.112, deduzir: 9360 },
+                { ate: 720000, aliquota: 0.135, deduzir: 17640 },
+                { ate: 1800000, aliquota: 0.16, deduzir: 35640 },
+                { ate: 3600000, aliquota: 0.21, deduzir: 125640 },
+                { ate: 4800000, aliquota: 0.33, deduzir: 648000 }
+            ],
+            anexo5: [
+                { ate: 180000, aliquota: 0.155, deduzir: 0 },
+                { ate: 360000, aliquota: 0.18, deduzir: 4500 },
+                { ate: 720000, aliquota: 0.195, deduzir: 9900 },
+                { ate: 1800000, aliquota: 0.205, deduzir: 17100 },
+                { ate: 3600000, aliquota: 0.23, deduzir: 62100 },
+                { ate: 4800000, aliquota: 0.305, deduzir: 540000 }
+            ]
+        };
+
+        const tabelaSelecionada = tabelas[anexo];
+        let faixaEncontrada = null;
+
+        for (const faixa of tabelaSelecionada) {
+            if (rbt12 <= faixa.ate) {
+                faixaEncontrada = faixa;
+                break;
+            }
+        }
+
+        if (!faixaEncontrada) {
+            alert('Faturamento anual excede o limite do Simples Nacional (R$ 4.800.000,00).');
+            return;
+        }
+
+        const { aliquota, deduzir } = faixaEncontrada;
+        const aliquotaEfetiva = ((rbt12 * aliquota) - deduzir) / rbt12;
+        const valorDAS = faturamentoMensal * aliquotaEfetiva;
+
+        // Exibir resultados
+        simplesNacionalElements.results.rbt12.textContent = `R$ ${rbt12.toFixed(2)}`;
+        simplesNacionalElements.results.aliquotaEfetiva.textContent = `${(aliquotaEfetiva * 100).toFixed(2)}%`;
+        simplesNacionalElements.results.valorDas.textContent = `R$ ${valorDAS.toFixed(2)}`;
+        simplesNacionalElements.results.explicacao.textContent = `Cálculo: ((R$${rbt12.toFixed(2)} * ${aliquota * 100}%) - R$${deduzir}) / R$${rbt12.toFixed(2)} = Alíquota Efetiva de ${(aliquotaEfetiva * 100).toFixed(2)}%.`;
+        simplesNacionalElements.results.container.classList.remove('hidden');
+    }
+
     // PARTE 7: REGISTO DE EVENT LISTENERS
     // ----------------------------------------------------------------------------------
     if(authButtons.showLogin) authButtons.showLogin.addEventListener('click', () => { authForms.choices.classList.add('hidden'); authForms.login.classList.remove('hidden'); });
@@ -151,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(dashboardButtons.reports) dashboardButtons.reports.addEventListener('click', () => { renderSalaryChart(); renderInvestmentChart(); renderSummaryCards(); showScreen('reports'); });
     
     // LISTENERS DA DASHBOARD PJ
-    if(pjDashboardButtons.simples) pjDashboardButtons.simples.addEventListener('click', () => alert('Em desenvolvimento!'));
+    if(pjDashboardButtons.simples) pjDashboardButtons.simples.addEventListener('click', () => showScreen('simplesNacional'));
     if(pjDashboardButtons.horaValorPj) pjDashboardButtons.horaValorPj.addEventListener('click', () => alert('Em desenvolvimento!'));
     if(pjDashboardButtons.backToWelcome) pjDashboardButtons.backToWelcome.addEventListener('click', () => showScreen('welcome'));
 
@@ -171,6 +229,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if(profileElements.buttons.salvar) profileElements.buttons.salvar.addEventListener('click', handleSaveProfile);
     if(profileElements.buttons.voltar) profileElements.buttons.voltar.addEventListener('click', () => showScreen('dashboard'));
     if(reportsElements.backButton) reportsElements.backButton.addEventListener('click', () => showScreen('dashboard'));
+    if(simplesNacionalElements.buttons.calcular) simplesNacionalElements.buttons.calcular.addEventListener('click', executarCalculoSimplesNacional); // NOVO
+    if(simplesNacionalElements.buttons.voltar) simplesNacionalElements.buttons.voltar.addEventListener('click', () => showScreen('pjDashboard')); // NOVO
     
     // LISTENERS DO MODAL
     if(dashboardButtons.showAbout) dashboardButtons.showAbout.addEventListener('click', () => { modalElements.overlay.classList.remove('hidden'); });
