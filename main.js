@@ -1,9 +1,9 @@
 /**
  * ==================================================================================
- * main.js - Cérebro da "änalitks" (Etapa 1 - Módulo PJ: Casca da Central PJ)
+ * main.js - Cérebro da "änalitks" (Etapa 2 - Módulo PJ: Calculadora Simples Nacional)
  * ----------------------------------------------------------------------------------
- * Este ficheiro foi modificado para incluir a nova tela da Dashboard PJ e
- * a lógica de navegação para ela.
+ * Este ficheiro foi modificado para incluir a lógica completa da nova calculadora
+ * do Simples Nacional.
  * CÓDIGO COMPLETO E NÃO SIMPLIFICADO.
  * ==================================================================================
  */
@@ -23,7 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
         auth: document.getElementById('auth-screen'),
         welcome: document.getElementById('welcome-screen'),
         dashboard: document.getElementById('dashboard-screen'),
-        pjDashboard: document.getElementById('pj-dashboard-screen'), // NOVA TELA
+        pjDashboard: document.getElementById('pj-dashboard-screen'),
+        simplesNacional: document.getElementById('simples-nacional-screen'), // NOVA TELA
         salario: document.getElementById('salario-screen'),
         investimentos: document.getElementById('investimentos-screen'),
         ferias: document.getElementById('ferias-screen'),
@@ -39,10 +40,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const authButtons = { showLogin: document.getElementById('show-login-btn'), showSignup: document.getElementById('show-signup-btn'), showLoginLink: document.getElementById('show-login-link'), showSignupLink: document.getElementById('show-signup-link'), logout: document.getElementById('logout-btn'), logoutPj: document.getElementById('logout-btn-pj') };
     const welcomeScreenElements = { welcomeMessage: document.getElementById('welcome-message-choice'), buttons: { clt: document.getElementById('goto-clt-dashboard-btn'), pj: document.getElementById('goto-pj-dashboard-btn') } };
     const dashboardButtons = { salario: document.getElementById('goto-salario-btn'), investimentos: document.getElementById('goto-investimentos-btn'), ferias: document.getElementById('goto-ferias-btn'), decimoTerceiro: document.getElementById('goto-decimo-terceiro-btn'), horaValor: document.getElementById('goto-hora-valor-btn'), irpf: document.getElementById('goto-irpf-btn'), showAbout: document.getElementById('show-about-btn'), profile: document.getElementById('goto-profile-btn'), reports: document.getElementById('goto-reports-btn') };
-    const pjDashboardButtons = { // NOVOS SELETORES
-        simples: document.getElementById('goto-simples-nacional-btn'),
-        horaValorPj: document.getElementById('goto-pj-hora-valor-btn'),
-        backToWelcome: document.getElementById('back-to-welcome-from-pj')
+    const pjDashboardButtons = { simples: document.getElementById('goto-simples-nacional-btn'), horaValorPj: document.getElementById('goto-pj-hora-valor-btn'), backToWelcome: document.getElementById('back-to-welcome-from-pj') };
+    const simplesNacionalElements = { // NOVOS SELETORES
+        form: {
+            faturamentoMensal: document.getElementById('faturamento-mensal'),
+            anexo: document.getElementById('anexo-simples')
+        },
+        buttons: {
+            calcular: document.getElementById('calcular-simples-btn'),
+            voltar: document.getElementById('back-to-pj-dashboard-from-simples')
+        },
+        results: {
+            container: document.getElementById('simples-results-section'),
+            rbt12: document.getElementById('resultado-rbt12'),
+            aliquotaEfetiva: document.getElementById('resultado-aliquota-efetiva'),
+            valorDas: document.getElementById('resultado-valor-das'),
+            explicacao: document.getElementById('explicacao-simples')
+        }
     };
     const dashboardElements = { quote: document.getElementById('dashboard-quote') };
     const modalElements = { overlay: document.getElementById('about-modal-overlay'), closeBtn: document.getElementById('close-about-btn') };
