@@ -66,7 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // ----------------------------------------------------------------------------------
     function showScreen(screenName) { Object.values(screens).forEach(screen => { if (screen) screen.classList.add('hidden'); }); if (screens[screenName]) { screens[screenName].classList.remove('hidden'); console.log(`A exibir a tela: ${screenName}`); } else { console.warn(`AVISO: A tela "${screenName}" ainda não foi criada no index.html.`); alert(`A funcionalidade para "${screenName}" ainda está em desenvolvimento!`); screens.dashboard.classList.remove('hidden'); } }
     
-    // ATUALIZADO: Leva para a tela de escolha após o login
     async function updateUserUI(user) {
         if (user) {
             welcomeScreenElements.welcomeMessage.textContent = `Olá, ${user.email}!`;
@@ -114,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(authForms.login) authForms.login.addEventListener('submit', handleLogin);
     if(authForms.signup) authForms.signup.addEventListener('submit', handleSignup);
     if(authButtons.logout) authButtons.logout.addEventListener('click', handleLogout);
-    if(authButtons.logoutPj) authButtons.logoutPj.addEventListener('click', handleLogout); // NOVO LISTENER
+    if(authButtons.logoutPj) authButtons.logoutPj.addEventListener('click', handleLogout);
 
     // LISTENERS DA TELA DE ESCOLHA
     if(welcomeScreenElements.buttons.clt) welcomeScreenElements.buttons.clt.addEventListener('click', async () => {

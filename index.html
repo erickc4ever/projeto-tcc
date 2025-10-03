@@ -86,7 +86,7 @@
         </div>
     </div>
     
-    <!-- TELA DA DASHBOARD PJ (NOVA - ETAPA 1) -->
+    <!-- TELA DA DASHBOARD PJ -->
     <div id="pj-dashboard-screen" class="screen hidden">
         <div class="calculator-card">
             <div class="card-header">
@@ -100,6 +100,45 @@
             <div class="dashboard-footer">
                 <button id="back-to-welcome-from-pj" class="btn btn-secondary">Voltar para a Escolha</button>
                 <button id="logout-btn-pj" class="btn btn-primary">Sair</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TELA DE CÁLCULO DO SIMPLES NACIONAL (NOVA - ETAPA 2) -->
+    <div id="simples-nacional-screen" class="screen hidden">
+        <div class="calculator-card">
+            <div class="card-header">
+                <h1>Cálculo do Simples Nacional (DAS)</h1>
+                <p>Estime o imposto mensal para a sua empresa de serviços.</p>
+            </div>
+            <div class="input-group">
+                <label for="faturamento-mensal">Faturamento Mensal (R$)</label>
+                <input type="number" id="faturamento-mensal" class="input-field" placeholder="Ex: 6000.00">
+                
+                <label for="anexo-simples">Anexo da sua Atividade</label>
+                <select id="anexo-simples" class="input-field">
+                    <option value="anexo3">Anexo III (Ex: dentistas, médicos, academias)</option>
+                    <option value="anexo5">Anexo V (Ex: consultoria, publicidade, engenharia)</option>
+                </select>
+            </div>
+            <button id="calcular-simples-btn" class="btn btn-primary">Calcular Imposto</button>
+            <button id="back-to-pj-dashboard-from-simples" class="btn btn-secondary">Voltar para a Dashboard PJ</button>
+            
+            <div id="simples-results-section" class="results-section hidden">
+                <div class="result-line">
+                    <span>Faturamento Bruto Anual (RBT12) Estimado:</span>
+                    <span id="resultado-rbt12" class="font-bold">R$ 0,00</span>
+                </div>
+                <div class="result-line">
+                    <span>Alíquota Efetiva:</span>
+                    <span id="resultado-aliquota-efetiva" class="font-bold">0.00%</span>
+                </div>
+                <hr>
+                <div class="result-line final-result">
+                    <span>Valor do Imposto (DAS):</span>
+                    <span id="resultado-valor-das" class="font-bold success-text">R$ 0,00</span>
+                </div>
+                <p class="explanation-text" id="explicacao-simples">Cálculo detalhado do imposto.</p>
             </div>
         </div>
     </div>
