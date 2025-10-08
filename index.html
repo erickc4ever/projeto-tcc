@@ -34,7 +34,7 @@
                 <input type="email" id="login-email" class="input-field" placeholder="Seu e-mail" required>
                 <input type="password" id="login-password" class="input-field" placeholder="Sua senha" required>
                 <button type="submit" class="btn btn-primary">Entrar</button>
-                <p>Não tem uma conta? <a href="#" id="show-signup-link">Registe-se</a></p>
+                <p>Não tem uma conta? <a href="#" id="show-signup-link">Registre-se</a></p>
             </form>
             <form id="signup-form" class="auth-form hidden">
                 <input type="email" id="signup-email" class="input-field" placeholder="Seu melhor e-mail" required>
@@ -63,7 +63,7 @@
         <div class="calculator-card">
             <div class="card-header">
                 <h1 id="welcome-message">Dashboard CLT</h1>
-                <p>Passe o rato sobre um cartão para saber mais.</p>
+                <p>Passe o mouse sobre um cartão para saber mais.</p>
                 <p id="dashboard-quote" class="explanation-text"></p>
             </div>
             
@@ -101,7 +101,7 @@
                             <h3>Cálculo de Férias</h3>
                         </div>
                         <div class="card-back card-clt">
-                            <p>Planeie o seu descanso e saiba exatamente quanto irá receber, incluindo o terço constitucional.</p>
+                            <p>Planeje o seu descanso e saiba exatamente quanto irá receber, incluindo o terço constitucional.</p>
                             <button id="goto-ferias-btn" class="btn btn-primary">Planear Férias</button>
                         </div>
                     </div>
@@ -151,6 +151,8 @@
                 <button id="goto-profile-btn" class="btn btn-secondary">Meu Perfil</button>
                 <button id="goto-reports-btn" class="btn btn-secondary">Minha Visão Geral</button>
                 <button id="show-about-btn" class="btn btn-secondary">Sobre o Projeto</button>
+                                <button id="goto-historico-btn" class="btn btn-secondary">Meu Histórico</button>
+                                                      <button id="back-to-welcome-from-pj" class="btn btn-secondary">Voltar para a Escolha</button>
                 <button id="logout-btn" class="btn btn-primary">Sair</button>
             </div>
         </div>
@@ -190,7 +192,8 @@
                 </div>
             </div>
             <div class="dashboard-footer">
-                <button id="back-to-welcome-from-pj" class="btn btn-secondary">Voltar para a Escolha</button>
+                      <button id="goto-historico-btn" class="btn btn-secondary">Meu Histórico</button>
+                      <button id="back-to-welcome-from-pj" class="btn btn-secondary">Voltar para a Escolha</button>
                 <button id="logout-btn-pj" class="btn btn-primary">Sair</button>
             </div>
         </div>
@@ -222,7 +225,8 @@
                     <span id="resultado-rbt12" class="font-bold">R$ 0,00</span>
                 </div>
                 <div class="result-line">
-                    <span>Alíquota Efetiva:</span>
+                    <span>Alíquota Efetiva:</s<!-- Para: Valor da Hora para Freelancer/PJ -->
+<button id="salvar-pj-hora-valor-btn" class="btn btn-secondary hidden" style="max-width: 600px; margin: 10px auto 0;">Salvar Resultado</button>pan>
                     <span id="resultado-aliquota-efetiva" class="font-bold">0.00%</span>
                 </div>
                 <hr>
@@ -231,6 +235,8 @@
                     <span id="resultado-valor-das" class="font-bold success-text">R$ 0,00</span>
                 </div>
                 <p class="explanation-text" id="explicacao-simples">Cálculo detalhado do imposto.</p>
+                <!-- Botão de salvar -->
+<button id="salvar-simples-nacional-btn" class="btn btn-secondary hidden" style="max-width: 600px; margin: 10px auto 0;">Salvar Cálculo</button>
             </div>
         </div>
     </div>
@@ -262,6 +268,8 @@
                     <span id="resultado-pj-hora-valor" class="font-bold success-text">R$ 0,00</span>
                 </div>
                 <p class="explanation-text" id="explicacao-pj-hora-valor">Este valor cobre o seu salário desejado, custos, férias e impostos.</p>
+                <!-- Botão de salvar -->
+<button id="salvar-pj-hora-valor-btn" class="btn btn-secondary hidden" style="max-width: 600px; margin: 10px auto 0;">Salvar Resultado</button>
             </div>
         </div>
     </div>
@@ -306,6 +314,10 @@
                 <div class="result-line final-result">
                     <span>Salário Líquido:</span>
                     <span id="resultado-salario-liquido" class="font-bold success-text">R$ 0,00</span>
+
+                    <!--Botão salvar-->
+                    <button id="salvar-salario-btn" class="btn btn-secondary hidden" style="max-width: 600px; margin: 10px auto 0;">Salvar Resultado</button>
+
                 </div>
             </div>
         </div>
@@ -343,6 +355,10 @@
                 <div class="result-line">
                     <span>Total em Juros:</span>
                     <span id="resultado-total-juros" class="font-bold">R$ 0,00</span>
+
+                    <!--Botão Salvar-->
+<button id="salvar-investimentos-btn" class="btn btn-secondary hidden" style="max-width: 600px; margin: 10px auto 0;">Salvar Simulação</button>
+
                 </div>
             </div>
         </div>
@@ -407,6 +423,9 @@
                 <div class="result-line final-result">
                     <span>Líquido a Receber:</span>
                     <span id="resultado-liquido-ferias" class="font-bold success-text">R$ 0,00</span>
+
+                    <!--Botão Salvar-->
+<button id="salvar-ferias-btn" class="btn btn-secondary hidden" style="max-width: 600px; margin: 10px auto 0;">Salvar Cálculo</button>
                 </div>
             </div>
         </div>
@@ -463,6 +482,10 @@
                 <div class="result-line final-result">
                     <span>Total Líquido do 13º:</span>
                     <span id="resultado-13-liquido-total" class="font-bold success-text">R$ 0,00</span>
+
+                  <!--Botão Salvar-->
+                  <button id="salvar-decimo-terceiro-btn" class="btn btn-secondary hidden" style="max-width: 600px; margin: 10px auto 0;">Salvar Cálculo</button>
+
                 </div>
             </div>
         </div>
@@ -492,6 +515,10 @@
                     <span id="resultado-hora-valor" class="font-bold success-text">R$ 0,00</span>
                 </div>
                 <p class="explanation-text" id="explicacao-hora-valor"></p>
+
+                <!--Botão Salvar-->
+                <button id="salvar-hora-valor-btn" class="btn btn-secondary hidden" style="max-width: 600px; margin: 10px auto 0;">Salvar Resultado</button>
+
             </div>
         </div>
     </div>
@@ -527,6 +554,10 @@
                 <hr>
                 <div id="recomendacao-irpf" class="text-center font-bold">
                     <p>Recomendação: -</p>
+
+                    <!--Botão Salvar-->
+                   <button id="salvar-irpf-btn" class="btn btn-secondary hidden" style="max-width: 600px; margin: 10px auto 0;">Salvar Simulação</button>
+
                 </div>
             </div>
         </div>
@@ -555,41 +586,78 @@
         </div>
     </div>
 
-    <!-- TELA DE RELATÓRIOS / VISÃO GERAL -->
-    <div id="reports-screen" class="screen hidden">
+ <!-- TELA DE RELATÓRIOS / VISÃO GERAL -->
+<div id="reports-screen" class="screen hidden">
+    <div class="calculator-card">
+        <div class="card-header">
+            <h1>Minha Visão Geral</h1>
+            <!-- ATUALIZAÇÃO: Descrição mais precisa, já que agora usaremos o histórico. -->
+            <p>Um resumo visual da sua evolução financeira com base nos seus cálculos salvos.</p>
+        </div>
+        <div id="reports-content">
+            <div class="reports-grid">
+                <div class="chart-container">
+                    <!-- ATUALIZAÇÃO: Título do gráfico alterado para refletir a nova funcionalidade. -->
+                    <h2>Evolução do Salário Líquido Salvo</h2>
+                    <canvas id="salary-chart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <!-- ATUALIZAÇÃO: Título do gráfico alterado para refletir a nova funcionalidade. -->
+                    <h2>Projeções de Investimento Salvas</h2>
+                    <canvas id="investment-chart"></canvas>
+                </div>
+            </div>
+            <div class="summary-cards-grid">
+                <div class="summary-card">
+                    <h3>Valor do Dia de Trabalho (Líquido)</h3>
+                    <p id="summary-daily-value" class="font-bold">R$ 0,00</p>
+                </div>
+                <div class="summary-card">
+                    <h3>13º Salário Estimado (Líquido)</h3>
+                    <p id="summary-13th-value" class="font-bold">R$ 0,00</p>
+                </div>
+            </div>
+        </div>
+        <p id="reports-notice" class="explanation-text text-center hidden">
+            Para ver os seus relatórios, primeiro salve as suas informações na tela 'Meu Perfil'.
+        </p>
+        <button id="back-to-dashboard-from-reports" class="btn btn-secondary">Voltar para a Dashboard CLT</button>
+    </div>
+</div>
+
+        <!-- ======================================================= -->
+    <!-- NOVA TELA DE HISTÓRICO (ETAPA 3)                        -->
+    <!-- ======================================================= -->
+    <div id="historico-screen" class="screen hidden">
         <div class="calculator-card">
             <div class="card-header">
-                <h1>Minha Visão Geral</h1>
-                <p>Um resumo visual das suas finanças com base nos dados do seu perfil.</p>
+                <h1>Meu Histórico de Cálculos</h1>
+                <p>Aqui ficam registados todos os resultados que você salvou.</p>
             </div>
-            <div id="reports-content">
-                <div class="reports-grid">
-                    <div class="chart-container">
-                        <h2>Composição do Salário</h2>
-                        <canvas id="salary-chart"></canvas>
+            
+            <!-- A lista de resultados salvos será inserida aqui pelo JavaScript -->
+            <div id="historico-lista" class="results-section">
+                <!-- Exemplo de como um item ficará (será gerado dinamicamente):
+                <div class="historico-item">
+                    <h3>Cálculo de Salário</h3>
+                    <p>Salvo em: 07/10/2025</p>
+                    <div class="result-line">
+                        <span>Salário Bruto:</span>
+                        <span>R$ 3500,00</span>
                     </div>
-                    <div class="chart-container">
-                        <h2>Projeção de Investimentos</h2>
-                        <canvas id="investment-chart"></canvas>
+                    <div class="result-line final-result">
+                        <span>Salário Líquido:</span>
+                        <span class="font-bold">R$ 2980,50</span>
                     </div>
                 </div>
-                <div class="summary-cards-grid">
-                    <div class="summary-card">
-                        <h3>Valor do Dia de Trabalho (Líquido)</h3>
-                        <p id="summary-daily-value" class="font-bold">R$ 0,00</p>
-                    </div>
-                    <div class="summary-card">
-                        <h3>13º Salário Estimado (Líquido)</h3>
-                        <p id="summary-13th-value" class="font-bold">R$ 0,00</p>
-                    </div>
-                </div>
+                -->
+                <p class="explanation-text text-center">A carregar o seu histórico...</p>
             </div>
-            <p id="reports-notice" class="explanation-text text-center hidden">
-                Para ver os seus relatórios, primeiro salve as suas informações na tela 'Meu Perfil'.
-            </p>
-            <button id="back-to-dashboard-from-reports" class="btn btn-secondary">Voltar para a Dashboard CLT</button>
+
+            <button id="back-to-dashboard-from-historico" class="btn btn-secondary">Voltar para a Dashboard</button>
         </div>
     </div>
+
 
     <!-- MODAL SOBRE NÓS -->
     <div id="about-modal-overlay" class="modal-overlay hidden">
