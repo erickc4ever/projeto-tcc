@@ -76,24 +76,33 @@ document.addEventListener('DOMContentLoaded', () => {
     async function fetchUserProfile(user) { if (!user) return; const { data, error } = await supabaseClient.from('profiles').select('*').eq('user_id', user.id).single(); if (error && error.code !== 'PGRST116') { console.error('Erro ao buscar o perfil:', error); } else if (data) { userProfile = data; console.log('Perfil do utilizador carregado:', userProfile); } else { console.log('Nenhum perfil encontrado para este utilizador.'); userProfile = null; } }
     function preencherFormulariosComPerfil() { if (!userProfile) return; if (userProfile.salario_bruto) profileElements.form.salarioBruto.value = userProfile.salario_bruto; if (userProfile.dependentes !== null) profileElements.form.dependentes.value = userProfile.dependentes; if (userProfile.horas_dia) profileElements.form.horasDia.value = userProfile.horas_dia; if (userProfile.dias_semana) profileElements.form.diasSemana.value = userProfile.dias_semana; if (userProfile.salario_bruto) salarioElements.form.salarioBruto.value = userProfile.salario_bruto; if (userProfile.dependentes !== null) salarioElements.form.dependentes.value = userProfile.dependentes; if (userProfile.salario_bruto) feriasElements.form.salarioBruto.value = userProfile.salario_bruto; if (userProfile.salario_bruto) decimoTerceiroElements.form.salarioBruto.value = userProfile.salario_bruto; if (userProfile.dependentes !== null) decimoTerceiroElements.form.dependentes.value = userProfile.dependentes; if (userProfile.salario_bruto) horaValorElements.form.salario.value = userProfile.salario_bruto; if (userProfile.horas_dia) horaValorElements.form.horasDia.value = userProfile.horas_dia; if (userProfile.dias_semana) horaValorElements.form.diasSemana.value = userProfile.dias_semana; }
 
-    // PARTE 5: FUNÇÕES DE CÁLCULO E GRÁFICOS
-   // ==================================================================================
-// PARTE 5: FUNÇÕES DE CÁLCULO E GRÁFICOS (ATUALIZADA)
+// ==================================================================================
+// PARTE 5: FUNÇÕES DE CÁLCULO E GRÁFICOS (CORRIGIDA)
 // ----------------------------------------------------------------------------------
+// Esta versão corrige o bug que impedia a tela "Visão Geral" de abrir mais de uma vez.
+// A lógica agora destrói apenas a "instância" do gráfico, preservando o elemento <canvas>.
+// ==================================================================================
+
 function calcularINSS(baseDeCalculo) { const faixas = [ { teto: 1412.00, aliquota: 0.075, parcela: 0 }, { teto: 2666.68, aliquota: 0.09,  parcela: 21.18 }, { teto: 4000.03, aliquota: 0.12,  parcela: 101.18 }, { teto: 7786.02, aliquota: 0.14,  parcela: 181.18 } ]; if (baseDeCalculo > faixas[3].teto) { return (faixas[3].teto * faixas[3].aliquota) - faixas[3].parcela; } for (const faixa of faixas) { if (baseDeCalculo <= faixa.teto) { return (baseDeCalculo * faixa.aliquota) - faixa.parcela; } } return 0; }
 function calcularIRRF(baseDeCalculo, numDependentes = 0) { const DEDUCAO_POR_DEPENDENTE = 189.59; const baseReal = baseDeCalculo - (numDependentes * DEDUCAO_POR_DEPENDENTE); const faixas = [ { teto: 2259.20, aliquota: 0,     parcela: 0 }, { teto: 2826.65, aliquota: 0.075, parcela: 169.44 }, { teto: 3751.05, aliquota: 0.15,  parcela: 381.44 }, { teto: 4664.68, aliquota: 0.225, parcela: 662.77 }, { teto: Infinity,aliquota: 0.275, parcela: 896.00 } ]; for (const faixa of faixas) { if (baseReal <= faixa.teto) { const imposto = (baseReal * faixa.aliquota) - faixa.parcela; return Math.max(0, imposto); } } return 0; }
 function calcularImpostoAnual(baseDeCalculo) { const faixas = [ { limite: 24511.92, aliquota: 0,     deducao: 0 }, { limite: 33919.80, aliquota: 0.075, deducao: 1838.39 }, { limite: 45012.60, aliquota: 0.15,  deducao: 4382.38 }, { limite: 55976.16, aliquota: 0.225, deducao: 7758.32 }, { limite: Infinity, aliquota: 0.275, deducao: 10557.13 } ]; for (const faixa of faixas) { if (baseDeCalculo <= faixa.limite) { const imposto = (baseDeCalculo * faixa.aliquota) - faixa.deducao; return imposto > 0 ? imposto : 0; } } return 0; }
 
-// ATUALIZAÇÃO: Função do gráfico de salário agora é dinâmica e busca dados do histórico.
 async function renderSalaryChart() {
+    // CORREÇÃO: Destrói a instância anterior do gráfico, se ela existir.
     if (salaryChartInstance) {
         salaryChartInstance.destroy();
     }
+    
     const { data: { user } } = await supabaseClient.auth.getUser();
     if (!user) return;
 
-    const container = reportsElements.salaryChart.parentElement;
-    container.innerHTML = '<canvas id="salary-chart"></canvas>'; // Limpa e recria o canvas para evitar bugs
+    const canvas = reportsElements.salaryChart;
+    const container = canvas.parentElement;
+    
+    // CORREÇÃO: Em vez de apagar o HTML, apenas limpa a área para a mensagem.
+    // Garante que o container não tenha conteúdo de texto antes de desenhar.
+    const existingMessage = container.querySelector('.chart-notice');
+    if (existingMessage) existingMessage.remove();
 
     const { data, error } = await supabaseClient
         .from('historico_salarios')
@@ -102,14 +111,20 @@ async function renderSalaryChart() {
         .order('created_at', { ascending: true });
 
     if (error || !data || data.length === 0) {
-        container.innerHTML = '<p class="explanation-text text-center">Salve o seu primeiro cálculo de salário para ver a sua evolução aqui!</p>';
+        canvas.style.display = 'none'; // Esconde o canvas
+        const noDataMessage = document.createElement('p');
+        noDataMessage.className = 'explanation-text text-center chart-notice';
+        noDataMessage.textContent = 'Salve o seu primeiro cálculo de salário para ver a sua evolução aqui!';
+        container.appendChild(noDataMessage);
         return;
     }
+
+    canvas.style.display = 'block'; // Garante que o canvas esteja visível
 
     const labels = data.map(item => new Date(item.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }));
     const chartData = data.map(item => item.salario_liquido_calculado);
 
-    salaryChartInstance = new Chart(document.getElementById('salary-chart').getContext('2d'), {
+    salaryChartInstance = new Chart(canvas.getContext('2d'), {
         type: 'line',
         data: {
             labels: labels,
@@ -126,16 +141,21 @@ async function renderSalaryChart() {
     });
 }
 
-// ATUALIZAÇÃO: Função do gráfico de investimentos agora é dinâmica e busca dados do histórico.
 async function renderInvestmentChart() {
+    // CORREÇÃO: Destrói a instância anterior do gráfico, se ela existir.
     if (investmentChartInstance) {
         investmentChartInstance.destroy();
     }
     const { data: { user } } = await supabaseClient.auth.getUser();
     if (!user) return;
 
-    const container = reportsElements.investmentChart.parentElement;
-    container.innerHTML = '<canvas id="investment-chart"></canvas>';
+    const canvas = reportsElements.investmentChart;
+    const container = canvas.parentElement;
+
+    // CORREÇÃO: Limpa qualquer mensagem antiga.
+    const existingMessage = container.querySelector('.chart-notice');
+    if (existingMessage) existingMessage.remove();
+
 
     const { data, error } = await supabaseClient
         .from('historico_investimentos')
@@ -144,14 +164,20 @@ async function renderInvestmentChart() {
         .order('created_at', { ascending: true });
 
     if (error || !data || data.length === 0) {
-        container.innerHTML = '<p class="explanation-text text-center">Salve a sua primeira simulação de investimento para comparar cenários aqui!</p>';
+        canvas.style.display = 'none'; // Esconde o canvas
+        const noDataMessage = document.createElement('p');
+        noDataMessage.className = 'explanation-text text-center chart-notice';
+        noDataMessage.textContent = 'Salve a sua primeira simulação de investimento para comparar cenários aqui!';
+        container.appendChild(noDataMessage);
         return;
     }
+    
+    canvas.style.display = 'block'; // Garante que o canvas esteja visível
 
     const labels = data.map(item => `Salvo em ${new Date(item.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })} (${item.periodo_anos_informado} anos)`);
     const chartData = data.map(item => item.valor_final_calculado);
 
-    investmentChartInstance = new Chart(document.getElementById('investment-chart').getContext('2d'), {
+    investmentChartInstance = new Chart(canvas.getContext('2d'), {
         type: 'bar',
         data: {
             labels: labels,
@@ -165,25 +191,20 @@ async function renderInvestmentChart() {
     });
 }
 
-// Lógica dos cartões de resumo permanece a mesma, baseada no perfil.
 function renderSummaryCards() {
     if (!userProfile || !userProfile.salario_bruto || !userProfile.horas_dia || !userProfile.dias_semana) {
         reportsElements.summary.dailyValue.textContent = 'N/A';
         reportsElements.summary.thirteenthValue.textContent = 'N/A';
         return;
     }
-
     const salarioBruto = userProfile.salario_bruto;
     const diasSemana = userProfile.dias_semana;
-
     const descontoINSS = calcularINSS(salarioBruto);
     const salarioLiquido = salarioBruto - descontoINSS - calcularIRRF(salarioBruto - descontoINSS, userProfile.dependentes || 0);
     const diasTrabalhadosMes = diasSemana * 4.5;
     const valorDiaLiquido = salarioLiquido / diasTrabalhadosMes;
-
     reportsElements.summary.dailyValue.textContent = `R$ ${valorDiaLiquido.toFixed(2)}`;
-
-    const decimoTerceiroBruto = (salarioBruto / 12) * 12; // Estimativa para o ano completo
+    const decimoTerceiroBruto = (salarioBruto / 12) * 12;
     const decimoTerceiroLiquido = (decimoTerceiroBruto - calcularINSS(decimoTerceiroBruto) - calcularIRRF(decimoTerceiroBruto - calcularINSS(decimoTerceiroBruto), userProfile.dependentes || 0));
     reportsElements.summary.thirteenthValue.textContent = `R$ ${decimoTerceiroLiquido.toFixed(2)}`;
 }
