@@ -58,90 +58,31 @@
             </div>
         </div>
     </div>
-    <!-- TELA DA DASHBOARD (CLT) - ATUALIZADA COM CARTÕES FLIP -->
+    <!-- TELA DA DASHBOARD (CLT) -->
     <div id="dashboard-screen" class="screen hidden">
         <div class="calculator-card">
             <div class="card-header">
                 <h1 id="welcome-message">Dashboard CLT</h1>
-                <p>Passe o mouse sobre um cartão para saber mais.</p>
+                <p>Passe o rato sobre um cartão para saber mais.</p>
                 <p id="dashboard-quote" class="explanation-text"></p>
             </div>
             
             <div class="dashboard-grid">
-                <!-- Card 1: Cálculo de Salário -->
+                <!-- Card 1 a 6 (Existentes) -->
+                <div class="card-container"><div class="flipping-card-inner"><div class="card-front card-clt"><h3>Cálculo de Salário</h3></div><div class="card-back card-clt"><p>Descubra o valor líquido do seu salário após todos os descontos de INSS e IRRF.</p><button id="goto-salario-btn" class="btn btn-primary">Calcular Agora</button></div></div></div>
+                <div class="card-container"><div class="flipping-card-inner"><div class="card-front card-clt"><h3>Simulador de Investimentos</h3></div><div class="card-back card-clt"><p>Veja o poder dos juros compostos e projete o crescimento do seu património ao longo do tempo.</p><button id="goto-investimentos-btn" class="btn btn-primary">Simular Agora</button></div></div></div>
+                <div class="card-container"><div class="flipping-card-inner"><div class="card-front card-clt"><h3>Cálculo de Férias</h3></div><div class="card-back card-clt"><p>Planeie o seu descanso e saiba exatamente quanto irá receber, incluindo o terço constitucional.</p><button id="goto-ferias-btn" class="btn btn-primary">Planear Férias</button></div></div></div>
+                <div class="card-container"><div class="flipping-card-inner"><div class="card-front card-clt"><h3>Cálculo de 13º Salário</h3></div><div class="card-back card-clt"><p>Estime o valor do seu 13º, com o detalhe das parcelas e descontos aplicáveis.</p><button id="goto-decimo-terceiro-btn" class="btn btn-primary">Calcular 13º</button></div></div></div>
+                <div class="card-container"><div class="flipping-card-inner"><div class="card-front card-clt"><h3>Quanto Vale a Minha Hora?</h3></div><div class="card-back card-clt"><p>Descubra o valor real de uma hora do seu trabalho com base no seu salário e jornada.</p><button id="goto-hora-valor-btn" class="btn btn-primary">Descobrir Valor</button></div></div></div>
+                <div class="card-container"><div class="flipping-card-inner"><div class="card-front card-clt"><h3>Simulador Anual de IRPF</h3></div><div class="card-back card-clt"><p>Compare a declaração completa com a simplificada e descubra qual é a mais vantajosa para si.</p><button id="goto-irpf-btn" class="btn btn-primary">Simular IRPF</button></div></div></div>
+                
+                <!-- NOVO CARTÃO DE APOSENTADORIA -->
                 <div class="card-container">
                     <div class="flipping-card-inner">
-                        <div class="card-front card-clt">
-                            <h3>Cálculo de Salário</h3>
-                        </div>
+                        <div class="card-front card-clt"><h3>Projeção de Aposentadoria</h3></div>
                         <div class="card-back card-clt">
-                            <p>Descubra o valor líquido do seu salário após todos os descontos de INSS e IRRF.</p>
-                            <button id="goto-salario-btn" class="btn btn-primary">Calcular Agora</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 2: Simulador de Investimentos -->
-                <div class="card-container">
-                    <div class="flipping-card-inner">
-                        <div class="card-front card-clt">
-                            <h3>Simulador de Investimentos</h3>
-                        </div>
-                        <div class="card-back card-clt">
-                            <p>Veja o poder dos juros compostos e projete o crescimento do seu património ao longo do tempo.</p>
-                            <button id="goto-investimentos-btn" class="btn btn-primary">Simular Agora</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 3: Cálculo de Férias -->
-                <div class="card-container">
-                    <div class="flipping-card-inner">
-                        <div class="card-front card-clt">
-                            <h3>Cálculo de Férias</h3>
-                        </div>
-                        <div class="card-back card-clt">
-                            <p>Planeje o seu descanso e saiba exatamente quanto irá receber, incluindo o terço constitucional.</p>
-                            <button id="goto-ferias-btn" class="btn btn-primary">Planear Férias</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 4: Cálculo de 13º Salário -->
-                <div class="card-container">
-                    <div class="flipping-card-inner">
-                        <div class="card-front card-clt">
-                            <h3>Cálculo de 13º Salário</h3>
-                        </div>
-                        <div class="card-back card-clt">
-                            <p>Estime o valor do seu 13º, com o detalhe das parcelas e descontos aplicáveis.</p>
-                            <button id="goto-decimo-terceiro-btn" class="btn btn-primary">Calcular 13º</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 5: Quanto Vale a Minha Hora? -->
-                <div class="card-container">
-                    <div class="flipping-card-inner">
-                        <div class="card-front card-clt">
-                            <h3>Quanto Vale a Minha Hora?</h3>
-                        </div>
-                        <div class="card-back card-clt">
-                            <p>Descubra o valor real de uma hora do seu trabalho com base no seu salário e jornada.</p>
-                            <button id="goto-hora-valor-btn" class="btn btn-primary">Descobrir Valor</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 6: Simulador Anual de IRPF -->
-                <div class="card-container">
-                    <div class="flipping-card-inner">
-                        <div class="card-front card-clt">
-                            <h3>Simulador Anual de IRPF</h3>
-                        </div>
-                        <div class="card-back card-clt">
-                            <p>Compare a declaração completa com a simplificada e descubra qual é a mais vantajosa para si.</p>
-                            <button id="goto-irpf-btn" class="btn btn-primary">Simular IRPF</button>
+                            <p>Descubra quanto precisa de juntar para se aposentar com a renda que deseja.</p>
+                            <button id="goto-aposentadoria-btn" class="btn btn-primary">Projetar Futuro</button>
                         </div>
                     </div>
                 </div>
@@ -150,15 +91,13 @@
             <div class="dashboard-footer">
                 <button id="goto-profile-btn" class="btn btn-secondary">Meu Perfil</button>
                 <button id="goto-reports-btn" class="btn btn-secondary">Minha Visão Geral</button>
-                <button id="show-about-btn" class="btn btn-secondary">Sobre o Projeto</button>
-                                <button id="goto-historico-btn" class="btn btn-secondary">Meu Histórico</button>
-                                                      <button id="back-to-welcome-from-pj" class="btn btn-secondary">Voltar para a Escolha</button>
+                <button id="show-about-btn" class="btn btn-secondary">Sobre e Parâmetros</button>
                 <button id="logout-btn" class="btn btn-primary">Sair</button>
             </div>
         </div>
     </div>
     
-    <!-- TELA DA DASHBOARD PJ - ATUALIZADA COM CARTÕES FLIP -->
+    <!-- TELA DA DASHBOARD PJ -->
     <div id="pj-dashboard-screen" class="screen hidden">
         <div class="calculator-card">
             <div class="card-header">
@@ -166,40 +105,30 @@
                 <p>Passe o rato sobre um cartão para saber mais.</p>
             </div>
             <div class="dashboard-grid">
-                <!-- Card 1: Simples Nacional -->
+                <!-- Card 1 e 2 (Existentes) -->
+                <div class="card-container"><div class="flipping-card-inner"><div class="card-front card-pj"><h3>Calcular Simples Nacional</h3></div><div class="card-back card-pj"><p>Estime o valor do seu imposto mensal (DAS) com base no seu faturamento e anexo de serviço.</p><button id="goto-simples-nacional-btn" class="btn btn-primary">Calcular Imposto</button></div></div></div>
+                <div class="card-container"><div class="flipping-card-inner"><div class="card-front card-pj"><h3>Valor da Hora Freelancer</h3></div><div class="card-back card-pj"><p>Defina o preço da sua hora de trabalho incluindo seu salário, custos fixos e dias de descanso.</p><button id="goto-pj-hora-valor-btn" class="btn btn-primary">Definir Preço</button></div></div></div>
+
+                <!-- NOVO CARTÃO DE APOSENTADORIA -->
                 <div class="card-container">
                     <div class="flipping-card-inner">
-                        <div class="card-front card-pj">
-                            <h3>Calcular Simples Nacional</h3>
-                        </div>
+                        <div class="card-front card-pj"><h3>Projeção de Aposentadoria</h3></div>
                         <div class="card-back card-pj">
-                            <p>Estime o valor do seu imposto mensal (DAS) com base no seu faturamento e anexo de serviço.</p>
-                            <button id="goto-simples-nacional-btn" class="btn btn-primary">Calcular Imposto</button>
-                        </div>
-                    </div>
-                </div>
-                <!-- Card 2: Valor da Hora Freelancer -->
-                <div class="card-container">
-                    <div class="flipping-card-inner">
-                        <div class="card-front card-pj">
-                            <h3>Valor da Hora Freelancer</h3>
-                        </div>
-                        <div class="card-back card-pj">
-                            <p>Defina o preço da sua hora de trabalho incluindo seu salário, custos fixos e dias de descanso.</p>
-                            <button id="goto-pj-hora-valor-btn" class="btn btn-primary">Definir Preço</button>
+                            <p>Descubra quanto precisa de juntar para se aposentar com a renda que deseja.</p>
+                            <button id="goto-aposentadoria-btn-pj" class="btn btn-primary">Projetar Futuro</button>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="dashboard-footer">
-                      <button id="goto-historico-btn" class="btn btn-secondary">Meu Histórico</button>
-                      <button id="back-to-welcome-from-pj" class="btn btn-secondary">Voltar para a Escolha</button>
+                <button id="back-to-welcome-from-pj" class="btn btn-secondary">Voltar para a Escolha</button>
                 <button id="logout-btn-pj" class="btn btn-primary">Sair</button>
             </div>
         </div>
     </div>
 
-    <!-- TELA DE CÁLCULO DO SIMPLES NACIONAL -->
+    <!--modal aposentadoria-->
+        <!-- TELA DE CÁLCULO DO SIMPLES NACIONAL -->
     <div id="simples-nacional-screen" class="screen hidden">
         <div class="calculator-card">
             <div class="card-header">
@@ -224,19 +153,19 @@
                     <span>Faturamento Bruto Anual (RBT12) Estimado:</span>
                     <span id="resultado-rbt12" class="font-bold">R$ 0,00</span>
                 </div>
+                <p class="explanation-text">O Simples Nacional baseia-se no seu faturamento dos últimos 12 meses para definir a sua faixa de imposto.</p>
                 <div class="result-line">
-                    <span>Alíquota Efetiva:</s<!-- Para: Valor da Hora para Freelancer/PJ -->
-<button id="salvar-pj-hora-valor-btn" class="btn btn-secondary hidden" style="max-width: 600px; margin: 10px auto 0;">Salvar Resultado</button>pan>
+                    <span>Alíquota Efetiva:</span>
                     <span id="resultado-aliquota-efetiva" class="font-bold">0.00%</span>
                 </div>
+                 <p class="explanation-text">Esta é a percentagem real que será aplicada sobre o seu faturamento deste mês para calcular o imposto.</p>
                 <hr>
                 <div class="result-line final-result">
                     <span>Valor do Imposto (DAS):</span>
                     <span id="resultado-valor-das" class="font-bold success-text">R$ 0,00</span>
                 </div>
-                <p class="explanation-text" id="explicacao-simples">Cálculo detalhado do imposto.</p>
-                <!-- Botão de salvar -->
-<button id="salvar-simples-nacional-btn" class="btn btn-secondary hidden" style="max-width: 600px; margin: 10px auto 0;">Salvar Cálculo</button>
+                <p class="explanation-text" id="explicacao-simples"></p>
+                <button id="salvar-simples-nacional-btn" class="btn btn-secondary hidden" style="max-width: 600px; margin: 10px auto 0;">Salvar Cálculo</button>
             </div>
         </div>
     </div>
@@ -255,8 +184,8 @@
                 <input type="number" id="pj-custos-fixos" class="input-field" placeholder="Aluguer, software, etc.">
                 <label for="pj-ferias-ano">Dias de Férias por Ano</label>
                 <input type="number" id="pj-ferias-ano" class="input-field" placeholder="Ex: 30" value="30">
-                <label for="pj-horas-dia">Horas Trabalhadas por Dia</label>
-                <input type="number" id="pj-horas-dia" class="input-field" placeholder="Ex: 8" value="8">
+                <label for="pj-horas-dia">Horas Produtivas por Dia</label>
+                <input type="number" id="pj-horas-dia" class="input-field" placeholder="Ex: 6" value="6">
                 <label for="pj-dias-semana">Dias Trabalhados por Semana</label>
                 <input type="number" id="pj-dias-semana" class="input-field" placeholder="Ex: 5" value="5">
             </div>
@@ -268,8 +197,7 @@
                     <span id="resultado-pj-hora-valor" class="font-bold success-text">R$ 0,00</span>
                 </div>
                 <p class="explanation-text" id="explicacao-pj-hora-valor">Este valor cobre o seu salário desejado, custos, férias e impostos.</p>
-                <!-- Botão de salvar -->
-<button id="salvar-pj-hora-valor-btn" class="btn btn-secondary hidden" style="max-width: 600px; margin: 10px auto 0;">Salvar Resultado</button>
+                <button id="salvar-pj-hora-valor-btn" class="btn btn-secondary hidden" style="max-width: 600px; margin: 10px auto 0;">Salvar Resultado</button>
             </div>
         </div>
     </div>
@@ -293,32 +221,29 @@
             <div id="salario-results-section" class="results-section hidden">
                 <div class="result-line">
                     <span>Salário Bruto:</span>
-                    <span id="resultado-salario-bruto" class="font-bold">R$ 0,00</span>
+                    <span id="resultado-salario-bruto">R$ 0,00</span>
                 </div>
                 <hr>
                 <div class="result-line">
                     <span>Desconto INSS:</span>
-                    <span id="resultado-inss" class="font-bold">- R$ 0,00</span>
+                    <span id="resultado-inss">- R$ 0,00</span>
                 </div>
-                <p class="explanation-text" id="explicacao-inss">Cálculo detalhado do INSS.</p>
+                <p class="explanation-text" id="explicacao-inss"></p>
                 <div class="result-line">
-                    <span>Base de Cálculo IRRF:</span>
-                    <span id="resultado-base-irrf" class="font-bold">R$ 0,00</span>
+                    <span>Base de Cálculo IRRF (Bruto - INSS):</span>
+                    <span id="resultado-base-irrf">R$ 0,00</span>
                 </div>
                 <div class="result-line">
                     <span>Desconto IRRF:</span>
-                    <span id="resultado-irrf" class="font-bold">- R$ 0,00</span>
+                    <span id="resultado-irrf">- R$ 0,00</span>
                 </div>
-                <p class="explanation-text" id="explicacao-irrf">Cálculo detalhado do IRRF.</p>
+                <p class="explanation-text" id="explicacao-irrf"></p>
                 <hr>
                 <div class="result-line final-result">
                     <span>Salário Líquido:</span>
-                    <span id="resultado-salario-liquido" class="font-bold success-text">R$ 0,00</span>
-
-                    <!--Botão salvar-->
-                    <button id="salvar-salario-btn" class="btn btn-secondary hidden" style="max-width: 600px; margin: 10px auto 0;">Salvar Resultado</button>
-
+                    <span id="resultado-salario-liquido" class="font-bold">R$ 0,00</span>
                 </div>
+                <button id="salvar-salario-btn" class="btn btn-secondary hidden" style="max-width: 600px; margin: 10px auto 0;">Salvar Resultado</button>
             </div>
         </div>
     </div>
@@ -345,21 +270,21 @@
             <div id="investimentos-results-section" class="results-section hidden">
                 <div class="result-line final-result">
                     <span>Valor Final Acumulado:</span>
-                    <span id="resultado-valor-final" class="font-bold success-text">R$ 0,00</span>
+                    <span id="resultado-valor-final" class="font-bold">R$ 0,00</span>
                 </div>
+                 <p class="explanation-text">Este é o valor total que você terá ao final do período, somando o que você investiu mais os juros.</p>
                 <hr>
                 <div class="result-line">
-                    <span>Total Investido:</span>
-                    <span id="resultado-total-investido" class="font-bold">R$ 0,00</span>
+                    <span>Total Investido (Seu Esforço):</span>
+                    <span id="resultado-total-investido">R$ 0,00</span>
                 </div>
+                 <p class="explanation-text">Este é o montante total que saiu do seu bolso (valor inicial + todos os aportes mensais).</p>
                 <div class="result-line">
-                    <span>Total em Juros:</span>
-                    <span id="resultado-total-juros" class="font-bold">R$ 0,00</span>
-
-                    <!--Botão Salvar-->
-<button id="salvar-investimentos-btn" class="btn btn-secondary hidden" style="max-width: 600px; margin: 10px auto 0;">Salvar Simulação</button>
-
+                    <span>Total em Juros (Magia dos Juros Compostos):</span>
+                    <span id="resultado-total-juros">R$ 0,00</span>
                 </div>
+                 <p class="explanation-text">Este é o dinheiro que o seu dinheiro gerou para si ao longo do tempo. É a diferença entre o Valor Final e o Total Investido.</p>
+                <button id="salvar-investimentos-btn" class="btn btn-secondary hidden" style="max-width: 600px; margin: 10px auto 0;">Salvar Simulação</button>
             </div>
         </div>
     </div>
@@ -391,42 +316,40 @@
             
             <div id="ferias-results-section" class="results-section hidden">
                 <div class="result-line">
-                    <span>Férias Brutas:</span>
-                    <span id="resultado-ferias-brutas" class="font-bold">R$ 0,00</span>
+                    <span>Férias Brutas (Salário Proporcional):</span>
+                    <span id="resultado-ferias-brutas">R$ 0,00</span>
                 </div>
                 <div class="result-line">
-                    <span>Terço Constitucional (1/3):</span>
-                    <span id="resultado-terco-constitucional" class="font-bold">R$ 0,00</span>
+                    <span>Terço Constitucional (1/3 do Salário):</span>
+                    <span id="resultado-terco-constitucional">R$ 0,00</span>
                 </div>
                 <div class="result-line" id="abono-pecuniario-line">
                     <span>Abono Pecuniário (venda de 10 dias):</span>
-                    <span id="resultado-abono-pecuniario" class="font-bold">R$ 0,00</span>
+                    <span id="resultado-abono-pecuniario">R$ 0,00</span>
                 </div>
                 <hr>
                  <div class="result-line">
-                    <span>Total Bruto (Férias + 1/3):</span>
-                    <span id="resultado-total-bruto-ferias" class="font-bold">R$ 0,00</span>
+                    <span>Total Bruto (Base para Descontos):</span>
+                    <span id="resultado-total-bruto-ferias">R$ 0,00</span>
                 </div>
                 <div class="result-line">
                     <span>Desconto INSS sobre Férias:</span>
-                    <span id="resultado-inss-ferias" class="font-bold">- R$ 0,00</span>
+                    <span id="resultado-inss-ferias">- R$ 0,00</span>
                 </div>
                 <div class="result-line">
                     <span>Desconto IRRF sobre Férias:</span>
-                    <span id="resultado-irrf-ferias" class="font-bold">- R$ 0,00</span>
+                    <span id="resultado-irrf-ferias">- R$ 0,00</span>
                 </div>
                 <div class="result-line" id="adiantamento-13-line">
                     <span>Adiantamento 13º Salário:</span>
-                    <span id="resultado-adiantamento-13" class="font-bold">R$ 0,00</span>
+                    <span id="resultado-adiantamento-13">R$ 0,00</span>
                 </div>
                 <hr>
                 <div class="result-line final-result">
                     <span>Líquido a Receber:</span>
-                    <span id="resultado-liquido-ferias" class="font-bold success-text">R$ 0,00</span>
-
-                    <!--Botão Salvar-->
-<button id="salvar-ferias-btn" class="btn btn-secondary hidden" style="max-width: 600px; margin: 10px auto 0;">Salvar Cálculo</button>
+                    <span id="resultado-liquido-ferias" class="font-bold">R$ 0,00</span>
                 </div>
+                <button id="salvar-ferias-btn" class="btn btn-secondary hidden" style="max-width: 600px; margin: 10px auto 0;">Salvar Cálculo</button>
             </div>
         </div>
     </div>
@@ -451,42 +374,39 @@
             
             <div id="decimo-terceiro-results-section" class="results-section hidden">
                 <div class="result-line">
-                    <span>13º Salário Bruto:</span>
-                    <span id="resultado-13-bruto" class="font-bold">R$ 0,00</span>
+                    <span>13º Salário Bruto (Proporcional):</span>
+                    <span id="resultado-13-bruto">R$ 0,00</span>
                 </div>
                 <hr>
-                <p class="explanation-text">A primeira parcela é paga sem descontos.</p>
+                <p class="explanation-text">A primeira parcela (paga até novembro) corresponde a 50% do bruto, sem descontos.</p>
                 <div class="result-line">
                     <span>1ª Parcela (Líquida):</span>
-                    <span id="resultado-13-primeira-parcela" class="font-bold">R$ 0,00</span>
+                    <span id="resultado-13-primeira-parcela">R$ 0,00</span>
                 </div>
                 <hr>
-                <p class="explanation-text">A segunda parcela tem os descontos de INSS e IRRF.</p>
+                <p class="explanation-text">A segunda parcela (paga até dezembro) corresponde aos outros 50% do bruto, mas com os descontos de INSS e IRRF sobre o valor total.</p>
                 <div class="result-line">
                     <span>2ª Parcela (Valor Bruto):</span>
-                    <span id="resultado-13-segunda-parcela-bruta" class="font-bold">R$ 0,00</span>
+                    <span id="resultado-13-segunda-parcela-bruta">R$ 0,00</span>
                 </div>
                 <div class="result-line">
-                    <span>Desconto INSS:</span>
-                    <span id="resultado-inss-13" class="font-bold">- R$ 0,00</span>
+                    <span>Desconto INSS (sobre o total):</span>
+                    <span id="resultado-inss-13">- R$ 0,00</span>
                 </div>
                 <div class="result-line">
-                    <span>Desconto IRRF:</span>
-                    <span id="resultado-irrf-13" class="font-bold">- R$ 0,00</span>
+                    <span>Desconto IRRF (sobre o total):</span>
+                    <span id="resultado-irrf-13">- R$ 0,00</span>
                 </div>
                  <div class="result-line">
                     <span>2ª Parcela (Líquida):</span>
-                    <span id="resultado-13-segunda-parcela-liquida" class="font-bold">R$ 0,00</span>
+                    <span id="resultado-13-segunda-parcela-liquida">R$ 0,00</span>
                 </div>
                 <hr>
                 <div class="result-line final-result">
-                    <span>Total Líquido do 13º:</span>
-                    <span id="resultado-13-liquido-total" class="font-bold success-text">R$ 0,00</span>
-
-                  <!--Botão Salvar-->
-                  <button id="salvar-decimo-terceiro-btn" class="btn btn-secondary hidden" style="max-width: 600px; margin: 10px auto 0;">Salvar Cálculo</button>
-
+                    <span>Total Líquido do 13º (Soma das Parcelas):</span>
+                    <span id="resultado-13-liquido-total" class="font-bold">R$ 0,00</span>
                 </div>
+                <button id="salvar-decimo-terceiro-btn" class="btn btn-secondary hidden" style="max-width: 600px; margin: 10px auto 0;">Salvar Cálculo</button>
             </div>
         </div>
     </div>
@@ -512,13 +432,10 @@
             <div id="hora-valor-results-section" class="results-section hidden">
                 <div class="result-line final-result">
                     <span>O valor da sua hora é:</span>
-                    <span id="resultado-hora-valor" class="font-bold success-text">R$ 0,00</span>
+                    <span id="resultado-hora-valor" class="font-bold">R$ 0,00</span>
                 </div>
                 <p class="explanation-text" id="explicacao-hora-valor"></p>
-
-                <!--Botão Salvar-->
                 <button id="salvar-hora-valor-btn" class="btn btn-secondary hidden" style="max-width: 600px; margin: 10px auto 0;">Salvar Resultado</button>
-
             </div>
         </div>
     </div>
@@ -533,9 +450,9 @@
             <div class="input-group">
                 <label for="rendimentos-anuais">Total de Rendimentos Anuais (salário, etc.)</label>
                 <input type="number" id="rendimentos-anuais" class="input-field" placeholder="Ex: 50000.00">
-                <label for="despesas-saude">Total de Despesas com Saúde</label>
+                <label for="despesas-saude">Total de Despesas com Saúde (dedutível)</label>
                 <input type="number" id="despesas-saude" class="input-field" placeholder="Ex: 3000.00">
-                <label for="despesas-educacao">Total de Despesas com Educação</label>
+                <label for="despesas-educacao">Total de Despesas com Educação (dedutível)</label>
                 <input type="number" id="despesas-educacao" class="input-field" placeholder="Ex: 5000.00">
                 <label for="dependentes">Número de Dependentes</label>
                 <input type="number" id="dependentes" class="input-field" placeholder="Ex: 2">
@@ -544,21 +461,20 @@
             <button id="back-to-dashboard-from-irpf" class="btn btn-secondary">Voltar para a Dashboard CLT</button>
             <div id="irpf-results-section" class="results-section hidden">
                 <div class="result-line">
-                    <span>Resultado (Declaração Completa):</span>
-                    <span id="resultado-irpf-completa" class="font-bold">R$ 0,00</span>
+                    <span>Imposto Devido (Declaração Completa):</span>
+                    <span id="resultado-irpf-completa">R$ 0,00</span>
                 </div>
+                <p class="explanation-text">Considera todas as suas despesas dedutíveis (saúde, educação, dependentes) para abater do imposto.</p>
                 <div class="result-line">
-                    <span>Resultado (Declaração Simplificada):</span>
-                    <span id="resultado-irpf-simplificada" class="font-bold">R$ 0,00</span>
+                    <span>Imposto Devido (Declaração Simplificada):</span>
+                    <span id="resultado-irpf-simplificada">R$ 0,00</span>
                 </div>
+                <p class="explanation-text">Aplica um desconto padrão de 20% sobre os seus rendimentos, limitado a um teto definido pela Receita Federal.</p>
                 <hr>
                 <div id="recomendacao-irpf" class="text-center font-bold">
                     <p>Recomendação: -</p>
-
-                    <!--Botão Salvar-->
-                   <button id="salvar-irpf-btn" class="btn btn-secondary hidden" style="max-width: 600px; margin: 10px auto 0;">Salvar Simulação</button>
-
                 </div>
+                <button id="salvar-irpf-btn" class="btn btn-secondary hidden" style="max-width: 600px; margin: 10px auto 0;">Salvar Simulação</button>
             </div>
         </div>
     </div>
@@ -585,24 +501,20 @@
             <p id="profile-status-message" class="explanation-text text-center hidden"></p>
         </div>
     </div>
-
  <!-- TELA DE RELATÓRIOS / VISÃO GERAL -->
 <div id="reports-screen" class="screen hidden">
     <div class="calculator-card">
         <div class="card-header">
             <h1>Minha Visão Geral</h1>
-            <!-- ATUALIZAÇÃO: Descrição mais precisa, já que agora usaremos o histórico. -->
             <p>Um resumo visual da sua evolução financeira com base nos seus cálculos salvos.</p>
         </div>
         <div id="reports-content">
             <div class="reports-grid">
                 <div class="chart-container">
-                    <!-- ATUALIZAÇÃO: Título do gráfico alterado para refletir a nova funcionalidade. -->
                     <h2>Evolução do Salário Líquido Salvo</h2>
                     <canvas id="salary-chart"></canvas>
                 </div>
                 <div class="chart-container">
-                    <!-- ATUALIZAÇÃO: Título do gráfico alterado para refletir a nova funcionalidade. -->
                     <h2>Projeções de Investimento Salvas</h2>
                     <canvas id="investment-chart"></canvas>
                 </div>
@@ -625,8 +537,8 @@
     </div>
 </div>
 
-        <!-- ======================================================= -->
-    <!-- NOVA TELA DE HISTÓRICO (ETAPA 3)                        -->
+    <!-- ======================================================= -->
+    <!-- NOVA TELA DE HISTÓRICO                          -->
     <!-- ======================================================= -->
     <div id="historico-screen" class="screen hidden">
         <div class="calculator-card">
@@ -635,22 +547,7 @@
                 <p>Aqui ficam registados todos os resultados que você salvou.</p>
             </div>
             
-            <!-- A lista de resultados salvos será inserida aqui pelo JavaScript -->
             <div id="historico-lista" class="results-section">
-                <!-- Exemplo de como um item ficará (será gerado dinamicamente):
-                <div class="historico-item">
-                    <h3>Cálculo de Salário</h3>
-                    <p>Salvo em: 07/10/2025</p>
-                    <div class="result-line">
-                        <span>Salário Bruto:</span>
-                        <span>R$ 3500,00</span>
-                    </div>
-                    <div class="result-line final-result">
-                        <span>Salário Líquido:</span>
-                        <span class="font-bold">R$ 2980,50</span>
-                    </div>
-                </div>
-                -->
                 <p class="explanation-text text-center">A carregar o seu histórico...</p>
             </div>
 
@@ -658,26 +555,108 @@
         </div>
     </div>
 
+    <!-- ======================================================= -->
+    <!-- TELA DE INDEPENDÊNCIA FINANCEIRA (PÉ DE MEIA)           -->
+    <!-- ======================================================= -->
+    <div id="aposentadoria-screen" class="screen hidden">
+        <div class="calculator-card">
+            <div class="card-header">
+                <h1>Plano de Independência Financeira (Pé de Meia)</h1>
+                <p class="explanation-text" style="max-width: 600px; margin: 0 auto;">Esta ferramenta não calcula a sua aposentadoria do INSS. Ela ajuda a planear o seu "pé de meia": quanto você precisa de juntar para poder viver dos seus próprios rendimentos no futuro.</p>
+            </div>
+            <div class="input-group">
+                <label for="aposentadoria-idade-atual">A sua Idade Atual</label>
+                <input type="number" id="aposentadoria-idade-atual" class="input-field" placeholder="Ex: 30">
+                
+                <label for="aposentadoria-idade-objetivo">Com que Idade Deseja Atingir a Independência?</label>
+                <input type="number" id="aposentadoria-idade-objetivo" class="input-field" placeholder="Ex: 60">
 
-    <!-- MODAL SOBRE NÓS -->
+                <label for="aposentadoria-patrimonio-atual">O seu "Pé de Meia" Atual (Quanto já tem guardado)</label>
+                <input type="number" id="aposentadoria-patrimonio-atual" class="input-field" placeholder="Ex: 50000.00">
+
+                <label for="aposentadoria-aporte-mensal">Quanto Consegue Guardar por Mês?</label>
+                <input type="number" id="aposentadoria-aporte-mensal" class="input-field" placeholder="Ex: 500.00">
+                
+                <label for="aposentadoria-renda-desejada">Renda Mensal Desejada (Para viver dos rendimentos)</label>
+                <input type="number" id="aposentadoria-renda-desejada" class="input-field" placeholder="Ex: 5000.00">
+            </div>
+            <button id="calcular-aposentadoria-btn" class="btn btn-primary">Fazer Projeção</button>
+            <button id="back-to-dashboard-from-aposentadoria" class="btn btn-secondary">Voltar para a Dashboard</button>
+            
+            <div id="aposentadoria-results-section" class="results-section hidden">
+                <div class="result-line">
+                    <span>Sua Meta (Seu "Pé de Meia" Ideal):</span>
+                    <span id="resultado-aposentadoria-objetivo" class="font-bold">R$ 0,00</span>
+                </div>
+                <p class="explanation-text">Este é o valor total que você precisa de ter investido para gerar a renda mensal desejada, com base na "Regra dos 4%". Veja mais na aba "Parâmetros".</p>
+                <hr>
+                <div class="result-line final-result">
+                    <span>Sua Fortuna Projetada:</span>
+                    <span id="resultado-aposentadoria-projecao" class="font-bold success-text">R$ 0,00</span>
+                </div>
+                <p class="explanation-text">Este é o valor que você provavelmente terá na idade desejada, considerando os seus aportes e uma taxa de juros realista (6% ao ano, acima da inflação).</p>
+                <hr>
+                <div id="aposentadoria-recomendacao" class="text-center font-bold">
+                    <p>Recomendação: -</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL SOBRE NÓS E PARÂMETROS -->
     <div id="about-modal-overlay" class="modal-overlay hidden">
         <div class="calculator-card">
             <div class="modal-header">
                 <h1>Sobre a änalitks</h1>
                 <button id="close-about-btn" class="close-btn">&times;</button>
             </div>
-            <p class="brasao">"aqui o futuro e o passado tem a mesma frase"</p>
-            <h2>A Nossa Missão</h2>
-            <p>A "änalitks" nasceu de uma pergunta simples: como podemos dar ao trabalhador brasileiro as mesmas ferramentas de análise financeira que os grandes especialistas usam, mas de forma simples, transparente e gratuita?</p>
-            <p>A nossa missão é descodificar o "financês". Acreditamos que, ao entender exatamente para onde vai cada cêntimo do seu salário, como os seus investimentos podem crescer e como se planear para o futuro, você ganha o poder de tomar as melhores decisões.</p>
-            <h2>Desenvolvimento</h2>
-            <ul>
-                <li><strong>Criado por:</strong> Sandro V. Lima, Kauan S. Mota e Erick C. Cardoso</li>
-                <li><strong>Projeto:</strong> Trabalho de Conclusão de Curso - Análise e Desenvolvimento de Sistemas (ADS)</li>
-                <li><strong>Tecnologias:</strong> Construído com HTML, CSS e JavaScript puros, com o Supabase a potenciar a gestão segura de utilizadores.</li>
-            </ul>
+
+            <div class="modal-tabs">
+                <button id="tab-sobre-btn" class="tab-btn active">Sobre</button>
+                <button id="tab-parametros-btn" class="tab-btn">Parâmetros de Cálculo</button>
+            </div>
+
+            <div id="tab-sobre-content">
+                <p class="brasao">"aqui o futuro e o passado tem a mesma frase"</p>
+                <h2>A Nossa Missão</h2>
+                <p>A "änalitks" nasceu de uma pergunta simples: como podemos dar ao trabalhador brasileiro as mesmas ferramentas de análise financeira que os grandes especialistas usam, mas de forma simples, transparente e gratuita?</p>
+                <p>A nossa missão é descodificar o "financês". Acreditamos que, ao entender exatamente para onde vai cada cêntimo do seu salário, como os seus investimentos podem crescer e como se planear para o futuro, você ganha o poder de tomar as melhores decisões.</p>
+                <h2>Desenvolvimento</h2>
+                <ul>
+                    <li><strong>Criado por:</strong> Sandro V. Lima, Kauan S. Mota e Erick C. Cardoso</li>
+                    <li><strong>Projeto:</strong> Trabalho de Conclusão de Curso - Análise e Desenvolvimento de Sistemas (ADS)</li>
+                    <li><strong>Tecnologias:</strong> Construído com HTML, CSS e JavaScript puros, com o Supabase a potenciar a gestão segura de utilizadores.</li>
+                </ul>
+            </div>
+
+            <div id="tab-parametros-content" class="hidden">
+                <h2>INSS (Instituto Nacional do Seguro Social)</h2>
+                <p>O INSS é um desconto progressivo. Isto significa que quem ganha mais, contribui com uma percentagem maior, mas apenas sobre cada "fatia" do salário. A nossa calculadora usa a tabela oficial mais recente para estimar este valor.</p>
+                <div class="param-chart">
+                    <div class="chart-bar inss-bar-1"><span>Até R$ 1.412,00</span><span>7,5%</span></div>
+                    <div class="chart-bar inss-bar-2"><span>De R$ 1.412,01 até R$ 2.666,68</span><span>9%</span></div>
+                    <div class="chart-bar inss-bar-3"><span>De R$ 2.666,69 até R$ 4.000,03</span><span>12%</span></div>
+                    <div class="chart-bar inss-bar-4"><span>De R$ 4.000,04 até R$ 7.786,02</span><span>14%</span></div>
+                </div>
+
+                <h2>IRRF (Imposto de Renda Retido na Fonte)</h2>
+                <p>Similar ao INSS, o IRRF também é progressivo. O cálculo é feito sobre o salário bruto menos o desconto do INSS e um valor fixo por cada dependente legal.</p>
+                 <div class="param-chart">
+                    <div class="chart-bar irrf-bar-1"><span>Até R$ 2.259,20</span><span>Isento</span></div>
+                    <div class="chart-bar irrf-bar-2"><span>De R$ 2.259,21 até R$ 2.826,65</span><span>7,5%</span></div>
+                    <div class="chart-bar irrf-bar-3"><span>De R$ 2.826,66 até R$ 3.751,05</span><span>15%</span></div>
+                    <div class="chart-bar irrf-bar-4"><span>De R$ 3.751,06 até R$ 4.664,68</span><span>22,5%</span></div>
+                    <div class="chart-bar irrf-bar-5"><span>Acima de R$ 4.664,68</span><span>27,5%</span></div>
+                </div>
+                
+                <h2>Independência Financeira (A Regra dos 4%)</h2>
+                <p>Para planear o seu "pé de meia", usamos um princípio universal: para saber quanto dinheiro você precisa de ter investido (a sua Meta), basta multiplicar a **renda ANUAL** que você deseja por **25**.</p>
+                <p class="explanation-text">Exemplo: Para uma renda de R$ 5.000/mês (R$ 60.000/ano), a sua meta é R$ 60.000 x 25 = R$ 1.500.000,00.</p>
+            </div>
+
         </div>
     </div>
+
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

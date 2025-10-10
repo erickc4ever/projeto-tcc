@@ -213,3 +213,96 @@ hr { border: none; border-top: 1px solid var(--cor-borda); margin: 15px 0; }
     }
 }
 
+/* --- ESTILOS DO MODAL --- */
+.modal-overlay {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.modal-overlay .calculator-card {
+    /* ATUALIZAÇÃO: Aumentado para dar mais espaço ao conteúdo das abas */
+    max-width: 720px;
+    border-radius: 0;
+    
+    /* CORREÇÃO DO SCROLL: */
+    max-height: 90vh; /* Limita a altura do modal a 90% da altura da tela */
+    overflow-y: auto; /* Adiciona a barra de scroll vertical apenas quando necessário */
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    font-weight: 300;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--cor-texto-secundario);
+    transition: color 0.2s ease;
+}
+
+.close-btn:hover {
+    color: var(--cor-texto-primario);
+}
+
+.brasao {
+    font-style: italic;
+    text-align: center;
+    color: var(--cor-texto-secundario);
+    margin-bottom: 1.5rem;
+    padding: 0.5rem;
+    background-color: var(--cor-fundo);
+    border-radius: 0;
+}
+
+.modal-overlay ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 0.5rem;
+}
+
+.modal-overlay li {
+    margin-bottom: 0.5rem;
+}
+
+/* Estilos para os "mini-gráficos" de parâmetros */
+.param-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 1rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+}
+
+.chart-bar {
+    padding: 8px 12px;
+    border-radius: 0; /* Design Quadrado */
+    color: var(--cor-texto-primario);
+    display: flex;
+    justify-content: space-between;
+    font-weight: 500;
+    border: 1px solid var(--cor-borda);
+    background-color: var(--cor-fundo);
+}
+
+dashboard-footer .btn {
+    width: auto; /* Remove a largura de 100% */
+    padding-left: 28px;  /* Adiciona um espaçamento horizontal */
+    padding-right: 28px; /* para um visual mais equilibrado */
+}
+
+
+.chart-bar span:last-child {
+    font-weight: 700;
+}
+
+/* Cores para as barras (usando o tema roxo do CLT) */
+.inss-bar-1 { background-color: rgba(109, 40, 217, 0.1); }
+.inss-bar-2 { background-color: rgba(109, 40, 217, 0.2); }
+.inss-bar-3 { background-color: rgba(109, 40, 217, 0.3); }
+.inss-bar-4 { background-color: rgba(109, 40, 217, 0.4); }
+
+.irrf-bar-1 { background-color: rgba(109, 40, 217, 0.05); }
+.irrf-bar-2 { background-color: rgba(109, 40, 217, 0.15); }
+.irrf-bar-3 { background-color: rgba(109, 40, 217, 0.25); }
+.irrf-bar-4 { background-color: rgba(109, 40, 217, 0.35); }
+.irrf-bar-5 { background-color: rgba(109, 40, 217, 0.45); }
